@@ -14,13 +14,8 @@ create_zip() {
       # Delete existing ZIP file
       rm "../$zip_name"
     fi
-    if [[ "$platform" == "macOS" ]]; then
-      # Compress macOS app bundle excluding symlinks
-      powershell -Command "Compress-Archive -Path * -DestinationPath '../$zip_name' -CompressionLevel Optimal -Force"
-    else
-      # Compress other platforms
-      powershell -Command "Compress-Archive -Path * -DestinationPath '../$zip_name' -Force"
-    fi
+    # Compress using PowerShell
+    powershell -Command "Compress-Archive -Path * -DestinationPath '../$zip_name' -Force"
   else
     # Running on macOS or Linux
     zip -r "../$zip_name" * -f
@@ -59,7 +54,13 @@ fi
 # Create ZIP files for each build
 create_zip "Windows" "Pokerogue-win32-x64"
 create_zip "Linux" "Pokerogue-linux-x64"
-create_zip "macOS" "Pokerogue-darwin-x64"
+
+# Create ZIP file for macOS only if running on macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  create_zip "macOS" "Pokerogue-darwin-x64"
+else
+  echo "Skipping ZIP creation for macOS on non-macOS platform."
+fi
 
 echo "Build and packaging complete!"
 read -p "Press any key to continue..."
