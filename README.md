@@ -13,7 +13,9 @@ Open a command prompt to the directory you stick this repo in
 Install electron (npm install electron --save-dev) and the electron packager (npm install electron-packager --save-dev)
 
 Run from command prompt with "npm start" or build the full app with "npm run package:platform" (platform being either "win", "mac", or "linux" for Windows/Mac/Linux respectively).
-    Alternatively, try to use my WIP build script that will do all of these and bundle them into a zip (although it's a bit jank atm; I don't recommend it).
-    NOTE: Apparently you can't zip up the mac version if you're not on a mac, so I can't distribute this version at the moment myself.
+
+Alternatively, try to use my WIP build script that will do all of these and bundle them into a zip (although it's a bit jank atm; I don't recommend it).
+
+NOTE: Apparently you can't zip up the mac version if you're not on a mac, so I can't distribute this version at the moment myself.
 
 Play! The app is found in dist/Pokerogue/Pokerogue.exe if you built it that way.
