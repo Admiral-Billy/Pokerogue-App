@@ -1,6 +1,9 @@
 # Pokerogue App
  An app to play Pokerogue.net in an app window. Wow!
 
+All cookie-related information can be found in %AppData%/Pokerogue; go there and delete the whole thing if you want the game to forget your login/settings/etc.
+
+
 Build instructions:
 
 Install NodeJS (https://nodejs.org/en)
