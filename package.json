@@ -1,17 +1,19 @@
 {
-	"name": "Pokerogue",
-	"version": "1.0.0",
-	"description": "",
-	"main": "main.js",
-	"scripts": {
-		"start": "electron . --persist-session-storage --persist-user-data-dir-name",
-		"package": "electron-packager . --overwrite --platform=win32 --arch=x64 --out=dist --icon=icons/PR"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"electron": "^29.2.0",
-		"electron-packager": "^17.1.2"
-	}
+  "name": "Pokerogue",
+  "version": "1.0.1",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --persist-session-storage --persist-user-data-dir-name",
+    "package:win": "electron-packager . --overwrite --platform=win32 --arch=x64 --out=dist --icon=icons/PR",
+    "package:linux": "electron-packager . --overwrite --platform=linux --arch=x64 --out=dist --icon=icons/PR",
+    "package:mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --out=dist --icon=icons/PR"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^29.2.0",
+    "electron-packager": "^17.1.2"
+  }
 }
