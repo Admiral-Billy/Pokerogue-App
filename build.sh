@@ -4,7 +4,7 @@
 create_zip() {
   local platform=$1
   local folder_name=$2
-  local zip_name="Pokerogue-$platform.zip"
+  local zip_name="Pokerogue-$platform-Offline.zip"
 
   echo "Creating ZIP file for $platform..."
   cd "dist/$folder_name"
