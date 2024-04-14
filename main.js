@@ -7,7 +7,7 @@ const treeKill = require('tree-kill');
 let viteProcess;
 let mainWindow;
 
-function createWindow() {
+async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 749,
@@ -19,6 +19,8 @@ function createWindow() {
       persistUserDataDirName: 'Pokerogue'
     }
   });
+
+  const readyToStart = await startServer();
 
   mainWindow.loadURL('http://localhost:8000');
   mainWindow.webContents.on('did-finish-load', () => {
@@ -41,7 +43,7 @@ function createWindow() {
   });
 }
 
-function startGame() {
+function startServer() {
   const gameDir = path.join(__dirname, '..', 'app', 'game');
   if (!fs.existsSync(gameDir)) {
     console.log('Game files not found. Please run the update script to download the game (located in the resources folder).');
@@ -54,6 +56,8 @@ function startGame() {
     shell: true,
     stdio: 'ignore'
   });
+  
+  return Promise.resolve(1);
 }
 
 function showErrorBox() {
@@ -75,7 +79,6 @@ function showErrorBox() {
 }
 
 app.whenReady().then(() => {
-  startGame();
   createWindow();
 });
 
