@@ -4,10 +4,10 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron . --persist-session-storage --persist-user-data-dir-name",
-    "package:win": "electron-packager . --overwrite --platform=win32 --arch=x64 --out=dist --icon=icons/PR",
-    "package:linux": "electron-packager . --overwrite --platform=linux --arch=x64 --out=dist --icon=icons/PR",
-    "package:mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --out=dist --icon=icons/PR"
+    "start": "electron .",
+    "package:win": "electron-packager . --overwrite --platform=win32 --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.bat",
+    "package:linux": "electron-packager . --overwrite --platform=linux --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.sh",
+    "package:mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.command"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +15,8 @@
   "devDependencies": {
     "electron": "^29.2.0",
     "electron-packager": "^17.1.2"
+  },
+  "dependencies": {
+    "tree-kill": "^1.2.2"
   }
 }
