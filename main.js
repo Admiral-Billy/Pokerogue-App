@@ -59,7 +59,7 @@ function startGame() {
 function showErrorBox() {
   const errorWindow = new BrowserWindow({
     width: 400,
-    height: 200,
+    height: 300,
     autoHideMenuBar: true,
     resizable: false,
     alwaysOnTop: true,
