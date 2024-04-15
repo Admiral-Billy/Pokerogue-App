@@ -46,11 +46,14 @@ async function createWindow() {
   });
   mainWindow.webContents.on('did-finish-load', () => {
     const gameWidth = 1280;
-    const gameHeight = 750; /// rescale the window to fix a bug with the game's resolution
-    mainWindow.setSize(gameWidth, gameHeight);
+    const gameHeight = 750;
+    mainWindow.setSize(gameWidth, 749);
+    mainWindow.setSize(gameWidth, gameHeight); /// rescale the window to fix a bug with the game's resolution
     mainWindow.center();
     mainWindow.show();
-    loadingWindow.close();
+    if (loadingWindow) {
+      loadingWindow.close();
+    }
   });
 
   mainWindow.on('close', (event) => {
@@ -60,9 +63,9 @@ async function createWindow() {
         if (err) {
           console.error('Error killing Vite process:', err);
         }
-        mainWindow.destroy();
       });
     }
+    mainWindow.destroy()
   });
 }
 
