@@ -3,7 +3,7 @@
 
 All cookie-related information can be found in %AppData%/Pokerogue; go there and delete the whole thing if you want the game to forget your login/settings/etc.
 
-It's worth noting that startup will be slower, and performance will likely be worse due to running a server locally, so keep that in mind!
+It's worth noting that if you're using the offline version (from the Offline-Mode branch) startup will be slower, and performance will likely be worse due to running a server locally, so keep that in mind!
 
 Build instructions:
 
