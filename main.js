@@ -58,14 +58,15 @@ async function createWindow() {
 
   mainWindow.on('close', (event) => {
     if (viteProcess) {
+      console.log("server kill")
       event.preventDefault();
       treeKill(viteProcess.pid, 'SIGTERM', (err) => {
+        mainWindow.destroy();
         if (err) {
           console.error('Error killing Vite process:', err);
         }
       });
     }
-    mainWindow.destroy()
   });
 }
 
