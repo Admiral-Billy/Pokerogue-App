@@ -46,7 +46,7 @@ async function createWindow() {
   });
   mainWindow.webContents.on('did-finish-load', () => {
     const gameWidth = 1280;
-    const gameHeight = 750;
+    const gameHeight = 750; /// rescale the window to fix a bug with the game's resolution
     mainWindow.setSize(gameWidth, gameHeight);
     mainWindow.center();
     mainWindow.show();
