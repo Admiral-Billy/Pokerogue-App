@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Loading Screen</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .loading-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .loading-text {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-container">
+    <div class="loading-text">Loading, please wait...</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    // Function to check if the app has connected to localhost
+    function checkConnection() {
+      fetch('http://localhost:8000')
+        .then(response => {
+          if (response.ok) {
+            // Connection successful, close the loading screen
+            ipcRenderer.send('close-loading-screen');
+          } else {
+            // Connection failed, retry after a delay
+            setTimeout(checkConnection, 1000);
+          }
+        })
+        .catch(() => {
+          // Connection failed, retry after a delay
+          setTimeout(checkConnection, 1000);
+        });
+    }
+
+    // Start checking the connection
+    checkConnection();
+  </script>
+</body>
+</html>
