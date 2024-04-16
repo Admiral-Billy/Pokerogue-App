@@ -4,7 +4,7 @@
 create_zip() {
   local platform=$1
   local folder_name=$2
-  local zip_name="Pokerogue-$platform.zip"
+  local zip_name="PokeRogue-$platform.zip"
 
   echo "Creating ZIP file for $platform..."
   cd "dist/$folder_name"
@@ -25,12 +25,16 @@ create_zip() {
 }
 
 # Build for Windows
-echo "Building for Windows..."
-npm run package:win
-if [ $? -ne 0 ]; then
-  echo "Error building for Windows. Please check the error messages."
-  read -p "Press any key to continue..."
-  exit 1
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+	echo "Building for Windows..."
+	npm run package:win
+	if [ $? -ne 0 ]; then
+	  echo "Error building for Windows. Please check the error messages."
+	  read -p "Press any key to continue..."
+	  exit 1
+	fi
+else
+  echo "Skipping ZIP creation for Windows on non-Windows platform."
 fi
 
 # Build for Linux
@@ -40,15 +44,19 @@ if [ $? -ne 0 ]; then
   echo "Error building for Linux. Please check the error messages."
   read -p "Press any key to continue..."
   exit 1
+else
+  echo "Skipping ZIP creation for Linux on non-Linux platform."
 fi
 
 # Build for macOS
-echo "Building for macOS..."
-npm run package:mac
-if [ $? -ne 0 ]; then
-  echo "Error building for macOS. Please check the error messages."
-  read -p "Press any key to continue..."
-  exit 1
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	echo "Building for macOS..."
+	npm run package:mac
+	if [ $? -ne 0 ]; then
+	  echo "Error building for macOS. Please check the error messages."
+	  read -p "Press any key to continue..."
+	  exit 1
+	fi
 fi
 
 # Create ZIP files for each build
