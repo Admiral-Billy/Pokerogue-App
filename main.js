@@ -7,8 +7,9 @@ const treeKill = require('tree-kill');
 let viteProcess;
 let mainWindow;
 let loadingWindow;
-let imageWindow;
 let wikiWindow;
+let typeCalculatorProcess;
+let typeCalculatorWindow;
 let isOfflineMode = process.argv.includes('--offline');
 
 async function createWindow() {
@@ -27,11 +28,14 @@ async function createWindow() {
 
   // Register a global shortcut for CTRL+T
   globalShortcut.register('CommandOrControl+T', () => {
-    if (imageWindow) {
-      imageWindow.close();
-      imageWindow = null;
+    if (typeCalculatorWindow) {
+      if (typeCalculatorWindow.isVisible()) {
+        typeCalculatorWindow.hide();
+      } else {
+        typeCalculatorWindow.show();
+      }
     } else {
-      createImageWindow();
+      createTypeCalculatorWindow();
     }
   });
 
@@ -49,10 +53,10 @@ async function createWindow() {
     // Unregister the global shortcuts when the main window is closed
     globalShortcut.unregisterAll();
 
-    // Close the image window if it's open
-    if (imageWindow) {
-      imageWindow.close();
-      imageWindow = null;
+    // Close the type calculator window if it's open
+    if (typeCalculatorWindow) {
+      typeCalculatorWindow.close();
+      typeCalculatorWindow = null;
     }
 
     // Close the wiki window if it's open
@@ -85,18 +89,38 @@ async function createWindow() {
       }, 1000);
     });
 
-    mainWindow.on('close', (event) => {
-      if (viteProcess) {
-        console.log("server kill");
-        event.preventDefault();
-        treeKill(viteProcess.pid, 'SIGTERM', (err) => {
-          mainWindow.destroy();
-          if (err) {
-            console.error('Error killing Vite process:', err);
-          }
-        });
-      }
-    });
+  mainWindow.on('close', async (event) => {
+    // Prevent the window from closing immediately
+    event.preventDefault();
+
+	// Close the type calculator Vite server if it's running
+	if (typeCalculatorProcess) {
+	  await new Promise((resolve) => {
+		treeKill(typeCalculatorProcess.pid, 'SIGTERM', (err) => {
+		  if (err) {
+			console.error('Error killing type calculator Vite process:', err);
+		  }
+		  resolve();
+		});
+	  });
+	  typeCalculatorProcess = null;
+	}
+
+	if (isOfflineMode && viteProcess) {
+	  await new Promise((resolve) => {
+		treeKill(viteProcess.pid, 'SIGTERM', (err) => {
+		  if (err) {
+			console.error('Error killing Vite process:', err);
+		  }
+		  resolve();
+		});
+	  });
+	  viteProcess = null;
+	}
+
+	// Close the main window
+	mainWindow.destroy();
+  });
   } else {
     mainWindow.loadURL('https://pokerogue.net/');
   }
@@ -149,25 +173,88 @@ function showErrorBox() {
   });
 }
 
-function createImageWindow() {
-  imageWindow = new BrowserWindow({
-    width: 1322,
-    height: 890,
+function showTypeCalculatorErrorBox() {
+  const errorWindow = new BrowserWindow({
+    width: 400,
+    height: 340,
     autoHideMenuBar: true,
+    resizable: false,
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+
+  errorWindow.loadFile('error-type-calculator.html');
+}
+
+async function createTypeCalculatorWindow() {
+  const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
+  if (!fs.existsSync(typeCalculatorDir)) {
+    console.log('Type calculator files not found. Please run the update script to download the type calculator (located in the resources folder).');
+    showTypeCalculatorErrorBox();
+    return;
+  }
+
+  typeCalculatorLoadingWindow = new BrowserWindow({
+    width: 400,
+    height: 300,
+    autoHideMenuBar: true,
+    resizable: false,
+    alwaysOnTop: true,
+    frame: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+
+  typeCalculatorLoadingWindow.loadFile('loading-type-calculator.html');
+	
+  typeCalculatorWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
     icon: 'icons/PR',
+    show: false, // Hide the window initially
     webPreferences: {
       nodeIntegration: false
     }
   });
 
-  imageWindow.loadFile('type-chart.png');
+  const readyToStart = await startTypeCalculatorServer();
 
-  imageWindow.on('closed', () => {
-    imageWindow = null;
+  typeCalculatorWindow.loadURL('http://localhost:5173');
+  typeCalculatorWindow.webContents.on('did-fail-load', () => {
+    setTimeout(() => {
+      typeCalculatorWindow.loadURL('http://localhost:5173');
+    }, 1000);
   });
 
-  // Remove the window frame
-  imageWindow.setMenu(null);
+  typeCalculatorWindow.webContents.on('did-finish-load', () => {
+    typeCalculatorWindow.show(); // Show the window when the content is loaded
+    if (typeCalculatorLoadingWindow) {
+      typeCalculatorLoadingWindow.close();
+      typeCalculatorLoadingWindow = null;
+    }
+  });
+
+  typeCalculatorWindow.on('close', (event) => {
+    if (typeCalculatorProcess) {
+      event.preventDefault();
+      typeCalculatorWindow.hide(); // Hide the window instead of closing it
+    }
+  });
+}
+
+function startTypeCalculatorServer() {
+  const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
+
+  typeCalculatorProcess = spawn('npm', ['run', 'start'], {
+    cwd: typeCalculatorDir,
+    shell: true,
+    stdio: 'ignore'
+  });
+
+  return Promise.resolve(1);
 }
 
 function createWikiWindow() {
@@ -235,6 +322,12 @@ function createWikiWindow() {
 ipcMain.on('close-loading-screen', () => {
   if (loadingWindow) {
     loadingWindow.close();
+  }
+});
+
+ipcMain.on('close-type-calculator-loading-screen', () => {
+  if (typeCalculatorLoadingWindow) {
+    typeCalculatorLoadingWindow.close();
   }
 });
 
