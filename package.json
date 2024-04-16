@@ -1,13 +1,13 @@
 {
-  "name": "Pokerogue",
+  "name": "PokeRogue",
   "version": "1.0.1",
   "description": "",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "package:win": "electron-packager . --overwrite --platform=win32 --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.bat",
-    "package:linux": "electron-packager . --overwrite --platform=linux --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.sh",
-    "package:mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.command"
+    "package:win": "electron-packager . PokeRogue --overwrite --platform=win32 --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.bat && echo @echo off > \"dist\\PokeRogue-win32-x64\\PokeRogue Offline.bat\" && echo start \"\" \".\\PokeRogue.exe\" --offline >> \"dist\\PokeRogue-win32-x64\\PokeRogue Offline.bat\"",
+    "package:linux": "electron-packager . PokeRogue --overwrite --platform=linux --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.sh && echo '#!/bin/sh' > \"dist/PokeRogue-linux-x64/PokeRogue Offline.sh\" && echo './PokeRogue --offline' >> \"dist/PokeRogue-linux-x64/PokeRogue Offline.sh\" && chmod +x \"dist/PokeRogue-linux-x64/PokeRogue Offline.sh\"",
+    "package:mac": "electron-packager . PokeRogue --overwrite --platform=darwin --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.command && echo '#!/bin/sh' > \"dist/PokeRogue-darwin-x64/PokeRogue Offline.command\" && echo './PokeRogue.app/Contents/MacOS/PokeRogue --offline' >> \"dist/PokeRogue-darwin-x64/PokeRogue Offline.command\" && chmod +x \"dist/PokeRogue-darwin-x64/PokeRogue Offline.command\""
   },
   "keywords": [],
   "author": "",
