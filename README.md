@@ -1,5 +1,5 @@
 # Pokerogue App
-An app to play Pokerogue.net in an app window. Wow! Hit Alt and you can view a list of utilities as well as their shortcuts.. Offline mode can be ran by using the included bat/sh/command file, but requires the game files to be installed using the update script in the resources folder (which is also used to install https://www.pkmn.help for offline use).
+An app to play Pokerogue.net in an app window. Wow! Hit Alt and you can view a list of utilities as well as their shortcuts.. Offline mode can be ran by using the included bat/sh/command file, but requires the game files to be installed using the update script in the resources folder (which is also used to install https://www.pkmn.help for offline use). To find the resources folder on Mac you need to step into the actual App.
 
 All cookie-related information can be found in %AppData%/Pokerogue; go there and delete the whole thing if you want the game to forget your login/settings/etc.
 
