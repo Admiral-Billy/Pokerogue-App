@@ -48,12 +48,12 @@ async function promptUser(question) {
 }
 
 async function runUpdates() {
-  const updateGame = await promptUser('Do you want to install/update PokeRogue locally for offline play? (Y/N, takes up about 1.5gb of space): ');
+  const updateGame = await promptUser('Do you want to install/update PokeRogue locally for offline play? (y/N, takes up about 1.5gb of space): ');
   if (updateGame) {
     updateGameFiles();
   }
 
-  const updateCalculator = await promptUser('Do you want to install/update the CTRL+T ingame type calculator for offline play? (Y/N, takes up about 1.9gb of space): ');
+  const updateCalculator = await promptUser('Do you want to install/update the CTRL+T ingame type calculator for offline play? (y/N, takes up about 1.9gb of space): ');
   if (updateCalculator) {
     updateTypeCalculator();
   }
