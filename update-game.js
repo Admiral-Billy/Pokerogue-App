@@ -53,7 +53,7 @@ async function runUpdates() {
     updateGameFiles();
   }
 
-  const updateCalculator = await promptUser('Do you want to install/update the CTRL+T ingame type calculator? (Y/N, takes up about 1.9gb of space): ');
+  const updateCalculator = await promptUser('Do you want to install/update the CTRL+T ingame type calculator for offline play? (Y/N, takes up about 1.9gb of space): ');
   if (updateCalculator) {
     updateTypeCalculator();
   }
