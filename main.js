@@ -496,8 +496,8 @@ function createWikiWindow() {
 
 function createTypeChartWindow() {
   typeChartWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 730,
+    height: 1000,
     icon: 'icons/PR',
     webPreferences: {
       nodeIntegration: true
