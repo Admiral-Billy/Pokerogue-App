@@ -173,12 +173,19 @@ async function createWindow() {
       typeChartWindow.close();
       typeChartWindow = null;
     }
-
-    // Dispose of the ad blocker for the main window
-    if (mainWindowBlocker) {
-      await mainWindowBlocker.dispose();
-      mainWindowBlocker = null;
+	
+    // Terminate the type calculator process if it's running in offline mode
+    if (typeCalculatorProcess) {
+		process.kill(typeCalculatorProcess.pid);
+		console.log("killed it");
     }
+
+    // Terminate the Vite process if it's running in offline mode
+    if (viteProcess) {
+		process.kill(viteProcess.pid);
+    }
+	
+	app.quit()
   });
 
   if (isOfflineMode) {
@@ -196,7 +203,7 @@ async function createWindow() {
 
     loadingWindow.loadFile('loading.html');
 
-    const readyToStart = await startServer();
+    startServer();
     mainWindow.loadURL('http://localhost:8000');
     mainWindow.webContents.on('did-fail-load', () => {
       setTimeout(() => {
@@ -234,8 +241,6 @@ function startServer() {
     shell: true,
     stdio: 'ignore'
   });
-
-  return Promise.resolve(1);
 }
 
 function showErrorBox() {
@@ -311,7 +316,7 @@ async function createTypeCalculatorWindow() {
 
     typeCalculatorLoadingWindow.loadFile('loading-type-calculator.html');
 
-    const readyToStart = await startTypeCalculatorServer();
+    startTypeCalculatorServer();
 
     typeCalculatorWindow.loadURL('http://localhost:5173');
     typeCalculatorWindow.webContents.on('did-fail-load', () => {
@@ -396,8 +401,6 @@ function startTypeCalculatorServer() {
     shell: true,
     stdio: 'ignore'
   });
-
-  return Promise.resolve(1);
 }
 
 async function createWikiWindow() {
@@ -606,12 +609,6 @@ async function createSmogonWindow() {
   
   smogonWindow.on('closed', async () => {
     smogonWindow = null;
-
-    // Dispose of the ad blocker for the Smogon window
-    if (smogonWindowBlocker) {
-      await smogonWindowBlocker.dispose();
-      smogonWindowBlocker = null;
-    }
   });
 
   // Enable back and forward navigation
@@ -689,19 +686,7 @@ app.whenReady().then(() => {
   createWindow();
 });
 
-app.on('window-all-closed', app.quit);
-
-app.on('before-quit', () => {
-    // Terminate the type calculator process if it's running in offline mode
-    if (typeCalculatorProcess) {
-	  typeCalculatorProcess.kill()
-    }
-
-    // Terminate the Vite process if it's running in offline mode
-    if (viteProcess) {
-	  viteProcess.kill()
-    }
-});
+app.on('window-all-closed', () => { app.quit(); });
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
