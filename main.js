@@ -1,4 +1,6 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { ElectronBlocker } = require('@cliqz/adblocker-electron');
+const fetch = require('cross-fetch');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -14,8 +16,6 @@ let typeChartWindow;
 let typeCalculatorProcess = null;
 let typeCalculatorWindow = null;
 let typeCalculatorLoadingWindow = null;
-let isTypeCalculatorWindowVisible = false;
-let isWikiWindowVisible = false;
 let isOfflineMode = process.argv.includes('--offline');
 
 async function createWindow() {
@@ -32,7 +32,10 @@ async function createWindow() {
     }
   });
 
-  // Create a custom menu template
+  // Initialize the ad blocker for the main window
+  const mainWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+  mainWindowBlocker.enableBlockingInSession(mainWindow.webContents.session);
+
   // Create a custom menu template
   const menuTemplate = [
     {
@@ -140,7 +143,7 @@ async function createWindow() {
   // Set the custom menu as the application menu
   Menu.setApplicationMenu(menu);
 
-  mainWindow.on('closed', () => {
+  mainWindow.on('closed', async () => {
     // Close the type calculator window if it's open
     if (typeCalculatorWindow) {
       typeCalculatorWindow.close();
@@ -152,23 +155,29 @@ async function createWindow() {
       wikiWindow.close();
       wikiWindow = null;
     }
-	
-    // Close the wiki window if it's open
+
+    // Close the team builder window if it's open
     if (teamBuilderWindow) {
       teamBuilderWindow.close();
       teamBuilderWindow = null;
     }
-	
-    // Close the wiki window if it's open
+
+    // Close the Smogon window if it's open
     if (smogonWindow) {
       smogonWindow.close();
       smogonWindow = null;
     }
-	
+
     // Close the type chart window if it's open
     if (typeChartWindow) {
       typeChartWindow.close();
       typeChartWindow = null;
+    }
+
+    // Dispose of the ad blocker for the main window
+    if (mainWindowBlocker) {
+      await mainWindowBlocker.dispose();
+      mainWindowBlocker = null;
     }
   });
 
@@ -193,39 +202,6 @@ async function createWindow() {
       setTimeout(() => {
         mainWindow.loadURL('http://localhost:8000');
       }, 1000);
-    });
-
-    mainWindow.on('close', async (event) => {
-      // Prevent the window from closing immediately
-      event.preventDefault();
-
-      // Close the type calculator Vite server if it's running
-      if (isOfflineMode && typeCalculatorProcess) {
-        await new Promise((resolve) => {
-          treeKill(typeCalculatorProcess.pid, 'SIGTERM', (err) => {
-            if (err) {
-              console.error('Error killing type calculator Vite process:', err);
-            }
-            resolve();
-          });
-        });
-        typeCalculatorProcess = null;
-      }
-
-      if (isOfflineMode && viteProcess) {
-        await new Promise((resolve) => {
-          treeKill(viteProcess.pid, 'SIGTERM', (err) => {
-            if (err) {
-              console.error('Error killing Vite process:', err);
-            }
-            resolve();
-          });
-        });
-        viteProcess = null;
-      }
-
-      // Close the main window
-      mainWindow.destroy();
     });
   } else {
     mainWindow.loadURL('https://pokerogue.net/');
@@ -308,6 +284,10 @@ async function createTypeCalculatorWindow() {
   });
 
   if (!isOfflineMode) {
+    // Initialize the ad blocker for the type calculator window
+    const typeCalculatorWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+    typeCalculatorWindowBlocker.enableBlockingInSession(typeCalculatorWindow.webContents.session);
+
     typeCalculatorWindow.loadURL('https://www.pkmn.help');
   } else {
     const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
@@ -349,24 +329,24 @@ async function createTypeCalculatorWindow() {
       typeCalculatorLoadingWindow = null;
     }
     typeCalculatorWindow.webContents.executeJavaScript(`
-		const style = document.createElement('style');
-		style.innerHTML = '\
-		  .navigation-buttons {\
-			position: fixed;\
-			top: 10px;\
-			left: 10px;\
-			z-index: 9999;\
-		  }\
-		  .navigation-button {\
-			background-color: #333;\
-			color: #fff;\
-			border: none;\
-			border-radius: 4px;\
-			padding: 6px 12px;\
-			margin-right: 5px;\
-			cursor: pointer;\
-		  }\
-		';
+      const style = document.createElement('style');
+      style.innerHTML = '\
+        .navigation-buttons {\
+          position: fixed;\
+          top: 10px;\
+          left: 10px;\
+          z-index: 9999;\
+        }\
+        .navigation-button {\
+          background-color: #333;\
+          color: #fff;\
+          border: none;\
+          border-radius: 4px;\
+          padding: 6px 12px;\
+          margin-right: 5px;\
+          cursor: pointer;\
+        }\
+      ';
       document.head.appendChild(style);
 
       const buttonsContainer = document.createElement('div');
@@ -401,7 +381,7 @@ async function createTypeCalculatorWindow() {
   });
 
   typeCalculatorWindow.on('close', (event) => {
-    if (typeCalculatorProcess) {
+    if (typeCalculatorWindow) {
       event.preventDefault();
       typeCalculatorWindow.hide(); // Hide the window instead of closing it
     }
@@ -420,46 +400,52 @@ function startTypeCalculatorServer() {
   return Promise.resolve(1);
 }
 
-function createWikiWindow() {
+async function createWikiWindow() {
   wikiWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-	autoHideMenuBar: true,
+    autoHideMenuBar: true,
     icon: 'icons/PR',
     webPreferences: {
       nodeIntegration: false
     }
   });
 
+  // Initialize the ad blocker for the wiki window
+  const wikiWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+  wikiWindowBlocker.enableBlockingInSession(wikiWindow.webContents.session);
+
   wikiWindow.loadURL('https://wiki.pokerogue.net/');
 
-  wikiWindow.on('closed', () => {
-    wikiWindow = null;
-    isWikiWindowVisible = false;
+  wikiWindow.on('close', (event) => {
+    if (wikiWindow) {
+      event.preventDefault();
+      wikiWindow.hide(); // Hide the window instead of closing it
+    }
   });
 
   // Enable back and forward navigation
   wikiWindow.webContents.on('did-finish-load', () => {
     wikiWindow.focus(); // Set focus to the wiki window
     wikiWindow.webContents.executeJavaScript(`
-		const style = document.createElement('style');
-		style.innerHTML = '\
-		  .navigation-buttons {\
-			position: fixed;\
-			top: 10px;\
-			left: 10px;\
-			z-index: 9999;\
-		  }\
-		  .navigation-button {\
-			background-color: #333;\
-			color: #fff;\
-			border: none;\
-			border-radius: 4px;\
-			padding: 6px 12px;\
-			margin-right: 5px;\
-			cursor: pointer;\
-		  }\
-		';
+      const style = document.createElement('style');
+      style.innerHTML = '\
+        .navigation-buttons {\
+          position: fixed;\
+          top: 10px;\
+          left: 10px;\
+          z-index: 9999;\
+        }\
+        .navigation-button {\
+          background-color: #333;\
+          color: #fff;\
+          border: none;\
+          border-radius: 4px;\
+          padding: 6px 12px;\
+          margin-right: 5px;\
+          cursor: pointer;\
+        }\
+      ';
       document.head.appendChild(style);
 
       const buttonsContainer = document.createElement('div');
@@ -479,7 +465,9 @@ function createWikiWindow() {
       forwardButton.addEventListener('click', () => {
         window.history.forward();
       });
-      buttonsContainer.appendChild(forwardButton);
+      buttons
+
+Container.appendChild(forwardButton);
 
       const homeButton = document.createElement('button');
       homeButton.className = 'navigation-button';
@@ -506,13 +494,15 @@ function createTypeChartWindow() {
 
   typeChartWindow.loadFile('type-chart.png');
 
-  typeChartWindow.on('closed', () => {
-    typeChartWindow = null;
+  typeChartWindow.on('close', (event) => {
+    if (typeChartWindow) {
+      event.preventDefault();
+      typeChartWindow.hide(); // Hide the window instead of closing it
+    }
   });
 }
 
-
-function createTeamBuilderWindow() {
+async function createTeamBuilderWindow() {
   teamBuilderWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -522,10 +512,17 @@ function createTeamBuilderWindow() {
     }
   });
 
+  // Initialize the ad blocker for the team builder window
+  const teamBuilderWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+  teamBuilderWindowBlocker.enableBlockingInSession(teamBuilderWindow.webContents.session);
+
   teamBuilderWindow.loadURL('https://marriland.com/tools/team-builder/');
 
-  teamBuilderWindow.on('closed', () => {
-    teamBuilderWindow = null;
+  teamBuilderWindow.on('close', (event) => {
+    if (teamBuilderWindow) {
+      event.preventDefault();
+      teamBuilderWindow.hide(); // Hide the window instead of closing it
+    }
   });
 
   // Enable back and forward navigation
@@ -584,7 +581,7 @@ function createTeamBuilderWindow() {
   });
 }
 
-function createSmogonWindow() {
+async function createSmogonWindow() {
   smogonWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -594,10 +591,27 @@ function createSmogonWindow() {
     }
   });
 
+  // Initialize the ad blocker for the Smogon window
+  const smogonWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+  smogonWindowBlocker.enableBlockingInSession(smogonWindow.webContents.session);
+
   smogonWindow.loadURL('https://www.smogon.com/dex/sv/pokemon/');
 
-  smogonWindow.on('closed', () => {
+  smogonWindow.on('close', (event) => {
+    if (smogonWindow) {
+      event.preventDefault();
+      smogonWindow.hide(); // Hide the window instead of closing it
+    }
+  });
+  
+  smogonWindow.on('closed', async () => {
     smogonWindow = null;
+
+    // Dispose of the ad blocker for the Smogon window
+    if (smogonWindowBlocker) {
+      await smogonWindowBlocker.dispose();
+      smogonWindowBlocker = null;
+    }
   });
 
   // Enable back and forward navigation
@@ -675,8 +689,18 @@ app.whenReady().then(() => {
   createWindow();
 });
 
-app.on('window-all-closed', () => {
-  app.quit();
+app.on('window-all-closed', app.quit);
+
+app.on('before-quit', () => {
+    // Terminate the type calculator process if it's running in offline mode
+    if (typeCalculatorProcess) {
+	  typeCalculatorProcess.kill()
+    }
+
+    // Terminate the Vite process if it's running in offline mode
+    if (viteProcess) {
+	  viteProcess.kill()
+    }
 });
 
 app.on('activate', () => {

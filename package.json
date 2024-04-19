@@ -17,6 +17,8 @@
     "electron-packager": "^17.1.2"
   },
   "dependencies": {
+    "@cliqz/adblocker-electron": "^1.27.1",
+    "cross-fetch": "^4.0.0",
     "tree-kill": "^1.2.2"
   }
 }
