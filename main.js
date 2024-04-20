@@ -4,7 +4,7 @@ const fetch = require('cross-fetch');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
-const treeKill = require('tree-kill');
+const { exec } = require('child_process');
 
 let viteProcess = null;
 let mainWindow;
@@ -180,9 +180,9 @@ async function createWindow() {
 		console.log("killed it");
     }
 
-    // Terminate the Vite process if it's running in offline mode
     if (viteProcess) {
 		process.kill(viteProcess.pid);
+		console.log("killed it");
     }
 	
 	app.quit()
@@ -236,10 +236,17 @@ function startServer() {
     return;
   }
 
-  viteProcess = spawn('npm', ['run', 'start'], {
+  const nodePath = 'node'; // Assuming 'node' is in the system's PATH
+  const scriptPath = path.join(gameDir, 'node_modules', 'vite', 'bin', 'vite.js');
+  const args = ['--port', '8000']; // Add any additional arguments if needed
+
+  viteProcess = spawn(nodePath, [scriptPath, ...args], {
     cwd: gameDir,
-    shell: true,
     stdio: 'ignore'
+  });
+
+  viteProcess.on('close', (code) => {
+    console.log(`Vite process exited with code ${code}`);
   });
 }
 
@@ -396,10 +403,17 @@ async function createTypeCalculatorWindow() {
 function startTypeCalculatorServer() {
   const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
 
-  typeCalculatorProcess = spawn('npm', ['run', 'start'], {
+  const nodePath = 'node'; // Assuming 'node' is in the system's PATH
+  const scriptPath = path.join(typeCalculatorDir, 'node_modules', 'vite', 'bin', 'vite.js');
+  const args = ['--port', '5173']; // Add any additional arguments if needed
+
+  typeCalculatorProcess = spawn(nodePath, [scriptPath, ...args], {
     cwd: typeCalculatorDir,
-    shell: true,
     stdio: 'ignore'
+  });
+
+  typeCalculatorProcess.on('close', (code) => {
+    console.log(`Type calculator process exited with code ${code}`);
   });
 }
 
