@@ -57,7 +57,28 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           path: artifacts
-
+      
+      - name: Delete existing drafts
+        uses: actions/github-script@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        with:
+          script: |
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+      
+            const drafts = releases.data.filter(release => release.draft);
+      
+            for (const draft of drafts) {
+              await github.rest.repos.deleteRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: draft.id,
+              });
+            }
+            
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
