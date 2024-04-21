@@ -24,6 +24,7 @@
   "build": {
     "appId": "com.example.pokerogue",
     "productName": "PokeRogue",
+	"publish": ["github"],
     "directories": {
       "output": "dist"
     },
