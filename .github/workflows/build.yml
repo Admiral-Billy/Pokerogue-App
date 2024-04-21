@@ -34,6 +34,7 @@ jobs:
           elif [ "${{ matrix.os }}" == "macos-latest" ]; then
             zip -r PokeRogue-macOS.zip mac
           fi
+        shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
