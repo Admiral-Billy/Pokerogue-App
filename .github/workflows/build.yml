@@ -46,6 +46,7 @@ jobs:
             dist/PokeRogue-macOS.zip
 
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
@@ -55,7 +56,7 @@ jobs:
           draft: true
           prerelease: false
       
-      - name: Upload Release Assets
+      - name: Upload Release Asset (Windows)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
@@ -65,7 +66,7 @@ jobs:
           asset_name: PokeRogue-Windows.zip
           asset_content_type: application/zip
       
-      - name: Upload Release Assets
+      - name: Upload Release Asset (Linux)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
@@ -75,7 +76,7 @@ jobs:
           asset_name: PokeRogue-Linux.zip
           asset_content_type: application/zip
       
-      - name: Upload Release Assets
+      - name: Upload Release Asset (macOS)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
