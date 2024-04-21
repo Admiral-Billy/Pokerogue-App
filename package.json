@@ -1,6 +1,6 @@
 {
   "name": "PokeRogue",
-  "version": "1.2.1",
+  "version": "1.2.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -24,6 +24,7 @@
   "build": {
     "appId": "com.example.pokerogue",
     "productName": "PokeRogue",
+	"publish": ["github"],
     "directories": {
       "output": "dist"
     },
