@@ -12,15 +12,15 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: 20
 
       - name: Build/release Electron app
-        uses: vingeraycn/action-electron-builder@v1.0.1
+        uses: samuelmeuli/action-electron-builder@v1
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
@@ -29,3 +29,20 @@ jobs:
           # If the commit is tagged with a version (e.g. "v1.0.0"),
           # release the app after building
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Create ZIP files
+        run: |
+          cd dist
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            powershell -Command "Compress-Archive -Path .\PokeRogue-win32-x64 -DestinationPath PokeRogue-Windows.zip"
+          elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            zip -r PokeRogue-Linux.zip PokeRogue-linux-x64
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            zip -r PokeRogue-macOS.zip PokeRogue-darwin-x64
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: PokeRogue-${{ matrix.os }}
+          path: dist/*.zip
