@@ -40,4 +40,47 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: PokeRogue-${{ matrix.os }}
-          path: dist/PokeRogue-*.zip
+          path: |
+            dist/PokeRogue-Windows.zip
+            dist/PokeRogue-Linux.zip
+            dist/PokeRogue-macOS.zip
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: draft
+          release_name: Draft Release
+          draft: true
+          prerelease: false
+      
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/PokeRogue-Windows.zip
+          asset_name: PokeRogue-Windows.zip
+          asset_content_type: application/zip
+      
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/PokeRogue-Linux.zip
+          asset_name: PokeRogue-Linux.zip
+          asset_content_type: application/zip
+      
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/PokeRogue-macOS.zip
+          asset_name: PokeRogue-macOS.zip
+          asset_content_type: application/zip
