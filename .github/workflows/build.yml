@@ -57,6 +57,7 @@ jobs:
           prerelease: false
       
       - name: Upload Release Asset (Windows)
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
@@ -67,6 +68,7 @@ jobs:
           asset_content_type: application/zip
       
       - name: Upload Release Asset (Linux)
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
@@ -77,6 +79,7 @@ jobs:
           asset_content_type: application/zip
       
       - name: Upload Release Asset (macOS)
+        if: matrix.os == 'macos-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
