@@ -28,11 +28,17 @@ jobs:
         run: |
           cd dist
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            powershell -Command "Compress-Archive -Path .\win-unpacked -DestinationPath PokeRogue-Windows.zip"
+            cd win-unpacked
+            powershell -Command "Compress-Archive -Path * -DestinationPath ../PokeRogue-Windows.zip"
+            cd ..
           elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            zip -r PokeRogue-Linux.zip linux-unpacked
+            cd linux-unpacked
+            zip -r ../PokeRogue-Linux.zip *
+            cd ..
           elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            zip -r PokeRogue-macOS.zip mac
+            cd mac
+            zip -r ../PokeRogue-macOS.zip *
+            cd ..
           fi
         shell: bash
 
