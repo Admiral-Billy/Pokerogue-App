@@ -34,11 +34,11 @@ jobs:
         run: |
           cd dist
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            powershell -Command "Compress-Archive -Path .\PokeRogue-win32-x64 -DestinationPath PokeRogue-Windows.zip"
+            powershell -Command "Compress-Archive -Path .\win-unpacked -DestinationPath PokeRogue-Windows.zip"
           elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            zip -r PokeRogue-Linux.zip PokeRogue-linux-x64
+            zip -r PokeRogue-Linux.zip linux-unpacked
           elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            zip -r PokeRogue-macOS.zip PokeRogue-darwin-x64
+            zip -r PokeRogue-macOS.zip mac
           fi
 
       - name: Upload artifacts
