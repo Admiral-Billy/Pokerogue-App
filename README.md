@@ -3,7 +3,7 @@ An app to play Pokerogue.net in an app window. Wow! Hit Alt and you can view a l
 
 All cookie-related information can be found in %AppData%/Pokerogue; go there and delete the whole thing if you want the game to forget your login/settings/etc.
 
-It's worth noting that if you're using the offline version startup will be slower, and performance will likely be worse due to running a server locally, so keep that in mind! Also, occasionally the servers for the game and the type chart like to stay open even after the window is closed. I've been trying to chase down what causes this bug, but if you see Pokerogue and/or Node.js still open in task manager after closing, this is why and you can safely close it.
+It's worth noting that if you're using the offline version startup will be slower, and performance will likely be worse due to running a server locally, so keep that in mind!
 
 # Build instructions
 
