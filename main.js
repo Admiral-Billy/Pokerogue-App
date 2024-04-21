@@ -10,6 +10,7 @@ let viteProcess = null;
 let mainWindow;
 let loadingWindow;
 let wikiWindow;
+let pokedexWindow;
 let smogonWindow;
 let teamBuilderWindow;
 let typeChartWindow;
@@ -46,6 +47,13 @@ async function createWindow() {
 				mainWindow.reload();
 			  }
 			},
+		  {
+			label: 'Toggle Fullscreen',
+			accelerator: 'F11',
+			click: () => {
+			  mainWindow.setFullScreen(!mainWindow.isFullScreen());
+			}
+		  },
 			{
 			  label: 'Wiki',
 			  accelerator: 'CommandOrControl+W',
@@ -60,6 +68,23 @@ async function createWindow() {
 				  }
 				} else {
 				  createWikiWindow();
+				}
+			  }
+			},
+			{
+			  label: 'Pokedex',
+			  accelerator: 'CommandOrControl+D',
+			  click: () => {
+				if (pokedexWindow) {
+				  if (pokedexWindow.isVisible()) {
+					pokedexWindow.hide();
+					mainWindow.focus(); // Set focus to the main window
+				  } else {
+					pokedexWindow.show();
+					pokedexWindow.focus(); // Set focus to the Pokedex window
+				  }
+				} else {
+				  createPokedexWindow();
 				}
 			  }
 			},
@@ -147,6 +172,13 @@ async function createWindow() {
 				mainWindow.reload();
 			  }
 			},
+		  {
+			label: 'Toggle Fullscreen',
+			accelerator: 'F11',
+			click: () => {
+			  mainWindow.setFullScreen(!mainWindow.isFullScreen());
+			}
+		  },
 			{
 			  label: 'Type Chart',
 			  accelerator: 'CommandOrControl+Y',
@@ -203,6 +235,12 @@ async function createWindow() {
     if (wikiWindow) {
       wikiWindow.close();
       wikiWindow = null;
+    }
+
+    // Close the pokedex window if it's open
+    if (pokedexWindow) {
+      pokedexWindow.close();
+      pokedexWindow = null;
     }
 
     // Close the team builder window if it's open
@@ -538,6 +576,86 @@ async function createWikiWindow() {
       homeButton.innerText = 'Home';
       homeButton.addEventListener('click', () => {
         window.location.href = 'https://wiki.pokerogue.net/';
+      });
+      buttonsContainer.appendChild(homeButton);
+
+      document.body.appendChild(buttonsContainer);
+    `);
+  });
+}
+
+async function createPokedexWindow() {
+  pokedexWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    autoHideMenuBar: true,
+    icon: 'icons/PR',
+    webPreferences: {
+      nodeIntegration: false
+    }
+  });
+
+  // Initialize the ad blocker for the Pokedex window
+  const pokedexWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+  pokedexWindowBlocker.enableBlockingInSession(pokedexWindow.webContents.session);
+
+  pokedexWindow.loadURL('https://pokemondb.net/pokedex/all');
+
+  pokedexWindow.on('close', (event) => {
+    if (pokedexWindow) {
+      event.preventDefault();
+      pokedexWindow.hide(); // Hide the window instead of closing it
+    }
+  });
+
+  // Enable back and forward navigation
+  pokedexWindow.webContents.on('did-finish-load', () => {
+    pokedexWindow.focus(); // Set focus to the Pokedex window
+    pokedexWindow.webContents.executeJavaScript(`
+      const style = document.createElement('style');
+      style.innerHTML = '\
+        .navigation-buttons {\
+          position: fixed;\
+          top: 10px;\
+          left: 10px;\
+          z-index: 9999;\
+        }\
+        .navigation-button {\
+          background-color: #333;\
+          color: #fff;\
+          border: none;\
+          border-radius: 4px;\
+          padding: 6px 12px;\
+          margin-right: 5px;\
+          cursor: pointer;\
+        }\
+      ';
+      document.head.appendChild(style);
+
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'navigation-buttons';
+
+      const backButton = document.createElement('button');
+      backButton.className = 'navigation-button';
+      backButton.innerText = 'Back';
+      backButton.addEventListener('click', () => {
+        window.history.back();
+      });
+      buttonsContainer.appendChild(backButton);
+
+      const forwardButton = document.createElement('button');
+      forwardButton.className = 'navigation-button';
+      forwardButton.innerText = 'Forward';
+      forwardButton.addEventListener('click', () => {
+        window.history.forward();
+      });
+      buttonsContainer.appendChild(forwardButton);
+
+      const homeButton = document.createElement('button');
+      homeButton.className = 'navigation-button';
+      homeButton.innerText = 'Home';
+      homeButton.addEventListener('click', () => {
+        window.location.href = 'https://pokemondb.net/pokedex/all';
       });
       buttonsContainer.appendChild(homeButton);
 
