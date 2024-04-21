@@ -34,16 +34,22 @@ jobs:
           elif [ "${{ matrix.os }}" == "macos-latest" ]; then
             zip -r PokeRogue-macOS.zip mac
           fi
-        shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: PokeRogue-${{ matrix.os }}
-          path: |
-            dist/PokeRogue-Windows.zip
-            dist/PokeRogue-Linux.zip
-            dist/PokeRogue-macOS.zip
+          path: dist/PokeRogue-*.zip
+
+  create_release:
+    needs: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
 
       - name: Create Release
         id: create_release
@@ -55,36 +61,33 @@ jobs:
           release_name: Draft Release
           draft: true
           prerelease: false
-      
+
       - name: Upload Release Asset (Windows)
-        if: matrix.os == 'windows-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/PokeRogue-Windows.zip
+          asset_path: artifacts/PokeRogue-windows-latest/PokeRogue-Windows.zip
           asset_name: PokeRogue-Windows.zip
           asset_content_type: application/zip
-      
+
       - name: Upload Release Asset (Linux)
-        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/PokeRogue-Linux.zip
+          asset_path: artifacts/PokeRogue-ubuntu-latest/PokeRogue-Linux.zip
           asset_name: PokeRogue-Linux.zip
           asset_content_type: application/zip
-      
+
       - name: Upload Release Asset (macOS)
-        if: matrix.os == 'macos-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/PokeRogue-macOS.zip
+          asset_path: artifacts/PokeRogue-macos-latest/PokeRogue-macOS.zip
           asset_name: PokeRogue-macOS.zip
           asset_content_type: application/zip
