@@ -1,23 +1,82 @@
 {
   "name": "PokeRogue",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "description": "",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "package:win": "electron-packager . PokeRogue --overwrite --platform=win32 --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.bat && echo @echo off > \"dist\\PokeRogue-win32-x64\\PokeRogue Offline.bat\" && echo start \"\" \".\\PokeRogue.exe\" --offline >> \"dist\\PokeRogue-win32-x64\\PokeRogue Offline.bat\"",
-    "package:linux": "electron-packager . PokeRogue --overwrite --platform=linux --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.sh && echo '#!/bin/sh' > \"dist/PokeRogue-linux-x64/PokeRogue Offline.sh\" && echo './PokeRogue --offline' >> \"dist/PokeRogue-linux-x64/PokeRogue Offline.sh\" && chmod +x \"dist/PokeRogue-linux-x64/PokeRogue Offline.sh\"",
-    "package:mac": "electron-packager . PokeRogue --overwrite --platform=darwin --arch=x64 --out=dist --icon=icons/PR --extra-resource=update-game.js --extra-resource=update-game.command && echo '#!/bin/sh' > \"dist/PokeRogue-darwin-x64/PokeRogue Offline.command\" && echo './PokeRogue.app/Contents/MacOS/PokeRogue --offline' >> \"dist/PokeRogue-darwin-x64/PokeRogue Offline.command\" && chmod +x \"dist/PokeRogue-darwin-x64/PokeRogue Offline.command\""
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "electron": "^29.2.0",
-    "electron-packager": "^17.1.2"
+    "electron-builder": "^24.13.3"
   },
   "dependencies": {
     "@cliqz/adblocker-electron": "^1.27.1",
     "cross-fetch": "^4.0.0"
+  },
+  "build": {
+    "appId": "com.example.pokerogue",
+    "productName": "PokeRogue",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "extraResources": [
+      "update-game.js",
+      {
+        "from": "update-game.bat",
+        "to": "update-game.bat"
+      }
+    ],
+    "win": {
+      "icon": "icons/PR.ico",
+      "target": "nsis",
+      "extraFiles": [
+        {
+          "from": "PokeRogue Offline.bat",
+          "to": "PokeRogue Offline.bat"
+        }
+      ]
+    },
+    "linux": {
+      "icon": "icons/PR.png",
+      "target": "AppImage",
+      "extraFiles": [
+        {
+          "from": "PokeRogue Offline.sh",
+          "to": "PokeRogue Offline.sh"
+        }
+      ]
+    },
+    "mac": {
+      "icon": "icons/PR.icns",
+      "target": "dmg",
+      "extraFiles": [
+        {
+          "from": "PokeRogue Offline.command",
+          "to": "PokeRogue Offline.command"
+        }
+      ]
+    }
   }
 }
