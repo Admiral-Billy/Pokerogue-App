@@ -31,111 +31,160 @@ async function createWindow() {
       persistUserDataDirName: 'Pokerogue'
     }
   });
-
-  // Initialize the ad blocker for the main window
-  const mainWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-  mainWindowBlocker.enableBlockingInSession(mainWindow.webContents.session);
-
+  
+  let menuTemplate = [];
   // Create a custom menu template
-  const menuTemplate = [
-    {
-      label: 'Utilities',
-      submenu: [
-        {
-          label: 'Reload',
-          accelerator: 'CommandOrControl+R',
-          click: () => {
-            mainWindow.reload();
-          }
-        },
-        {
-          label: 'Wiki',
-          accelerator: 'CommandOrControl+W',
-          click: () => {
-            if (wikiWindow) {
-              if (wikiWindow.isVisible()) {
-                wikiWindow.hide();
-                mainWindow.focus(); // Set focus to the main window
-              } else {
-                wikiWindow.show();
-                wikiWindow.focus(); // Set focus to the wiki window
-              }
-            } else {
-              createWikiWindow();
-            }
-          }
-        },
-        {
-          label: 'Type Chart',
-          accelerator: 'CommandOrControl+Y',
-          click: () => {
-            if (typeChartWindow) {
-              if (typeChartWindow.isVisible()) {
-                typeChartWindow.hide();
-                mainWindow.focus(); // Set focus to the main window
-              } else {
-                typeChartWindow.show();
-                typeChartWindow.focus(); // Set focus to the type chart window
-              }
-            } else {
-              createTypeChartWindow();
-            }
-          }
-        },
-        {
-          label: 'Type Calculator',
-          accelerator: 'CommandOrControl+T',
-          click: () => {
-            if (typeCalculatorWindow) {
-              if (typeCalculatorWindow.isVisible()) {
-                typeCalculatorWindow.hide();
-                mainWindow.focus(); // Set focus to the main window
-              } else {
-                typeCalculatorWindow.show();
-                typeCalculatorWindow.focus(); // Set focus to the type calculator window
-              }
-            } else {
-              createTypeCalculatorWindow();
-            }
-          }
-        },
-        {
-          label: 'Team Builder',
-          accelerator: 'CommandOrControl+B',
-          click: () => {
-            if (teamBuilderWindow) {
-              if (teamBuilderWindow.isVisible()) {
-                teamBuilderWindow.hide();
-                mainWindow.focus(); // Set focus to the main window
-              } else {
-                teamBuilderWindow.show();
-                teamBuilderWindow.focus(); // Set focus to the team builder window
-              }
-            } else {
-              createTeamBuilderWindow();
-            }
-          }
-        },
-        {
-          label: 'Smogon',
-          accelerator: 'CommandOrControl+S',
-          click: () => {
-            if (smogonWindow) {
-              if (smogonWindow.isVisible()) {
-                smogonWindow.hide();
-                mainWindow.focus(); // Set focus to the main window
-              } else {
-                smogonWindow.show();
-                smogonWindow.focus(); // Set focus to the Smogon window
-              }
-            } else {
-              createSmogonWindow();
-            }
-          }
-        }
-      ]
-    }
-  ];
+  if (!isOfflineMode) {
+	  menuTemplate = [
+		{
+		  label: 'Utilities',
+		  submenu: [
+			{
+			  label: 'Reload',
+			  accelerator: 'CommandOrControl+R',
+			  click: () => {
+				mainWindow.reload();
+			  }
+			},
+			{
+			  label: 'Wiki',
+			  accelerator: 'CommandOrControl+W',
+			  click: () => {
+				if (wikiWindow) {
+				  if (wikiWindow.isVisible()) {
+					wikiWindow.hide();
+					mainWindow.focus(); // Set focus to the main window
+				  } else {
+					wikiWindow.show();
+					wikiWindow.focus(); // Set focus to the wiki window
+				  }
+				} else {
+				  createWikiWindow();
+				}
+			  }
+			},
+			{
+			  label: 'Type Chart',
+			  accelerator: 'CommandOrControl+Y',
+			  click: () => {
+				if (typeChartWindow) {
+				  if (typeChartWindow.isVisible()) {
+					typeChartWindow.hide();
+					mainWindow.focus(); // Set focus to the main window
+				  } else {
+					typeChartWindow.show();
+					typeChartWindow.focus(); // Set focus to the type chart window
+				  }
+				} else {
+				  createTypeChartWindow();
+				}
+			  }
+			},
+			{
+			  label: 'Type Calculator',
+			  accelerator: 'CommandOrControl+T',
+			  click: () => {
+				if (typeCalculatorWindow) {
+				  if (typeCalculatorWindow.isVisible()) {
+					typeCalculatorWindow.hide();
+					mainWindow.focus(); // Set focus to the main window
+				  } else {
+					typeCalculatorWindow.show();
+					typeCalculatorWindow.focus(); // Set focus to the type calculator window
+				  }
+				} else {
+				  createTypeCalculatorWindow();
+				}
+			  }
+			},
+			{
+			  label: 'Team Builder',
+			  accelerator: 'CommandOrControl+B',
+			  click: () => {
+				if (teamBuilderWindow) {
+				  if (teamBuilderWindow.isVisible()) {
+					teamBuilderWindow.hide();
+					mainWindow.focus(); // Set focus to the main window
+				  } else {
+					teamBuilderWindow.show();
+					teamBuilderWindow.focus(); // Set focus to the team builder window
+				  }
+				} else {
+				  createTeamBuilderWindow();
+				}
+			  }
+			},
+			{
+			  label: 'Smogon',
+			  accelerator: 'CommandOrControl+S',
+			  click: () => {
+				if (smogonWindow) {
+				  if (smogonWindow.isVisible()) {
+					smogonWindow.hide();
+					mainWindow.focus(); // Set focus to the main window
+				  } else {
+					smogonWindow.show();
+					smogonWindow.focus(); // Set focus to the Smogon window
+				  }
+				} else {
+				  createSmogonWindow();
+				}
+			  }
+			}
+		  ]
+		}
+	  ];
+  }
+  else {
+	  menuTemplate = [
+		{
+		  label: 'Utilities',
+		  submenu: [
+			{
+			  label: 'Reload',
+			  accelerator: 'CommandOrControl+R',
+			  click: () => {
+				mainWindow.reload();
+			  }
+			},
+			{
+			  label: 'Type Chart',
+			  accelerator: 'CommandOrControl+Y',
+			  click: () => {
+				if (typeChartWindow) {
+				  if (typeChartWindow.isVisible()) {
+					typeChartWindow.hide();
+					mainWindow.focus(); // Set focus to the main window
+				  } else {
+					typeChartWindow.show();
+					typeChartWindow.focus(); // Set focus to the type chart window
+				  }
+				} else {
+				  createTypeChartWindow();
+				}
+			  }
+			},
+			{
+			  label: 'Type Calculator',
+			  accelerator: 'CommandOrControl+T',
+			  click: () => {
+				if (typeCalculatorWindow) {
+				  if (typeCalculatorWindow.isVisible()) {
+					typeCalculatorWindow.hide();
+					mainWindow.focus(); // Set focus to the main window
+				  } else {
+					typeCalculatorWindow.show();
+					typeCalculatorWindow.focus(); // Set focus to the type calculator window
+				  }
+				} else {
+				  createTypeCalculatorWindow();
+				}
+			  }
+			}
+		  ]
+		}
+	  ];
+  }
 
   // Create the menu from the template
   const menu = Menu.buildFromTemplate(menuTemplate);
@@ -482,9 +531,7 @@ async function createWikiWindow() {
       forwardButton.addEventListener('click', () => {
         window.history.forward();
       });
-      buttons
-
-Container.appendChild(forwardButton);
+      buttonsContainer.appendChild(forwardButton);
 
       const homeButton = document.createElement('button');
       homeButton.className = 'navigation-button';
