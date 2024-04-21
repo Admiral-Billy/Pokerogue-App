@@ -11,10 +11,8 @@ Install NodeJS (https://nodejs.org/en)
 
 Open a command prompt to the directory you stick this repo in
 
-Install electron (npm install electron --save-dev) and the electron packager (npm install electron-packager --save-dev)
+Install electron (npm install electron --save-dev) and the electron builder (npm install electron-builder --save-dev)
 
-Run from command prompt with "npm start" or build the full app with "npm run package:platform" or the build.sh script. Each version has to be built from its own OS for it to work properly when zipped up (thanks Electron!)
+Run from command prompt with "npm start" or build the full app with "npm run build:platform". Each version has to be built from its own OS for it to work properly when zipped up (thanks Electron!)
 
-NOTE: Apparently you can't zip up the mac version if you're not on a mac, so I can't distribute this version at the moment myself.
-
-Play! The app is found in dist/Pokerogue/Pokerogue.exe if you built it that way.
+Play! The app is found in dist/unpacked/Pokerogue.exe if you built it that way.
