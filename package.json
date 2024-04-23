@@ -58,7 +58,7 @@
         },
         {
           "from": "update-game.bat",
-          "to": "update-game.bat"
+          "to": "resources/update-game.bat"
         }
       ]
     },
@@ -72,7 +72,7 @@
         },
         {
           "from": "update-game.sh",
-          "to": "update-game.sh"
+          "to": "resources/update-game.sh"
         }
       ]
     },
@@ -86,7 +86,7 @@
         },
         {
           "from": "update-game.command",
-          "to": "update-game.command"
+          "to": "resources/update-game.command"
         }
       ]
     }
