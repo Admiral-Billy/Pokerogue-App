@@ -5,6 +5,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
 const { exec } = require('child_process');
+const DiscordRPC = require('discord-rpc');
 
 let viteProcess = null;
 let mainWindow;
@@ -36,6 +37,57 @@ async function createWindow() {
   let menuTemplate = [];
   // Create a custom menu template
   if (!isOfflineMode) {
+	  const clientId = '1232165629046292551';
+	  DiscordRPC.register(clientId);
+	  const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+	  
+     rpc.on('ready', () => {
+       console.log('Discord Rich Presence is ready!');
+       startDiscordPresenceUpdates();
+     });
+	 
+	 let startTime = Date.now();
+
+	async function updateDiscordPresence() {
+	  // Placeholder data (replace with actual game data)
+	  const gameData = {
+		gameMode: 'Classic',
+		biome: 'Laboratory',
+		currentWave: 50,
+		pokemonList: [
+		  { name: 'Pikachu', level: 36 },
+		  { name: 'Charmander', level: 40 },
+		  { name: 'Bulbasaur', level: 28 },
+		  { name: 'Squirtle', level: 32 },
+		],
+	  };
+
+	  // Format the details string
+	  const details = `${gameData.gameMode} | Wave: ${gameData.currentWave} | ${gameData.biome}`;
+
+	  // Format the state string with the Pokemon list
+	  const state = `Hover here for full Pokemon list...\n\nPokemon:\n${gameData.pokemonList
+		.map((pokemon) => `Level ${pokemon.level} ${pokemon.name}`)
+		.join('\n')}`;
+
+	  // Update the Rich Presence
+	  rpc.setActivity({
+//		details: details,
+//		state: state,
+		startTimestamp: startTime,
+		largeImageKey: 'logo',
+		largeImageText: 'PokeRogue',
+//		smallImageKey: 'small_image',
+//		smallImageText: `${gameData.status}`,
+		instance: true,
+	  });
+	}
+
+	// Start updating the Rich Presence every second
+	setInterval(updateDiscordPresence, 1000);
+	 
+	  rpc.login({ clientId }).catch(console.error);
+	  
 	  menuTemplate = [
 		{
 		  label: 'Utilities',
