@@ -19,12 +19,15 @@
   },
   "dependencies": {
     "@cliqz/adblocker-electron": "^1.27.1",
-    "cross-fetch": "^4.0.0"
+    "cross-fetch": "^4.0.0",
+    "discord-rpc": "^4.0.1"
   },
   "build": {
     "appId": "com.example.pokerogue",
     "productName": "PokeRogue",
-	"publish": ["github"],
+    "publish": [
+      "github"
+    ],
     "directories": {
       "output": "dist"
     },
@@ -43,11 +46,7 @@
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
     "extraResources": [
-      "update-game.js",
-      {
-        "from": "update-game.bat",
-        "to": "update-game.bat"
-      }
+      "update-game.js"
     ],
     "win": {
       "icon": "icons/PR.ico",
@@ -56,6 +55,10 @@
         {
           "from": "PokeRogue Offline.bat",
           "to": "PokeRogue Offline.bat"
+        },
+        {
+          "from": "update-game.bat",
+          "to": "update-game.bat"
         }
       ]
     },
@@ -66,6 +69,10 @@
         {
           "from": "PokeRogue Offline.sh",
           "to": "PokeRogue Offline.sh"
+        },
+        {
+          "from": "update-game.sh",
+          "to": "update-game.sh"
         }
       ]
     },
@@ -76,6 +83,10 @@
         {
           "from": "PokeRogue Offline.command",
           "to": "PokeRogue Offline.command"
+        },
+        {
+          "from": "update-game.command",
+          "to": "update-game.command"
         }
       ]
     }

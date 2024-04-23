@@ -32,4 +32,6 @@ fi
 
 echo "Updating game files..."
 node update-game.js
-read -p "Press any key to continue..."
+
+echo "Press any key to continue..."
+read -n 1 -s
