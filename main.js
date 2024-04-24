@@ -106,6 +106,13 @@ async function createWindow() {
 			  mainWindow.setFullScreen(!mainWindow.isFullScreen());
 			}
 		  },
+           {
+             label: 'Toggle Developer Tools',
+             accelerator: 'F12',
+             click: () => {
+               mainWindow.webContents.toggleDevTools();
+             }
+           },
 			{
 			  label: 'Wiki',
 			  accelerator: 'CommandOrControl+W',
@@ -242,6 +249,13 @@ async function createWindow() {
 			  mainWindow.setFullScreen(!mainWindow.isFullScreen());
 			}
 		  },
+           {
+             label: 'Toggle Developer Tools',
+             accelerator: 'F12',
+             click: () => {
+               mainWindow.webContents.toggleDevTools();
+             }
+           },
 			{
 			  label: 'Type Chart',
 			  accelerator: 'CommandOrControl+Y',
