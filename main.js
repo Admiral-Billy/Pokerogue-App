@@ -106,7 +106,7 @@ async function createWindow() {
 						}
 					},
 					{
-						label: 'Toggle Developer Tools',
+						label: 'Toggle Console',
 						accelerator: 'F12',
 						click: () => {
 							mainWindow.webContents.toggleDevTools();
@@ -250,7 +250,7 @@ async function createWindow() {
 						}
 					},
 					{
-						label: 'Toggle Developer Tools',
+						label: 'Toggle Console',
 						accelerator: 'F12',
 						click: () => {
 							mainWindow.webContents.toggleDevTools();
@@ -901,7 +901,7 @@ async function createSmogonWindow() {
 				.navigation-buttons {\
 					position: fixed;\
 					top: 10px;\
-					left: 10px;\
+					right: 10px;\
 					z-index: 9999;\
 				}\
 				.navigation-button {\
@@ -910,7 +910,7 @@ async function createSmogonWindow() {
 					border: none !important;\
 					border-radius: 4px !important;\
 					padding: 6px 12px !important;\
-					margin-right: 5px !important;\
+					margin-left: 5px !important;\
 					cursor: pointer !important;\
 				}\
 			';
