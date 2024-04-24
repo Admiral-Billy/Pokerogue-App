@@ -1,3 +1,4 @@
+// Importing required modules
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const { ElectronBlocker } = require('@cliqz/adblocker-electron');
 const fetch = require('cross-fetch');
@@ -7,19 +8,21 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const DiscordRPC = require('discord-rpc');
 
-let viteProcess = null;
+// Declaring global variables in the order of the options in the utilities menu
 let mainWindow;
 let loadingWindow;
 let wikiWindow;
 let pokedexWindow;
-let smogonWindow;
-let teamBuilderWindow;
 let typeChartWindow;
+let typeCalculatorWindow;
+let typeCalculatorLoadingWindow;
 let typeCalculatorProcess = null;
-let typeCalculatorWindow = null;
-let typeCalculatorLoadingWindow = null;
+let teamBuilderWindow;
+let smogonWindow;
+let viteProcess = null;
 let isOfflineMode = process.argv.includes('--offline');
 
+// Create the main application window
 async function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 1280,
@@ -311,12 +314,6 @@ async function createWindow() {
 	Menu.setApplicationMenu(menu);
 
 	mainWindow.on('closed', async () => {
-		// Close the type calculator window if it's open
-		if (typeCalculatorWindow) {
-			typeCalculatorWindow.close();
-			typeCalculatorWindow = null;
-		}
-
 		// Close the wiki window if it's open
 		if (wikiWindow) {
 			wikiWindow.close();
@@ -327,6 +324,24 @@ async function createWindow() {
 		if (pokedexWindow) {
 			pokedexWindow.close();
 			pokedexWindow = null;
+		}
+
+		// Close the type chart window if it's open
+		if (typeChartWindow) {
+			typeChartWindow.close();
+			typeChartWindow = null;
+		}
+
+		// Close the type calculator window if it's open
+		if (typeCalculatorWindow) {
+			typeCalculatorWindow.close();
+			typeCalculatorWindow = null;
+		}
+
+		// Terminate the type calculator process if it's running in offline mode
+		if (typeCalculatorProcess) {
+			process.kill(typeCalculatorProcess.pid);
+			console.log("Terminated type calculator process");
 		}
 
 		// Close the team builder window if it's open
@@ -341,23 +356,12 @@ async function createWindow() {
 			smogonWindow = null;
 		}
 
-		// Close the type chart window if it's open
-		if (typeChartWindow) {
-			typeChartWindow.close();
-			typeChartWindow = null;
-		}
-		
-		// Terminate the type calculator process if it's running in offline mode
-		if (typeCalculatorProcess) {
-			process.kill(typeCalculatorProcess.pid);
-			console.log("killed it");
-		}
-
+		// Terminate the Vite process if it's running
 		if (viteProcess) {
 			process.kill(viteProcess.pid);
-			console.log("killed it");
+			console.log("Terminated Vite process");
 		}
-		
+
 		app.quit();
 	});
 
@@ -387,7 +391,7 @@ async function createWindow() {
 		mainWindow.loadURL('https://pokerogue.net/');
 	}
 
-	// Register the shortcuts for the main window
+	// Fix the resolution and get rid of the loading screen if it exists
 	mainWindow.webContents.on('did-finish-load', () => {
 		const gameWidth = 1280;
 		const gameHeight = 750;
@@ -401,6 +405,7 @@ async function createWindow() {
 	});
 }
 
+// Start the Vite server for offline mode
 function startServer() {
 	const gameDir = path.join(__dirname, '..', 'app', 'game');
 	if (!fs.existsSync(gameDir)) {
@@ -423,6 +428,7 @@ function startServer() {
 	});
 }
 
+// Show an error dialog when game files are not found
 function showErrorBox() {
 	const errorWindow = new BrowserWindow({
 		width: 400,
@@ -441,21 +447,190 @@ function showErrorBox() {
 	});
 }
 
-function showTypeCalculatorErrorBox() {
-	const errorWindow = new BrowserWindow({
-		width: 400,
-		height: 340,
+// Create the wiki window
+async function createWikiWindow() {
+	wikiWindow = new BrowserWindow({
+		width: 1200,
+		height: 800,
 		autoHideMenuBar: true,
-		resizable: false,
-		alwaysOnTop: true,
+		icon: 'icons/PR',
+		webPreferences: {
+			nodeIntegration: false
+		}
+	});
+
+	// Initialize the ad blocker for the wiki window
+	const wikiWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+	wikiWindowBlocker.enableBlockingInSession(wikiWindow.webContents.session);
+
+	wikiWindow.loadURL('https://wiki.pokerogue.net/');
+
+	wikiWindow.on('close', (event) => {
+		if (wikiWindow) {
+			event.preventDefault();
+			wikiWindow.hide(); // Hide the window instead of closing it
+		}
+	});
+
+	// Enable back and forward navigation
+	wikiWindow.webContents.on('did-finish-load', () => {
+		wikiWindow.focus(); // Set focus to the wiki window
+		wikiWindow.webContents.executeJavaScript(`
+			const style = document.createElement('style');
+			style.innerHTML = '\
+				.navigation-buttons {\
+					position: fixed;\
+					top: 10px;\
+					left: 10px;\
+					z-index: 9999;\
+				}\
+				.navigation-button {\
+					background-color: #333;\
+					color: #fff;\
+					border: none;\
+					border-radius: 4px;\
+					padding: 6px 12px;\
+					margin-right: 5px;\
+					cursor: pointer;\
+				}\
+			';
+			document.head.appendChild(style);
+
+			const buttonsContainer = document.createElement('div');
+			buttonsContainer.className = 'navigation-buttons';
+
+			const backButton = document.createElement('button');
+			backButton.className = 'navigation-button';
+			backButton.innerText = 'Back';
+			backButton.addEventListener('click', () => {
+				window.history.back();
+			});
+			buttonsContainer.appendChild(backButton);
+
+			const forwardButton = document.createElement('button');
+			forwardButton.className = 'navigation-button';
+			forwardButton.innerText = 'Forward';
+			forwardButton.addEventListener('click', () => {
+				window.history.forward();
+			});
+			buttonsContainer.appendChild(forwardButton);
+
+			const homeButton = document.createElement('button');
+			homeButton.className = 'navigation-button';
+			homeButton.innerText = 'Home';
+			homeButton.addEventListener('click', () => {
+				window.location.href = 'https://wiki.pokerogue.net/';
+			});
+			buttonsContainer.appendChild(homeButton);
+
+			document.body.appendChild(buttonsContainer);
+		`);
+	});
+}
+
+// Create the Pokedex window
+async function createPokedexWindow() {
+	pokedexWindow = new BrowserWindow({
+		width: 1200,
+		height: 800,
+		autoHideMenuBar: true,
+		icon: 'icons/PR',
+		webPreferences: {
+			nodeIntegration: false
+		}
+	});
+
+	// Initialize the ad blocker for the Pokedex window
+	const pokedexWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+	pokedexWindowBlocker.enableBlockingInSession(pokedexWindow.webContents.session);
+
+	pokedexWindow.loadURL('https://pokemondb.net/pokedex/all');
+
+	pokedexWindow.on('close', (event) => {
+		if (pokedexWindow) {
+			event.preventDefault();
+			pokedexWindow.hide(); // Hide the window instead of closing it
+		}
+	});
+
+	// Enable back and forward navigation
+	pokedexWindow.webContents.on('did-finish-load', () => {
+		pokedexWindow.focus(); // Set focus to the Pokedex window
+		pokedexWindow.webContents.executeJavaScript(`
+			const style = document.createElement('style');
+			style.innerHTML = '\
+				.navigation-buttons {\
+					position: fixed;\
+					top: 10px;\
+					left: 10px;\
+					z-index: 9999;\
+				}\
+				.navigation-button {\
+					background-color: #333;\
+					color: #fff;\
+					border: none;\
+					border-radius: 4px;\
+					padding: 6px 12px;\
+					margin-right: 5px;\
+					cursor: pointer;\
+				}\
+			';
+			document.head.appendChild(style);
+
+			const buttonsContainer = document.createElement('div');
+			buttonsContainer.className = 'navigation-buttons';
+
+			const backButton = document.createElement('button');
+			backButton.className = 'navigation-button';
+			backButton.innerText = 'Back';
+			backButton.addEventListener('click', () => {
+				window.history.back();
+			});
+			buttonsContainer.appendChild(backButton);
+
+			const forwardButton = document.createElement('button');
+			forwardButton.className = 'navigation-button';
+			forwardButton.innerText = 'Forward';
+			forwardButton.addEventListener('click', () => {
+				window.history.forward();
+			});
+			buttonsContainer.appendChild(forwardButton);
+
+			const homeButton = document.createElement('button');
+			homeButton.className = 'navigation-button';
+			homeButton.innerText = 'Home';
+			homeButton.addEventListener('click', () => {
+				window.location.href = 'https://pokemondb.net/pokedex/all';
+			});
+			buttonsContainer.appendChild(homeButton);
+
+			document.body.appendChild(buttonsContainer);
+		`);
+	});
+}
+
+// Create the type chart window
+function createTypeChartWindow() {
+	typeChartWindow = new BrowserWindow({
+		width: 670,
+		height: 1000,
+		icon: 'icons/PR',
 		webPreferences: {
 			nodeIntegration: true
 		}
 	});
 
-	errorWindow.loadFile('error-type-calculator.html');
+	typeChartWindow.loadFile('type-chart.png');
+
+	typeChartWindow.on('close', (event) => {
+		if (typeChartWindow) {
+			event.preventDefault();
+			typeChartWindow.hide(); // Hide the window instead of closing it
+		}
+	});
 }
 
+// Create the type calculator window
 async function createTypeCalculatorWindow() {
 	typeCalculatorWindow = new BrowserWindow({
 		width: 1200,
@@ -573,6 +748,7 @@ async function createTypeCalculatorWindow() {
 	});
 }
 
+// Start the Vite server for the type calculator in offline mode
 function startTypeCalculatorServer() {
 	const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
 
@@ -590,186 +766,23 @@ function startTypeCalculatorServer() {
 	});
 }
 
-async function createWikiWindow() {
-	wikiWindow = new BrowserWindow({
-		width: 1200,
-		height: 800,
+// Show an error dialog when type calculator files are not found
+function showTypeCalculatorErrorBox() {
+	const errorWindow = new BrowserWindow({
+		width: 400,
+		height: 340,
 		autoHideMenuBar: true,
-		icon: 'icons/PR',
-		webPreferences: {
-			nodeIntegration: false
-		}
-	});
-
-	// Initialize the ad blocker for the wiki window
-	const wikiWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-	wikiWindowBlocker.enableBlockingInSession(wikiWindow.webContents.session);
-
-	wikiWindow.loadURL('https://wiki.pokerogue.net/');
-
-	wikiWindow.on('close', (event) => {
-		if (wikiWindow) {
-			event.preventDefault();
-			wikiWindow.hide(); // Hide the window instead of closing it
-		}
-	});
-
-	// Enable back and forward navigation
-	wikiWindow.webContents.on('did-finish-load', () => {
-		wikiWindow.focus(); // Set focus to the wiki window
-		wikiWindow.webContents.executeJavaScript(`
-			const style = document.createElement('style');
-			style.innerHTML = '\
-				.navigation-buttons {\
-					position: fixed;\
-					top: 10px;\
-					left: 10px;\
-					z-index: 9999;\
-				}\
-				.navigation-button {\
-					background-color: #333;\
-					color: #fff;\
-					border: none;\
-					border-radius: 4px;\
-					padding: 6px 12px;\
-					margin-right: 5px;\
-					cursor: pointer;\
-				}\
-			';
-			document.head.appendChild(style);
-
-			const buttonsContainer = document.createElement('div');
-			buttonsContainer.className = 'navigation-buttons';
-
-			const backButton = document.createElement('button');
-			backButton.className = 'navigation-button';
-			backButton.innerText = 'Back';
-			backButton.addEventListener('click', () => {
-				window.history.back();
-			});
-			buttonsContainer.appendChild(backButton);
-
-			const forwardButton = document.createElement('button');
-			forwardButton.className = 'navigation-button';
-			forwardButton.innerText = 'Forward';
-			forwardButton.addEventListener('click', () => {
-				window.history.forward();
-			});
-			buttonsContainer.appendChild(forwardButton);
-
-			const homeButton = document.createElement('button');
-			homeButton.className = 'navigation-button';
-			homeButton.innerText = 'Home';
-			homeButton.addEventListener('click', () => {
-				window.location.href = 'https://wiki.pokerogue.net/';
-			});
-			buttonsContainer.appendChild(homeButton);
-
-			document.body.appendChild(buttonsContainer);
-		`);
-	});
-}
-
-async function createPokedexWindow() {
-	pokedexWindow = new BrowserWindow({
-		width: 1200,
-		height: 800,
-		autoHideMenuBar: true,
-		icon: 'icons/PR',
-		webPreferences: {
-			nodeIntegration: false
-		}
-	});
-
-	// Initialize the ad blocker for the Pokedex window
-	const pokedexWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-	pokedexWindowBlocker.enableBlockingInSession(pokedexWindow.webContents.session);
-
-	pokedexWindow.loadURL('https://pokemondb.net/pokedex/all');
-
-	pokedexWindow.on('close', (event) => {
-		if (pokedexWindow) {
-			event.preventDefault();
-			pokedexWindow.hide(); // Hide the window instead of closing it
-		}
-	});
-
-	// Enable back and forward navigation
-	pokedexWindow.webContents.on('did-finish-load', () => {
-		pokedexWindow.focus(); // Set focus to the Pokedex window
-		pokedexWindow.webContents.executeJavaScript(`
-			const style = document.createElement('style');
-			style.innerHTML = '\
-				.navigation-buttons {\
-					position: fixed;\
-					top: 10px;\
-					left: 10px;\
-					z-index: 9999;\
-				}\
-				.navigation-button {\
-					background-color: #333;\
-					color: #fff;\
-					border: none;\
-					border-radius: 4px;\
-					padding: 6px 12px;\
-					margin-right: 5px;\
-					cursor: pointer;\
-				}\
-			';
-			document.head.appendChild(style);
-
-			const buttonsContainer = document.createElement('div');
-			buttonsContainer.className = 'navigation-buttons';
-
-			const backButton = document.createElement('button');
-			backButton.className = 'navigation-button';
-			backButton.innerText = 'Back';
-			backButton.addEventListener('click', () => {
-				window.history.back();
-			});
-			buttonsContainer.appendChild(backButton);
-
-			const forwardButton = document.createElement('button');
-			forwardButton.className = 'navigation-button';
-			forwardButton.innerText = 'Forward';
-			forwardButton.addEventListener('click', () => {
-				window.history.forward();
-			});
-			buttonsContainer.appendChild(forwardButton);
-
-			const homeButton = document.createElement('button');
-			homeButton.className = 'navigation-button';
-			homeButton.innerText = 'Home';
-			homeButton.addEventListener('click', () => {
-				window.location.href = 'https://pokemondb.net/pokedex/all';
-			});
-			buttonsContainer.appendChild(homeButton);
-
-			document.body.appendChild(buttonsContainer);
-		`);
-	});
-}
-
-function createTypeChartWindow() {
-	typeChartWindow = new BrowserWindow({
-		width: 670,
-		height: 1000,
-		icon: 'icons/PR',
+		resizable: false,
+		alwaysOnTop: true,
 		webPreferences: {
 			nodeIntegration: true
 		}
 	});
 
-	typeChartWindow.loadFile('type-chart.png');
-
-	typeChartWindow.on('close', (event) => {
-		if (typeChartWindow) {
-			event.preventDefault();
-			typeChartWindow.hide(); // Hide the window instead of closing it
-		}
-	});
+	errorWindow.loadFile('error-type-calculator.html');
 }
 
+// Create the team builder window
 async function createTeamBuilderWindow() {
 	teamBuilderWindow = new BrowserWindow({
 		width: 1200,
@@ -849,6 +862,7 @@ async function createTeamBuilderWindow() {
 	});
 }
 
+// Create the Smogon window
 async function createSmogonWindow() {
 	smogonWindow = new BrowserWindow({
 		width: 1200,
@@ -923,6 +937,7 @@ async function createSmogonWindow() {
 			homeButton.className = 'navigation-button';
 			homeButton.innerText = 'Home';
 			homeButton.addEventListener('click', () => {
+				
 				window.location.href = 'https://www.smogon.com/dex/sv/pokemon/';
 			});
 			buttonsContainer.appendChild(homeButton);
@@ -932,6 +947,7 @@ async function createSmogonWindow() {
 	});
 }
 
+// Handle IPC events
 ipcMain.on('close-loading-screen', () => {
 	if (loadingWindow) {
 		loadingWindow.close();
@@ -944,6 +960,7 @@ ipcMain.on('close-type-calculator-loading-screen', () => {
 	}
 });
 
+// Handle app events
 app.whenReady().then(() => {
 	if (process.argv.includes('--offline')) {
 		isOfflineMode = true;
