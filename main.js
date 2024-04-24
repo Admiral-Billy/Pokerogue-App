@@ -395,13 +395,15 @@ async function createWindow() {
 	mainWindow.webContents.on('did-finish-load', () => {
 		const gameWidth = 1280;
 		const gameHeight = 750;
-		mainWindow.setSize(gameWidth, 749);
-		mainWindow.setSize(gameWidth, gameHeight);
-		mainWindow.show();
-		if (loadingWindow) {
-			loadingWindow.close();
-			loadingWindow = null;
-		}
+		setTimeout(() => {
+			mainWindow.setSize(gameWidth, 749);
+			mainWindow.setSize(gameWidth, gameHeight);
+			mainWindow.show();
+			if (loadingWindow) {
+				loadingWindow.close();
+				loadingWindow = null;
+			}
+		}, 100);
 	});
 }
 
