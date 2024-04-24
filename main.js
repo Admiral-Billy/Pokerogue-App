@@ -46,7 +46,7 @@ async function createWindow() {
 		
 		rpc.on('ready', () => {
 			console.log('Discord Rich Presence is ready!');
-			startDiscordPresenceUpdates();
+			updateDiscordPresence();
 		});
 		
 		let startTime = Date.now();
@@ -648,7 +648,7 @@ async function createTypeCalculatorWindow() {
 	if (!isOfflineMode) {
 		// Initialize the ad blocker for the type calculator window
 		const typeCalculatorWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-		typeCalculatorWindow.BlenderBlocker.enableBlockingInSession(typeCalculatorWindow.webContents.session);
+		typeCalculatorWindowBlocker.enableBlockingInSession(typeCalculatorWindow.webContents.session);
 
 		typeCalculatorWindow.loadURL('https://www.pkmn.help');
 	} else {
