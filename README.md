@@ -7,15 +7,16 @@ It's worth noting that if you're using the offline version startup will be slowe
 
 Hit Alt and you can view a list of utilities as well as their shortcuts, but they're also included here for your convenience:
 
-Alt: Opens the menu bar that has the utilities tab, containing all of the below.
-Ctrl+R: Soft resets the game, as if you relaunched it
-F11: Fullscreens the game
-Ctrl+T: pkmn.help website (useful for being a type calculator and having a pokedex to access bulbapedia)
-Ctrl+Y: Type chart
-Ctrl+B: Team builder (useful for quickly seeing your team's resistances to various types, or planning)
-Ctrl+W: PokeRogue wiki
-Ctrl+D: Pokedex
-Ctrl+S: Smogon (to get a quick reference on what movesets might be good for a Pokemon, although of course take it with a grain of salt; PokeRogue is a different beast).
+Alt: Opens the menu bar that has the utilities tab, containing all of the below.  
+Ctrl+R: Soft resets the game, as if you relaunched it  
+F11: Fullscreens the game  
+F12: Developer console  
+Ctrl+T: pkmn.help website (useful for being a type calculator and having a pokedex to access bulbapedia)  
+Ctrl+Y: Type chart  
+Ctrl+B: Team builder (useful for quickly seeing your team's resistances to various types, or planning)  
+Ctrl+W: PokeRogue wiki  
+Ctrl+D: Pokedex  
+Ctrl+S: Smogon (to get a quick reference on what movesets might be good for a Pokemon, although of course take it with a grain of salt; PokeRogue is a different beast).  
 
 # Build instructions
 
