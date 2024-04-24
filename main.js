@@ -21,942 +21,942 @@ let typeCalculatorLoadingWindow = null;
 let isOfflineMode = process.argv.includes('--offline');
 
 async function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 749,
-    autoHideMenuBar: true,
-    icon: 'icons/PR',
-    show: false,
-    webPreferences: {
-      nodeIntegration: false,
-      persistSessionStorage: true,
-      persistUserDataDirName: 'Pokerogue'
-    }
-  });
-  
-  let menuTemplate = [];
-  // Create a custom menu template
-  if (!isOfflineMode) {
-	  const clientId = '1232165629046292551';
-	  DiscordRPC.register(clientId);
-	  const rpc = new DiscordRPC.Client({ transport: 'ipc' });
-	  
-     rpc.on('ready', () => {
-       console.log('Discord Rich Presence is ready!');
-       startDiscordPresenceUpdates();
-     });
-	 
-	 let startTime = Date.now();
+	mainWindow = new BrowserWindow({
+		width: 1280,
+		height: 749,
+		autoHideMenuBar: true,
+		icon: 'icons/PR',
+		show: false,
+		webPreferences: {
+			nodeIntegration: false,
+			persistSessionStorage: true,
+			persistUserDataDirName: 'Pokerogue'
+		}
+	});
+	
+	let menuTemplate = [];
+	// Create a custom menu template
+	if (!isOfflineMode) {
+		const clientId = '1232165629046292551';
+		DiscordRPC.register(clientId);
+		const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+		
+		rpc.on('ready', () => {
+			console.log('Discord Rich Presence is ready!');
+			startDiscordPresenceUpdates();
+		});
+		
+		let startTime = Date.now();
 
-	async function updateDiscordPresence() {
-	  // Placeholder data (replace with actual game data)
-	  const gameData = {
-		gameMode: 'Classic',
-		biome: 'Laboratory',
-		currentWave: 50,
-		pokemonList: [
-		  { name: 'Pikachu', level: 36 },
-		  { name: 'Charmander', level: 40 },
-		  { name: 'Bulbasaur', level: 28 },
-		  { name: 'Squirtle', level: 32 },
-		],
-	  };
+		async function updateDiscordPresence() {
+			// Placeholder data (replace with actual game data)
+			const gameData = {
+				gameMode: 'Classic',
+				biome: 'Laboratory',
+				currentWave: 50,
+				pokemonList: [
+					{ name: 'Pikachu', level: 36 },
+					{ name: 'Charmander', level: 40 },
+					{ name: 'Bulbasaur', level: 28 },
+					{ name: 'Squirtle', level: 32 },
+				],
+			};
 
-	  // Format the details string
-	  const details = `${gameData.gameMode} | Wave: ${gameData.currentWave} | ${gameData.biome}`;
+			// Format the details string
+			const details = `${gameData.gameMode} | Wave: ${gameData.currentWave} | ${gameData.biome}`;
 
-	  // Format the state string with the Pokemon list
-	  const state = `Hover here for full Pokemon list...\n\nPokemon:\n${gameData.pokemonList
-		.map((pokemon) => `Level ${pokemon.level} ${pokemon.name}`)
-		.join('\n')}`;
+			// Format the state string with the Pokemon list
+			const state = `Hover here for full Pokemon list...\n\nPokemon:\n${gameData.pokemonList
+				.map((pokemon) => `Level ${pokemon.level} ${pokemon.name}`)
+				.join('\n')}`;
 
-	  // Update the Rich Presence
-	  rpc.setActivity({
-//		details: details,
-//		state: state,
-		startTimestamp: startTime,
-		largeImageKey: 'logo',
-		largeImageText: 'PokeRogue',
-//		smallImageKey: 'small_image',
-//		smallImageText: `${gameData.status}`,
-		instance: true,
-	  });
+			// Update the Rich Presence
+			rpc.setActivity({
+				startTimestamp: startTime,
+				largeImageKey: 'logo',
+				largeImageText: 'PokeRogue',
+				instance: true,
+			});
+		}
+
+		// Start updating the Rich Presence every second
+		setInterval(updateDiscordPresence, 1000);
+		
+		rpc.login({ clientId }).catch(console.error);
+		
+		menuTemplate = [
+			{
+				label: 'Utilities',
+				submenu: [
+					{
+						label: 'Reload',
+						accelerator: 'CommandOrControl+R',
+						click: () => {
+							mainWindow.reload();
+						}
+					},
+					{
+						label: 'Toggle Fullscreen',
+						accelerator: 'F11',
+						click: () => {
+							mainWindow.setFullScreen(!mainWindow.isFullScreen());
+						}
+					},
+					{
+						label: 'Toggle Developer Tools',
+						accelerator: 'F12',
+						click: () => {
+							mainWindow.webContents.toggleDevTools();
+						}
+					},
+					{
+						label: 'Wiki',
+						accelerator: 'CommandOrControl+W',
+						click: () => {
+							if (wikiWindow) {
+								if (wikiWindow.isVisible()) {
+									wikiWindow.hide();
+									mainWindow.focus(); // Set focus to the main window
+								} else {
+									wikiWindow.show();
+									wikiWindow.focus(); // Set focus to the wiki window
+								}
+							} else {
+								createWikiWindow();
+							}
+						}
+					},
+					{
+						label: 'Pokedex',
+						accelerator: 'CommandOrControl+D',
+						click: () => {
+							if (pokedexWindow) {
+								if (pokedexWindow.isVisible()) {
+									pokedexWindow.hide();
+									mainWindow.focus(); // Set focus to the main window
+								} else {
+									pokedexWindow.show();
+									pokedexWindow.focus(); // Set focus to the Pokedex window
+								}
+							} else {
+								createPokedexWindow();
+							}
+						}
+					},
+					{
+						label: 'Type Chart',
+						accelerator: 'CommandOrControl+Y',
+						click: () => {
+							if (typeChartWindow) {
+								if (typeChartWindow.isVisible()) {
+									typeChartWindow.hide();
+									mainWindow.focus(); // Set focus to the main window
+								} else {
+									typeChartWindow.show();
+									typeChartWindow.focus(); // Set focus to the type chart window
+								}
+							} else {
+								createTypeChartWindow();
+							}
+						}
+					},
+					{
+						label: 'Type Calculator',
+						accelerator: 'CommandOrControl+T',
+						click: () => {
+							if (typeCalculatorWindow) {
+								if (typeCalculatorWindow.isVisible()) {
+									typeCalculatorWindow.hide();
+									mainWindow.focus(); // Set focus to the main window
+								} else {
+									typeCalculatorWindow.show();
+									typeCalculatorWindow.focus(); // Set focus to the type calculator window
+								}
+							} else {
+								createTypeCalculatorWindow();
+							}
+						}
+					},
+					{
+						label: 'Team Builder',
+						accelerator: 'CommandOrControl+B',
+						click: () => {
+							if (teamBuilderWindow) {
+								if (teamBuilderWindow.isVisible()) {
+									teamBuilderWindow.hide();
+									mainWindow.focus(); // Set focus to the main window
+								} else {
+									teamBuilderWindow.show();
+									teamBuilderWindow.focus(); // Set focus to the team builder window
+								}
+							} else {
+								createTeamBuilderWindow();
+							}
+						}
+					},
+					{
+						label: 'Smogon',
+						accelerator: 'CommandOrControl+S',
+						click: () => {
+							if (smogonWindow) {
+								if (smogonWindow.isVisible()) {
+									smogonWindow.hide();
+									mainWindow.focus(); // Set focus to the main window
+								} else {
+									smogonWindow.show();
+									smogonWindow.focus(); // Set focus to the Smogon window
+								}
+							} else {
+								createSmogonWindow();
+							}
+						}
+					}
+				]
+			},
+			{
+				label: "Edit",
+				submenu: [
+					{ label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+					{ label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+					{ type: "separator" },
+					{ label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+					{ label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+					{ label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+					{ label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+				]
+			}
+		];
+	}
+	else {
+		menuTemplate = [
+			{
+				label: 'Utilities',
+				submenu: [
+					{
+						label: 'Reload',
+						accelerator: 'CommandOrControl+R',
+						click: () => {
+							mainWindow.reload();
+						}
+					},
+					{
+						label: 'Toggle Fullscreen',
+						accelerator: 'F11',
+						click: () => {
+							mainWindow.setFullScreen(!mainWindow.isFullScreen());
+						}
+					},
+					{
+						label: 'Toggle Developer Tools',
+						accelerator: 'F12',
+						click: () => {
+							mainWindow.webContents.toggleDevTools();
+						}
+					},
+					{
+						label: 'Type Chart',
+						accelerator: 'CommandOrControl+Y',
+						click: () => {
+							if (typeChartWindow) {
+								if (typeChartWindow.isVisible()) {
+									typeChartWindow.hide();
+									mainWindow.focus(); // Set focus to the main window
+								} else {
+									typeChartWindow.show();
+									typeChartWindow.focus(); // Set focus to the type chart window
+								}
+							} else {
+								createTypeChartWindow();
+							}
+						}
+					},
+					{
+						label: 'Type Calculator',
+						accelerator: 'CommandOrControl+T',
+						click: () => {
+							if (typeCalculatorWindow) {
+								if (typeCalculatorWindow.isVisible()) {
+									typeCalculatorWindow.hide();
+									mainWindow.focus(); // Set focus to the main window
+								} else {
+									typeCalculatorWindow.show();
+									typeCalculatorWindow.focus(); // Set focus to the type calculator window
+								}
+							} else {
+								createTypeCalculatorWindow();
+							}
+						}
+					}
+				]
+			},
+			{
+				label: "Edit",
+				submenu: [
+					{ label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+					{ label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+					{ type: "separator" },
+					{ label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+					{ label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+					{ label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+					{ label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+				]
+			}
+		];
 	}
 
-	// Start updating the Rich Presence every second
-	setInterval(updateDiscordPresence, 1000);
-	 
-	  rpc.login({ clientId }).catch(console.error);
-	  
-	  menuTemplate = [
-		{
-		  label: 'Utilities',
-		  submenu: [
-			{
-			  label: 'Reload',
-			  accelerator: 'CommandOrControl+R',
-			  click: () => {
-				mainWindow.reload();
-			  }
-			},
-		  {
-			label: 'Toggle Fullscreen',
-			accelerator: 'F11',
-			click: () => {
-			  mainWindow.setFullScreen(!mainWindow.isFullScreen());
+	// Create the menu from the template
+	const menu = Menu.buildFromTemplate(menuTemplate);
+
+	// Set the custom menu as the application menu
+	Menu.setApplicationMenu(menu);
+
+	mainWindow.on('closed', async () => {
+		// Close the type calculator window if it's open
+		if (typeCalculatorWindow) {
+			typeCalculatorWindow.close();
+			typeCalculatorWindow = null;
+		}
+
+		// Close the wiki window if it's open
+		if (wikiWindow) {
+			wikiWindow.close();
+			wikiWindow = null;
+		}
+
+		// Close the pokedex window if it's open
+		if (pokedexWindow) {
+			pokedexWindow.close();
+			pokedexWindow = null;
+		}
+
+		// Close the team builder window if it's open
+		if (teamBuilderWindow) {
+			teamBuilderWindow.close();
+			teamBuilderWindow = null;
+		}
+
+		// Close the Smogon window if it's open
+		if (smogonWindow) {
+			smogonWindow.close();
+			smogonWindow = null;
+		}
+
+		// Close the type chart window if it's open
+		if (typeChartWindow) {
+			typeChartWindow.close();
+			typeChartWindow = null;
+		}
+		
+		// Terminate the type calculator process if it's running in offline mode
+		if (typeCalculatorProcess) {
+			process.kill(typeCalculatorProcess.pid);
+			console.log("killed it");
+		}
+
+		if (viteProcess) {
+			process.kill(viteProcess.pid);
+			console.log("killed it");
+		}
+		
+		app.quit();
+	});
+
+	if (isOfflineMode) {
+		loadingWindow = new BrowserWindow({
+			width: 400,
+			height: 300,
+			autoHideMenuBar: true,
+			resizable: false,
+			alwaysOnTop: true,
+			frame: false,
+			webPreferences: {
+				nodeIntegration: true
 			}
-		  },
-           {
-             label: 'Toggle Developer Tools',
-             accelerator: 'F12',
-             click: () => {
-               mainWindow.webContents.toggleDevTools();
-             }
-           },
-			{
-			  label: 'Wiki',
-			  accelerator: 'CommandOrControl+W',
-			  click: () => {
-				if (wikiWindow) {
-				  if (wikiWindow.isVisible()) {
-					wikiWindow.hide();
-					mainWindow.focus(); // Set focus to the main window
-				  } else {
-					wikiWindow.show();
-					wikiWindow.focus(); // Set focus to the wiki window
-				  }
-				} else {
-				  createWikiWindow();
-				}
-			  }
-			},
-			{
-			  label: 'Pokedex',
-			  accelerator: 'CommandOrControl+D',
-			  click: () => {
-				if (pokedexWindow) {
-				  if (pokedexWindow.isVisible()) {
-					pokedexWindow.hide();
-					mainWindow.focus(); // Set focus to the main window
-				  } else {
-					pokedexWindow.show();
-					pokedexWindow.focus(); // Set focus to the Pokedex window
-				  }
-				} else {
-				  createPokedexWindow();
-				}
-			  }
-			},
-			{
-			  label: 'Type Chart',
-			  accelerator: 'CommandOrControl+Y',
-			  click: () => {
-				if (typeChartWindow) {
-				  if (typeChartWindow.isVisible()) {
-					typeChartWindow.hide();
-					mainWindow.focus(); // Set focus to the main window
-				  } else {
-					typeChartWindow.show();
-					typeChartWindow.focus(); // Set focus to the type chart window
-				  }
-				} else {
-				  createTypeChartWindow();
-				}
-			  }
-			},
-			{
-			  label: 'Type Calculator',
-			  accelerator: 'CommandOrControl+T',
-			  click: () => {
-				if (typeCalculatorWindow) {
-				  if (typeCalculatorWindow.isVisible()) {
-					typeCalculatorWindow.hide();
-					mainWindow.focus(); // Set focus to the main window
-				  } else {
-					typeCalculatorWindow.show();
-					typeCalculatorWindow.focus(); // Set focus to the type calculator window
-				  }
-				} else {
-				  createTypeCalculatorWindow();
-				}
-			  }
-			},
-			{
-			  label: 'Team Builder',
-			  accelerator: 'CommandOrControl+B',
-			  click: () => {
-				if (teamBuilderWindow) {
-				  if (teamBuilderWindow.isVisible()) {
-					teamBuilderWindow.hide();
-					mainWindow.focus(); // Set focus to the main window
-				  } else {
-					teamBuilderWindow.show();
-					teamBuilderWindow.focus(); // Set focus to the team builder window
-				  }
-				} else {
-				  createTeamBuilderWindow();
-				}
-			  }
-			},
-			{
-			  label: 'Smogon',
-			  accelerator: 'CommandOrControl+S',
-			  click: () => {
-				if (smogonWindow) {
-				  if (smogonWindow.isVisible()) {
-					smogonWindow.hide();
-					mainWindow.focus(); // Set focus to the main window
-				  } else {
-					smogonWindow.show();
-					smogonWindow.focus(); // Set focus to the Smogon window
-				  }
-				} else {
-				  createSmogonWindow();
-				}
-			  }
-			}
-		  ]
-		},
-		{
-		label: "Edit",
-		submenu: [
-			{ label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-			{ label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-			{ type: "separator" },
-			{ label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-			{ label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-			{ label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-			{ label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
-		]}
-	  ];
-  }
-  else {
-	  menuTemplate = [
-		{
-		  label: 'Utilities',
-		  submenu: [
-			{
-			  label: 'Reload',
-			  accelerator: 'CommandOrControl+R',
-			  click: () => {
-				mainWindow.reload();
-			  }
-			},
-		  {
-			label: 'Toggle Fullscreen',
-			accelerator: 'F11',
-			click: () => {
-			  mainWindow.setFullScreen(!mainWindow.isFullScreen());
-			}
-		  },
-           {
-             label: 'Toggle Developer Tools',
-             accelerator: 'F12',
-             click: () => {
-               mainWindow.webContents.toggleDevTools();
-             }
-           },
-			{
-			  label: 'Type Chart',
-			  accelerator: 'CommandOrControl+Y',
-			  click: () => {
-				if (typeChartWindow) {
-				  if (typeChartWindow.isVisible()) {
-					typeChartWindow.hide();
-					mainWindow.focus(); // Set focus to the main window
-				  } else {
-					typeChartWindow.show();
-					typeChartWindow.focus(); // Set focus to the type chart window
-				  }
-				} else {
-				  createTypeChartWindow();
-				}
-			  }
-			},
-			{
-			  label: 'Type Calculator',
-			  accelerator: 'CommandOrControl+T',
-			  click: () => {
-				if (typeCalculatorWindow) {
-				  if (typeCalculatorWindow.isVisible()) {
-					typeCalculatorWindow.hide();
-					mainWindow.focus(); // Set focus to the main window
-				  } else {
-					typeCalculatorWindow.show();
-					typeCalculatorWindow.focus(); // Set focus to the type calculator window
-				  }
-				} else {
-				  createTypeCalculatorWindow();
-				}
-			  }
-			}
-		  ]
-		},
-		{
-		label: "Edit",
-		submenu: [
-			{ label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-			{ label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-			{ type: "separator" },
-			{ label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-			{ label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-			{ label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-			{ label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
-		]}
-	  ];
-  }
+		});
 
-  // Create the menu from the template
-  const menu = Menu.buildFromTemplate(menuTemplate);
+		loadingWindow.loadFile('loading.html');
 
-  // Set the custom menu as the application menu
-  Menu.setApplicationMenu(menu);
+		startServer();
+		mainWindow.loadURL('http://localhost:8000');
+		mainWindow.webContents.on('did-fail-load', () => {
+			setTimeout(() => {
+				mainWindow.loadURL('http://localhost:8000');
+			}, 1000);
+		});
+	} else {
+		mainWindow.loadURL('https://pokerogue.net/');
+	}
 
-  mainWindow.on('closed', async () => {
-    // Close the type calculator window if it's open
-    if (typeCalculatorWindow) {
-      typeCalculatorWindow.close();
-      typeCalculatorWindow = null;
-    }
-
-    // Close the wiki window if it's open
-    if (wikiWindow) {
-      wikiWindow.close();
-      wikiWindow = null;
-    }
-
-    // Close the pokedex window if it's open
-    if (pokedexWindow) {
-      pokedexWindow.close();
-      pokedexWindow = null;
-    }
-
-    // Close the team builder window if it's open
-    if (teamBuilderWindow) {
-      teamBuilderWindow.close();
-      teamBuilderWindow = null;
-    }
-
-    // Close the Smogon window if it's open
-    if (smogonWindow) {
-      smogonWindow.close();
-      smogonWindow = null;
-    }
-
-    // Close the type chart window if it's open
-    if (typeChartWindow) {
-      typeChartWindow.close();
-      typeChartWindow = null;
-    }
-	
-    // Terminate the type calculator process if it's running in offline mode
-    if (typeCalculatorProcess) {
-		process.kill(typeCalculatorProcess.pid);
-		console.log("killed it");
-    }
-
-    if (viteProcess) {
-		process.kill(viteProcess.pid);
-		console.log("killed it");
-    }
-	
-	app.quit()
-  });
-
-  if (isOfflineMode) {
-    loadingWindow = new BrowserWindow({
-      width: 400,
-      height: 300,
-      autoHideMenuBar: true,
-      resizable: false,
-      alwaysOnTop: true,
-      frame: false,
-      webPreferences: {
-        nodeIntegration: true
-      }
-    });
-
-    loadingWindow.loadFile('loading.html');
-
-    startServer();
-    mainWindow.loadURL('http://localhost:8000');
-    mainWindow.webContents.on('did-fail-load', () => {
-      setTimeout(() => {
-        mainWindow.loadURL('http://localhost:8000');
-      }, 1000);
-    });
-  } else {
-    mainWindow.loadURL('https://pokerogue.net/');
-  }
-
-  // Register the shortcuts for the main window
-  mainWindow.webContents.on('did-finish-load', () => {
-    const gameWidth = 1280;
-    const gameHeight = 750;
-    mainWindow.setSize(gameWidth, 749);
-    mainWindow.setSize(gameWidth, gameHeight);
-    mainWindow.show();
-    if (loadingWindow) {
-      loadingWindow.close();
-      loadingWindow = null;
-    }
-  });
+	// Register the shortcuts for the main window
+	mainWindow.webContents.on('did-finish-load', () => {
+		const gameWidth = 1280;
+		const gameHeight = 750;
+		mainWindow.setSize(gameWidth, 749);
+		mainWindow.setSize(gameWidth, gameHeight);
+		mainWindow.show();
+		if (loadingWindow) {
+			loadingWindow.close();
+			loadingWindow = null;
+		}
+	});
 }
 
 function startServer() {
-  const gameDir = path.join(__dirname, '..', 'app', 'game');
-  if (!fs.existsSync(gameDir)) {
-    console.log('Game files not found. Please run the update script to download the game (located in the resources folder).');
-    showErrorBox();
-    return;
-  }
+	const gameDir = path.join(__dirname, '..', 'app', 'game');
+	if (!fs.existsSync(gameDir)) {
+		console.log('Game files not found. Please run the update script to download the game (located in the resources folder).');
+		showErrorBox();
+		return;
+	}
 
-  const nodePath = 'node'; // Assuming 'node' is in the system's PATH
-  const scriptPath = path.join(gameDir, 'node_modules', 'vite', 'bin', 'vite.js');
-  const args = ['--port', '8000']; // Add any additional arguments if needed
+	const nodePath = 'node'; // Assuming 'node' is in the system's PATH
+	const scriptPath = path.join(gameDir, 'node_modules', 'vite', 'bin', 'vite.js');
+	const args = ['--port', '8000']; // Add any additional arguments if needed
 
-  viteProcess = spawn(nodePath, [scriptPath, ...args], {
-    cwd: gameDir,
-    stdio: 'ignore'
-  });
+	viteProcess = spawn(nodePath, [scriptPath, ...args], {
+		cwd: gameDir,
+		stdio: 'ignore'
+	});
 
-  viteProcess.on('close', (code) => {
-    console.log(`Vite process exited with code ${code}`);
-  });
+	viteProcess.on('close', (code) => {
+		console.log(`Vite process exited with code ${code}`);
+	});
 }
 
 function showErrorBox() {
-  const errorWindow = new BrowserWindow({
-    width: 400,
-    height: 300,
-    autoHideMenuBar: true,
-    resizable: false,
-    alwaysOnTop: true,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
+	const errorWindow = new BrowserWindow({
+		width: 400,
+		height: 300,
+		autoHideMenuBar: true,
+		resizable: false,
+		alwaysOnTop: true,
+		webPreferences: {
+			nodeIntegration: true
+		}
+	});
 
-  errorWindow.loadFile('error.html');
-  errorWindow.on('closed', () => {
-    app.quit();
-  });
+	errorWindow.loadFile('error.html');
+	errorWindow.on('closed', () => {
+		app.quit();
+	});
 }
 
 function showTypeCalculatorErrorBox() {
-  const errorWindow = new BrowserWindow({
-    width: 400,
-    height: 340,
-    autoHideMenuBar: true,
-    resizable: false,
-    alwaysOnTop: true,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
+	const errorWindow = new BrowserWindow({
+		width: 400,
+		height: 340,
+		autoHideMenuBar: true,
+		resizable: false,
+		alwaysOnTop: true,
+		webPreferences: {
+			nodeIntegration: true
+		}
+	});
 
-  errorWindow.loadFile('error-type-calculator.html');
+	errorWindow.loadFile('error-type-calculator.html');
 }
 
 async function createTypeCalculatorWindow() {
-  typeCalculatorWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    autoHideMenuBar: true,
-    icon: 'icons/PR',
-    show: false, // Hide the window initially
-    webPreferences: {
-      nodeIntegration: false
-    }
-  });
+	typeCalculatorWindow = new BrowserWindow({
+		width: 1200,
+		height: 800,
+		autoHideMenuBar: true,
+		icon: 'icons/PR',
+		show: false, // Hide the window initially
+		webPreferences: {
+			nodeIntegration: false
+		}
+	});
 
-  if (!isOfflineMode) {
-    // Initialize the ad blocker for the type calculator window
-    const typeCalculatorWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-    typeCalculatorWindowBlocker.enableBlockingInSession(typeCalculatorWindow.webContents.session);
+	if (!isOfflineMode) {
+		// Initialize the ad blocker for the type calculator window
+		const typeCalculatorWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+		typeCalculatorWindow.BlenderBlocker.enableBlockingInSession(typeCalculatorWindow.webContents.session);
 
-    typeCalculatorWindow.loadURL('https://www.pkmn.help');
-  } else {
-    const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
-    if (!fs.existsSync(typeCalculatorDir)) {
-      console.log('Type calculator files not found. Please run the update script to download the type calculator (located in the resources folder).');
-      showTypeCalculatorErrorBox();
-      return;
-    }
+		typeCalculatorWindow.loadURL('https://www.pkmn.help');
+	} else {
+		const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
+		if (!fs.existsSync(typeCalculatorDir)) {
+			console.log('Type calculator files not found. Please run the update script to download the type calculator (located in the resources folder).');
+			showTypeCalculatorErrorBox();
+			return;
+		}
 
-    typeCalculatorLoadingWindow = new BrowserWindow({
-      width: 400,
-      height: 300,
-      autoHideMenuBar: true,
-      resizable: false,
-      alwaysOnTop: true,
-      frame: false,
-      webPreferences: {
-        nodeIntegration: true
-      }
-    });
+		typeCalculatorLoadingWindow = new BrowserWindow({
+			width: 400,
+			height: 300,
+			autoHideMenuBar: true,
+			resizable: false,
+			alwaysOnTop: true,
+			frame: false,
+			webPreferences: {
+				nodeIntegration: true
+			}
+		});
 
-    typeCalculatorLoadingWindow.loadFile('loading-type-calculator.html');
+		typeCalculatorLoadingWindow.loadFile('loading-type-calculator.html');
 
-    startTypeCalculatorServer();
+		startTypeCalculatorServer();
 
-    typeCalculatorWindow.loadURL('http://localhost:5173');
-    typeCalculatorWindow.webContents.on('did-fail-load', () => {
-      setTimeout(() => {
-        typeCalculatorWindow.loadURL('http://localhost:5173');
-      }, 1000);
-    });
-  }
+		typeCalculatorWindow.loadURL('http://localhost:5173');
+		typeCalculatorWindow.webContents.on('did-fail-load', () => {
+			setTimeout(() => {
+				typeCalculatorWindow.loadURL('http://localhost:5173');
+			}, 1000);
+		});
+	}
 
-  typeCalculatorWindow.webContents.on('did-finish-load', () => {
-    typeCalculatorWindow.show(); // Show the window when the content is loaded
-    typeCalculatorWindow.focus(); // Set focus to the type calculator window
-    if (typeCalculatorLoadingWindow) {
-      typeCalculatorLoadingWindow.close();
-      typeCalculatorLoadingWindow = null;
-    }
-    typeCalculatorWindow.webContents.executeJavaScript(`
-      const style = document.createElement('style');
-      style.innerHTML = '\
-        .navigation-buttons {\
-          position: fixed;\
-          top: 10px;\
-          left: 10px;\
-          z-index: 9999;\
-        }\
-        .navigation-button {\
-          background-color: #333;\
-          color: #fff;\
-          border: none;\
-          border-radius: 4px;\
-          padding: 6px 12px;\
-          margin-right: 5px;\
-          cursor: pointer;\
-        }\
-      ';
-      document.head.appendChild(style);
+	typeCalculatorWindow.webContents.on('did-finish-load', () => {
+		typeCalculatorWindow.show(); // Show the window when the content is loaded
+		typeCalculatorWindow.focus(); // Set focus to the type calculator window
+		if (typeCalculatorLoadingWindow) {
+			typeCalculatorLoadingWindow.close();
+			typeCalculatorLoadingWindow = null;
+		}
+		typeCalculatorWindow.webContents.executeJavaScript(`
+			const style = document.createElement('style');
+			style.innerHTML = '\
+				.navigation-buttons {\
+					position: fixed;\
+					top: 10px;\
+					left: 10px;\
+					z-index: 9999;\
+				}\
+				.navigation-button {\
+					background-color: #333;\
+					color: #fff;\
+					border: none;\
+					border-radius: 4px;\
+					padding: 6px 12px;\
+					margin-right: 5px;\
+					cursor: pointer;\
+				}\
+			';
+			document.head.appendChild(style);
 
-      const buttonsContainer = document.createElement('div');
-      buttonsContainer.className = 'navigation-buttons';
+			const buttonsContainer = document.createElement('div');
+			buttonsContainer.className = 'navigation-buttons';
 
-      const backButton = document.createElement('button');
-      backButton.className = 'navigation-button';
-      backButton.innerText = 'Back';
-      backButton.addEventListener('click', () => {
-        window.history.back();
-      });
-      buttonsContainer.appendChild(backButton);
+			const backButton = document.createElement('button');
+			backButton.className = 'navigation-button';
+			backButton.innerText = 'Back';
+			backButton.addEventListener('click', () => {
+				window.history.back();
+			});
+			buttonsContainer.appendChild(backButton);
 
-      const forwardButton = document.createElement('button');
-      forwardButton.className = 'navigation-button';
-      forwardButton.innerText = 'Forward';
-      forwardButton.addEventListener('click', () => {
-        window.history.forward();
-      });
-      buttonsContainer.appendChild(forwardButton);
+			const forwardButton = document.createElement('button');
+			forwardButton.className = 'navigation-button';
+			forwardButton.innerText = 'Forward';
+			forwardButton.addEventListener('click', () => {
+				window.history.forward();
+			});
+			buttonsContainer.appendChild(forwardButton);
 
-      const homeButton = document.createElement('button');
-      homeButton.className = 'navigation-button';
-      homeButton.innerText = 'Home';
-      homeButton.addEventListener('click', () => {
-        window.location.href = 'https://www.pkmn.help';
-      });
-      buttonsContainer.appendChild(homeButton);
+			const homeButton = document.createElement('button');
+			homeButton.className = 'navigation-button';
+			homeButton.innerText = 'Home';
+			homeButton.addEventListener('click', () => {
+				window.location.href = 'https://www.pkmn.help';
+			});
+			buttonsContainer.appendChild(homeButton);
 
-      document.body.appendChild(buttonsContainer);
-    `);
-  });
+			document.body.appendChild(buttonsContainer);
+		`);
+	});
 
-  typeCalculatorWindow.on('close', (event) => {
-    if (typeCalculatorWindow) {
-      event.preventDefault();
-      typeCalculatorWindow.hide(); // Hide the window instead of closing it
-    }
-  });
+	typeCalculatorWindow.on('close', (event) => {
+		if (typeCalculatorWindow) {
+			event.preventDefault();
+			typeCalculatorWindow.hide(); // Hide the window instead of closing it
+		}
+	});
 }
 
 function startTypeCalculatorServer() {
-  const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
+	const typeCalculatorDir = path.join(__dirname, '..', 'app', 'type-calculator');
 
-  const nodePath = 'node'; // Assuming 'node' is in the system's PATH
-  const scriptPath = path.join(typeCalculatorDir, 'node_modules', 'vite', 'bin', 'vite.js');
-  const args = ['--port', '5173']; // Add any additional arguments if needed
+	const nodePath = 'node'; // Assuming 'node' is in the system's PATH
+	const scriptPath = path.join(typeCalculatorDir, 'node_modules', 'vite', 'bin', 'vite.js');
+	const args = ['--port', '5173']; // Add any additional arguments if needed
 
-  typeCalculatorProcess = spawn(nodePath, [scriptPath, ...args], {
-    cwd: typeCalculatorDir,
-    stdio: 'ignore'
-  });
+	typeCalculatorProcess = spawn(nodePath, [scriptPath, ...args], {
+		cwd: typeCalculatorDir,
+		stdio: 'ignore'
+	});
 
-  typeCalculatorProcess.on('close', (code) => {
-    console.log(`Type calculator process exited with code ${code}`);
-  });
+	typeCalculatorProcess.on('close', (code) => {
+		console.log(`Type calculator process exited with code ${code}`);
+	});
 }
 
 async function createWikiWindow() {
-  wikiWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    autoHideMenuBar: true,
-    icon: 'icons/PR',
-    webPreferences: {
-      nodeIntegration: false
-    }
-  });
+	wikiWindow = new BrowserWindow({
+		width: 1200,
+		height: 800,
+		autoHideMenuBar: true,
+		icon: 'icons/PR',
+		webPreferences: {
+			nodeIntegration: false
+		}
+	});
 
-  // Initialize the ad blocker for the wiki window
-  const wikiWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-  wikiWindowBlocker.enableBlockingInSession(wikiWindow.webContents.session);
+	// Initialize the ad blocker for the wiki window
+	const wikiWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+	wikiWindowBlocker.enableBlockingInSession(wikiWindow.webContents.session);
 
-  wikiWindow.loadURL('https://wiki.pokerogue.net/');
+	wikiWindow.loadURL('https://wiki.pokerogue.net/');
 
-  wikiWindow.on('close', (event) => {
-    if (wikiWindow) {
-      event.preventDefault();
-      wikiWindow.hide(); // Hide the window instead of closing it
-    }
-  });
+	wikiWindow.on('close', (event) => {
+		if (wikiWindow) {
+			event.preventDefault();
+			wikiWindow.hide(); // Hide the window instead of closing it
+		}
+	});
 
-  // Enable back and forward navigation
-  wikiWindow.webContents.on('did-finish-load', () => {
-    wikiWindow.focus(); // Set focus to the wiki window
-    wikiWindow.webContents.executeJavaScript(`
-      const style = document.createElement('style');
-      style.innerHTML = '\
-        .navigation-buttons {\
-          position: fixed;\
-          top: 10px;\
-          left: 10px;\
-          z-index: 9999;\
-        }\
-        .navigation-button {\
-          background-color: #333;\
-          color: #fff;\
-          border: none;\
-          border-radius: 4px;\
-          padding: 6px 12px;\
-          margin-right: 5px;\
-          cursor: pointer;\
-        }\
-      ';
-      document.head.appendChild(style);
+	// Enable back and forward navigation
+	wikiWindow.webContents.on('did-finish-load', () => {
+		wikiWindow.focus(); // Set focus to the wiki window
+		wikiWindow.webContents.executeJavaScript(`
+			const style = document.createElement('style');
+			style.innerHTML = '\
+				.navigation-buttons {\
+					position: fixed;\
+					top: 10px;\
+					left: 10px;\
+					z-index: 9999;\
+				}\
+				.navigation-button {\
+					background-color: #333;\
+					color: #fff;\
+					border: none;\
+					border-radius: 4px;\
+					padding: 6px 12px;\
+					margin-right: 5px;\
+					cursor: pointer;\
+				}\
+			';
+			document.head.appendChild(style);
 
-      const buttonsContainer = document.createElement('div');
-      buttonsContainer.className = 'navigation-buttons';
+			const buttonsContainer = document.createElement('div');
+			buttonsContainer.className = 'navigation-buttons';
 
-      const backButton = document.createElement('button');
-      backButton.className = 'navigation-button';
-      backButton.innerText = 'Back';
-      backButton.addEventListener('click', () => {
-        window.history.back();
-      });
-      buttonsContainer.appendChild(backButton);
+			const backButton = document.createElement('button');
+			backButton.className = 'navigation-button';
+			backButton.innerText = 'Back';
+			backButton.addEventListener('click', () => {
+				window.history.back();
+			});
+			buttonsContainer.appendChild(backButton);
 
-      const forwardButton = document.createElement('button');
-      forwardButton.className = 'navigation-button';
-      forwardButton.innerText = 'Forward';
-      forwardButton.addEventListener('click', () => {
-        window.history.forward();
-      });
-      buttonsContainer.appendChild(forwardButton);
+			const forwardButton = document.createElement('button');
+			forwardButton.className = 'navigation-button';
+			forwardButton.innerText = 'Forward';
+			forwardButton.addEventListener('click', () => {
+				window.history.forward();
+			});
+			buttonsContainer.appendChild(forwardButton);
 
-      const homeButton = document.createElement('button');
-      homeButton.className = 'navigation-button';
-      homeButton.innerText = 'Home';
-      homeButton.addEventListener('click', () => {
-        window.location.href = 'https://wiki.pokerogue.net/';
-      });
-      buttonsContainer.appendChild(homeButton);
+			const homeButton = document.createElement('button');
+			homeButton.className = 'navigation-button';
+			homeButton.innerText = 'Home';
+			homeButton.addEventListener('click', () => {
+				window.location.href = 'https://wiki.pokerogue.net/';
+			});
+			buttonsContainer.appendChild(homeButton);
 
-      document.body.appendChild(buttonsContainer);
-    `);
-  });
+			document.body.appendChild(buttonsContainer);
+		`);
+	});
 }
 
 async function createPokedexWindow() {
-  pokedexWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    autoHideMenuBar: true,
-    icon: 'icons/PR',
-    webPreferences: {
-      nodeIntegration: false
-    }
-  });
+	pokedexWindow = new BrowserWindow({
+		width: 1200,
+		height: 800,
+		autoHideMenuBar: true,
+		icon: 'icons/PR',
+		webPreferences: {
+			nodeIntegration: false
+		}
+	});
 
-  // Initialize the ad blocker for the Pokedex window
-  const pokedexWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-  pokedexWindowBlocker.enableBlockingInSession(pokedexWindow.webContents.session);
+	// Initialize the ad blocker for the Pokedex window
+	const pokedexWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+	pokedexWindowBlocker.enableBlockingInSession(pokedexWindow.webContents.session);
 
-  pokedexWindow.loadURL('https://pokemondb.net/pokedex/all');
+	pokedexWindow.loadURL('https://pokemondb.net/pokedex/all');
 
-  pokedexWindow.on('close', (event) => {
-    if (pokedexWindow) {
-      event.preventDefault();
-      pokedexWindow.hide(); // Hide the window instead of closing it
-    }
-  });
+	pokedexWindow.on('close', (event) => {
+		if (pokedexWindow) {
+			event.preventDefault();
+			pokedexWindow.hide(); // Hide the window instead of closing it
+		}
+	});
 
-  // Enable back and forward navigation
-  pokedexWindow.webContents.on('did-finish-load', () => {
-    pokedexWindow.focus(); // Set focus to the Pokedex window
-    pokedexWindow.webContents.executeJavaScript(`
-      const style = document.createElement('style');
-      style.innerHTML = '\
-        .navigation-buttons {\
-          position: fixed;\
-          top: 10px;\
-          left: 10px;\
-          z-index: 9999;\
-        }\
-        .navigation-button {\
-          background-color: #333;\
-          color: #fff;\
-          border: none;\
-          border-radius: 4px;\
-          padding: 6px 12px;\
-          margin-right: 5px;\
-          cursor: pointer;\
-        }\
-      ';
-      document.head.appendChild(style);
+	// Enable back and forward navigation
+	pokedexWindow.webContents.on('did-finish-load', () => {
+		pokedexWindow.focus(); // Set focus to the Pokedex window
+		pokedexWindow.webContents.executeJavaScript(`
+			const style = document.createElement('style');
+			style.innerHTML = '\
+				.navigation-buttons {\
+					position: fixed;\
+					top: 10px;\
+					left: 10px;\
+					z-index: 9999;\
+				}\
+				.navigation-button {\
+					background-color: #333;\
+					color: #fff;\
+					border: none;\
+					border-radius: 4px;\
+					padding: 6px 12px;\
+					margin-right: 5px;\
+					cursor: pointer;\
+				}\
+			';
+			document.head.appendChild(style);
 
-      const buttonsContainer = document.createElement('div');
-      buttonsContainer.className = 'navigation-buttons';
+			const buttonsContainer = document.createElement('div');
+			buttonsContainer.className = 'navigation-buttons';
 
-      const backButton = document.createElement('button');
-      backButton.className = 'navigation-button';
-      backButton.innerText = 'Back';
-      backButton.addEventListener('click', () => {
-        window.history.back();
-      });
-      buttonsContainer.appendChild(backButton);
+			const backButton = document.createElement('button');
+			backButton.className = 'navigation-button';
+			backButton.innerText = 'Back';
+			backButton.addEventListener('click', () => {
+				window.history.back();
+			});
+			buttonsContainer.appendChild(backButton);
 
-      const forwardButton = document.createElement('button');
-      forwardButton.className = 'navigation-button';
-      forwardButton.innerText = 'Forward';
-      forwardButton.addEventListener('click', () => {
-        window.history.forward();
-      });
-      buttonsContainer.appendChild(forwardButton);
+			const forwardButton = document.createElement('button');
+			forwardButton.className = 'navigation-button';
+			forwardButton.innerText = 'Forward';
+			forwardButton.addEventListener('click', () => {
+				window.history.forward();
+			});
+			buttonsContainer.appendChild(forwardButton);
 
-      const homeButton = document.createElement('button');
-      homeButton.className = 'navigation-button';
-      homeButton.innerText = 'Home';
-      homeButton.addEventListener('click', () => {
-        window.location.href = 'https://pokemondb.net/pokedex/all';
-      });
-      buttonsContainer.appendChild(homeButton);
+			const homeButton = document.createElement('button');
+			homeButton.className = 'navigation-button';
+			homeButton.innerText = 'Home';
+			homeButton.addEventListener('click', () => {
+				window.location.href = 'https://pokemondb.net/pokedex/all';
+			});
+			buttonsContainer.appendChild(homeButton);
 
-      document.body.appendChild(buttonsContainer);
-    `);
-  });
+			document.body.appendChild(buttonsContainer);
+		`);
+	});
 }
 
 function createTypeChartWindow() {
-  typeChartWindow = new BrowserWindow({
-    width: 670,
-    height: 1000,
-    icon: 'icons/PR',
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
+	typeChartWindow = new BrowserWindow({
+		width: 670,
+		height: 1000,
+		icon: 'icons/PR',
+		webPreferences: {
+			nodeIntegration: true
+		}
+	});
 
-  typeChartWindow.loadFile('type-chart.png');
+	typeChartWindow.loadFile('type-chart.png');
 
-  typeChartWindow.on('close', (event) => {
-    if (typeChartWindow) {
-      event.preventDefault();
-      typeChartWindow.hide(); // Hide the window instead of closing it
-    }
-  });
+	typeChartWindow.on('close', (event) => {
+		if (typeChartWindow) {
+			event.preventDefault();
+			typeChartWindow.hide(); // Hide the window instead of closing it
+		}
+	});
 }
 
 async function createTeamBuilderWindow() {
-  teamBuilderWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    icon: 'icons/PR',
-    webPreferences: {
-      nodeIntegration: false
-    }
-  });
+	teamBuilderWindow = new BrowserWindow({
+		width: 1200,
+		height: 800,
+		icon: 'icons/PR',
+		webPreferences: {
+			nodeIntegration: false
+		}
+	});
 
-  // Initialize the ad blocker for the team builder window
-  const teamBuilderWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-  teamBuilderWindowBlocker.enableBlockingInSession(teamBuilderWindow.webContents.session);
+	// Initialize the ad blocker for the team builder window
+	const teamBuilderWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+	teamBuilderWindowBlocker.enableBlockingInSession(teamBuilderWindow.webContents.session);
 
-  teamBuilderWindow.loadURL('https://marriland.com/tools/team-builder/');
+	teamBuilderWindow.loadURL('https://marriland.com/tools/team-builder/');
 
-  teamBuilderWindow.on('close', (event) => {
-    if (teamBuilderWindow) {
-      event.preventDefault();
-      teamBuilderWindow.hide(); // Hide the window instead of closing it
-    }
-  });
+	teamBuilderWindow.on('close', (event) => {
+		if (teamBuilderWindow) {
+			event.preventDefault();
+			teamBuilderWindow.hide(); // Hide the window instead of closing it
+		}
+	});
 
-  // Enable back and forward navigation
-  teamBuilderWindow.webContents.on('did-finish-load', () => {
-    teamBuilderWindow.focus(); // Set focus to the team builder window
-    teamBuilderWindow.webContents.executeJavaScript(`
-      const style = document.createElement('style');
-      style.innerHTML = '\
-        .navigation-buttons {\
-          position: fixed;\
-          top: 10px;\
-          left: 10px;\
-          z-index: 9999;\
-        }\
-        .navigation-button {\
-          background-color: #333 !important;\
-          color: #fff !important;\
-          border: none !important;\
-          border-radius: 4px !important;\
-          padding: 6px 12px !important;\
-          margin-right: 5px !important;\
-          cursor: pointer !important;\
-        }\
-      ';
-      document.head.appendChild(style);
+	// Enable back and forward navigation
+	teamBuilderWindow.webContents.on('did-finish-load', () => {
+		teamBuilderWindow.focus(); // Set focus to the team builder window
+		teamBuilderWindow.webContents.executeJavaScript(`
+			const style = document.createElement('style');
+			style.innerHTML = '\
+				.navigation-buttons {\
+					position: fixed;\
+					top: 10px;\
+					left: 10px;\
+					z-index: 9999;\
+				}\
+				.navigation-button {\
+					background-color: #333 !important;\
+					color: #fff !important;\
+					border: none !important;\
+					border-radius: 4px !important;\
+					padding: 6px 12px !important;\
+					margin-right: 5px !important;\
+					cursor: pointer !important;\
+				}\
+			';
+			document.head.appendChild(style);
 
-      const buttonsContainer = document.createElement('div');
-      buttonsContainer.className = 'navigation-buttons';
+			const buttonsContainer = document.createElement('div');
+			buttonsContainer.className = 'navigation-buttons';
 
-      const backButton = document.createElement('button');
-      backButton.className = 'navigation-button';
-      backButton.innerText = 'Back';
-      backButton.addEventListener('click', () => {
-        window.history.back();
-      });
-      buttonsContainer.appendChild(backButton);
+			const backButton = document.createElement('button');
+			backButton.className = 'navigation-button';
+			backButton.innerText = 'Back';
+			backButton.addEventListener('click', () => {
+				window.history.back();
+			});
+			buttonsContainer.appendChild(backButton);
 
-      const forwardButton = document.createElement('button');
-      forwardButton.className = 'navigation-button';
-      forwardButton.innerText = 'Forward';
-      forwardButton.addEventListener('click', () => {
-        window.history.forward();
-      });
-      buttonsContainer.appendChild(forwardButton);
+			const forwardButton = document.createElement('button');
+			forwardButton.className = 'navigation-button';
+			forwardButton.innerText = 'Forward';
+			forwardButton.addEventListener('click', () => {
+				window.history.forward();
+			});
+			buttonsContainer.appendChild(forwardButton);
 
-      const homeButton = document.createElement('button');
-      homeButton.className = 'navigation-button';
-      homeButton.innerText = 'Home';
-      homeButton.addEventListener('click', () => {
-        window.location.href = 'https://marriland.com/tools/team-builder/';
-      });
-      buttonsContainer.appendChild(homeButton);
+			const homeButton = document.createElement('button');
+			homeButton.className = 'navigation-button';
+			homeButton.innerText = 'Home';
+			homeButton.addEventListener('click', () => {
+				window.location.href = 'https://marriland.com/tools/team-builder/';
+			});
+			buttonsContainer.appendChild(homeButton);
 
-      document.body.appendChild(buttonsContainer);
-    `);
-  });
+			document.body.appendChild(buttonsContainer);
+		`);
+	});
 }
 
 async function createSmogonWindow() {
-  smogonWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    icon: 'icons/PR',
-    webPreferences: {
-      nodeIntegration: false
-    }
-  });
+	smogonWindow = new BrowserWindow({
+		width: 1200,
+		height: 800,
+		icon: 'icons/PR',
+		webPreferences: {
+			nodeIntegration: false
+		}
+	});
 
-  // Initialize the ad blocker for the Smogon window
-  const smogonWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-  smogonWindowBlocker.enableBlockingInSession(smogonWindow.webContents.session);
+	// Initialize the ad blocker for the Smogon window
+	const smogonWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+	smogonWindowBlocker.enableBlockingInSession(smogonWindow.webContents.session);
 
-  smogonWindow.loadURL('https://www.smogon.com/dex/sv/pokemon/');
+	smogonWindow.loadURL('https://www.smogon.com/dex/sv/pokemon/');
 
-  smogonWindow.on('close', (event) => {
-    if (smogonWindow) {
-      event.preventDefault();
-      smogonWindow.hide(); // Hide the window instead of closing it
-    }
-  });
-  
-  smogonWindow.on('closed', async () => {
-    smogonWindow = null;
-  });
+	smogonWindow.on('close', (event) => {
+		if (smogonWindow) {
+			event.preventDefault();
+			smogonWindow.hide(); // Hide the window instead of closing it
+		}
+	});
+	
+	smogonWindow.on('closed', async () => {
+		smogonWindow = null;
+	});
 
-  // Enable back and forward navigation
-  smogonWindow.webContents.on('did-finish-load', () => {
-    smogonWindow.focus(); // Set focus to the Smogon window
-    smogonWindow.webContents.executeJavaScript(`
-      const style = document.createElement('style');
-      style.innerHTML = '\
-        .navigation-buttons {\
-          position: fixed;\
-          top: 10px;\
-          left: 10px;\
-          z-index: 9999;\
-        }\
-        .navigation-button {\
-          background-color: #333 !important;\
-          color: #fff !important;\
-          border: none !important;\
-          border-radius: 4px !important;\
-          padding: 6px 12px !important;\
-          margin-right: 5px !important;\
-          cursor: pointer !important;\
-        }\
-      ';
-      document.head.appendChild(style);
+	// Enable back and forward navigation
+	smogonWindow.webContents.on('did-finish-load', () => {
+		smogonWindow.focus(); // Set focus to the Smogon window
+		smogonWindow.webContents.executeJavaScript(`
+			const style = document.createElement('style');
+			style.innerHTML = '\
+				.navigation-buttons {\
+					position: fixed;\
+					top: 10px;\
+					left: 10px;\
+					z-index: 9999;\
+				}\
+				.navigation-button {\
+					background-color: #333 !important;\
+					color: #fff !important;\
+					border: none !important;\
+					border-radius: 4px !important;\
+					padding: 6px 12px !important;\
+					margin-right: 5px !important;\
+					cursor: pointer !important;\
+				}\
+			';
+			document.head.appendChild(style);
 
-      const buttonsContainer = document.createElement('div');
-      buttonsContainer.className = 'navigation-buttons';
+			const buttonsContainer = document.createElement('div');
+			buttonsContainer.className = 'navigation-buttons';
 
-      const backButton = document.createElement('button');
-      backButton.className = 'navigation-button';
-      backButton.innerText = 'Back';
-      backButton.addEventListener('click', () => {
-        window.history.back();
-      });
-      buttonsContainer.appendChild(backButton);
+			const backButton = document.createElement('button');
+			backButton.className = 'navigation-button';
+			backButton.innerText = 'Back';
+			backButton.addEventListener('click', () => {
+				window.history.back();
+			});
+			buttonsContainer.appendChild(backButton);
 
-      const forwardButton = document.createElement('button');
-      forwardButton.className = 'navigation-button';
-      forwardButton.innerText = 'Forward';
-      forwardButton.addEventListener('click', () => {
-        window.history.forward();
-      });
-      buttonsContainer.appendChild(forwardButton);
+			const forwardButton = document.createElement('button');
+			forwardButton.className = 'navigation-button';
+			forwardButton.innerText = 'Forward';
+			forwardButton.addEventListener('click', () => {
+				window.history.forward();
+			});
+			buttonsContainer.appendChild(forwardButton);
 
-      const homeButton = document.createElement('button');
-      homeButton.className = 'navigation-button';
-      homeButton.innerText = 'Home';
-      homeButton.addEventListener('click', () => {
-        window.location.href = 'https://www.smogon.com/dex/sv/pokemon/';
-      });
-      buttonsContainer.appendChild(homeButton);
+			const homeButton = document.createElement('button');
+			homeButton.className = 'navigation-button';
+			homeButton.innerText = 'Home';
+			homeButton.addEventListener('click', () => {
+				window.location.href = 'https://www.smogon.com/dex/sv/pokemon/';
+			});
+			buttonsContainer.appendChild(homeButton);
 
-      document.body.appendChild(buttonsContainer);
-    `);
-  });
+			document.body.appendChild(buttonsContainer);
+		`);
+	});
 }
 
 ipcMain.on('close-loading-screen', () => {
-  if (loadingWindow) {
-    loadingWindow.close();
-  }
+	if (loadingWindow) {
+		loadingWindow.close();
+	}
 });
 
 ipcMain.on('close-type-calculator-loading-screen', () => {
-  if (typeCalculatorLoadingWindow) {
-    typeCalculatorLoadingWindow.close();
-  }
+	if (typeCalculatorLoadingWindow) {
+		typeCalculatorLoadingWindow.close();
+	}
 });
 
 app.whenReady().then(() => {
-  if (process.argv.includes('--offline')) {
-    isOfflineMode = true;
-  }
-  createWindow();
+	if (process.argv.includes('--offline')) {
+		isOfflineMode = true;
+	}
+	createWindow();
 });
 
-app.on('window-all-closed', () => { app.quit(); });
+app.on('window-all-closed', () => {
+	app.quit();
+});
 
 app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+	if (BrowserWindow.getAllWindows().length === 0) {
+		createWindow();
+	}
 });
