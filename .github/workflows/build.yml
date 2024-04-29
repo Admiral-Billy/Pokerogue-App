@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-13, ubuntu-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -35,7 +35,7 @@ jobs:
             cd linux-unpacked
             zip -r ../PokeRogue-Linux.zip *
             cd ..
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+          elif [ "${{ matrix.os }}" == "macos-13" ]; then
             cd mac
             zip -r ../PokeRogue-macOS.zip *
             cd ..
@@ -115,6 +115,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/PokeRogue-macos-latest/PokeRogue-macOS.zip
+          asset_path: ./artifacts/PokeRogue-macos-13/PokeRogue-macOS.zip
           asset_name: PokeRogue-macOS.zip
           asset_content_type: application/zip
