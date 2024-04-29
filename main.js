@@ -21,6 +21,29 @@ let teamBuilderWindow;
 let smogonWindow;
 let viteProcess = null;
 let isOfflineMode = process.argv.includes('--offline');
+let closeUtilityWindows = false;
+
+function saveSettings() {
+    const userDataPath = app.getPath('userData');
+    const settingsFilePath = path.join(userDataPath, 'settings.json');
+
+    const settings = {
+        closeUtilityWindows: closeUtilityWindows
+    };
+
+    fs.writeFileSync(settingsFilePath, JSON.stringify(settings));
+}
+
+function loadSettings() {
+    const userDataPath = app.getPath('userData');
+    const settingsFilePath = path.join(userDataPath, 'settings.json');
+
+    if (fs.existsSync(settingsFilePath)) {
+        const settingsData = fs.readFileSync(settingsFilePath, 'utf-8');
+        const settings = JSON.parse(settingsData);
+        closeUtilityWindows = settings.closeUtilityWindows;
+    }
+}
 
 // Create the main application window
 async function createWindow() {
@@ -37,6 +60,7 @@ async function createWindow() {
 		}
 	});
 	
+	loadSettings();
 	let menuTemplate = [];
 	// Create a custom menu template
 	if (!isOfflineMode) {
@@ -89,6 +113,21 @@ async function createWindow() {
 		
 		menuTemplate = [
 			{
+				label: 'Settings',
+				submenu: [
+					{
+						label: 'Close utility windows instead of hiding',
+						type: 'checkbox',
+						checked: closeUtilityWindows,
+						click: () => {
+							closeUtilityWindows = !closeUtilityWindows;
+							saveSettings();
+						},
+						tooltip: 'When enabled, utility windows are completely closed rather than being hidden if they are toggled or exited. This can help save memory, but resets their position every toggle and might result in slower toggles.'
+					}
+				]
+			},
+			{
 				label: 'Utilities',
 				submenu: [
 					{
@@ -118,7 +157,12 @@ async function createWindow() {
 						click: () => {
 							if (wikiWindow) {
 								if (wikiWindow.isVisible()) {
-									wikiWindow.hide();
+									if (closeUtilityWindows) {
+										wikiWindow.close();
+										wikiWindow = null;
+									} else {
+										wikiWindow.hide();
+									}
 									mainWindow.focus(); // Set focus to the main window
 								} else {
 									wikiWindow.show();
@@ -135,7 +179,12 @@ async function createWindow() {
 						click: () => {
 							if (pokedexWindow) {
 								if (pokedexWindow.isVisible()) {
-									pokedexWindow.hide();
+									if (closeUtilityWindows) {
+										pokedexWindow.close();
+										pokedexWindow = null;
+									} else {
+										pokedexWindow.hide();
+									}
 									mainWindow.focus(); // Set focus to the main window
 								} else {
 									pokedexWindow.show();
@@ -152,7 +201,12 @@ async function createWindow() {
 						click: () => {
 							if (typeChartWindow) {
 								if (typeChartWindow.isVisible()) {
-									typeChartWindow.hide();
+									if (closeUtilityWindows) {
+										typeChartWindow.close();
+										typeChartWindow = null;
+									} else {
+										typeChartWindow.hide();
+									}
 									mainWindow.focus(); // Set focus to the main window
 								} else {
 									typeChartWindow.show();
@@ -169,7 +223,12 @@ async function createWindow() {
 						click: () => {
 							if (typeCalculatorWindow) {
 								if (typeCalculatorWindow.isVisible()) {
-									typeCalculatorWindow.hide();
+									if (closeUtilityWindows) {
+										typeCalculatorWindow.close();
+										typeCalculatorWindow = null;
+									} else {
+										typeCalculatorWindow.hide();
+									}
 									mainWindow.focus(); // Set focus to the main window
 								} else {
 									typeCalculatorWindow.show();
@@ -186,7 +245,12 @@ async function createWindow() {
 						click: () => {
 							if (teamBuilderWindow) {
 								if (teamBuilderWindow.isVisible()) {
-									teamBuilderWindow.hide();
+									if (closeUtilityWindows) {
+										teamBuilderWindow.close();
+										teamBuilderWindow = null;
+									} else {
+										teamBuilderWindow.hide();
+									}
 									mainWindow.focus(); // Set focus to the main window
 								} else {
 									teamBuilderWindow.show();
@@ -203,7 +267,12 @@ async function createWindow() {
 						click: () => {
 							if (smogonWindow) {
 								if (smogonWindow.isVisible()) {
-									smogonWindow.hide();
+									if (closeUtilityWindows) {
+										smogonWindow.close();
+										smogonWindow = null;
+									} else {
+										smogonWindow.hide();
+									}
 									mainWindow.focus(); // Set focus to the main window
 								} else {
 									smogonWindow.show();
@@ -232,6 +301,21 @@ async function createWindow() {
 	}
 	else {
 		menuTemplate = [
+			{
+				label: 'Settings',
+				submenu: [
+					{
+						label: 'Close utility windows instead of hiding',
+						type: 'checkbox',
+						checked: closeUtilityWindows,
+						click: () => {
+							closeUtilityWindows = !closeUtilityWindows;
+							saveSettings();
+						},
+						tooltip: 'When enabled, utility windows are completely closed rather than being hidden if they are toggled or exited. This can help save memory, but resets their position every toggle and might result in slower toggles.'
+					}
+				]
+			},
 			{
 				label: 'Utilities',
 				submenu: [
@@ -467,13 +551,6 @@ async function createWikiWindow() {
 
 	wikiWindow.loadURL('https://wiki.pokerogue.net/');
 
-	wikiWindow.on('close', (event) => {
-		if (wikiWindow) {
-			event.preventDefault();
-			wikiWindow.hide(); // Hide the window instead of closing it
-		}
-	});
-
 	// Enable back and forward navigation
 	wikiWindow.webContents.on('did-finish-load', () => {
 		wikiWindow.focus(); // Set focus to the wiki window
@@ -528,6 +605,18 @@ async function createWikiWindow() {
 			document.body.appendChild(buttonsContainer);
 		`);
 	});
+	
+	wikiWindow.on('close', (event) => {
+		if (wikiWindow && !closeUtilityWindows) {
+			event.preventDefault();
+			wikiWindow.hide(); // Hide the window instead of closing it
+		}
+		else
+		{
+			wikiWindow = null;
+		}
+		mainWindow.focus();
+	});
 }
 
 // Create the Pokedex window
@@ -547,13 +636,6 @@ async function createPokedexWindow() {
 	pokedexWindowBlocker.enableBlockingInSession(pokedexWindow.webContents.session);
 
 	pokedexWindow.loadURL('https://pokemondb.net/pokedex/all');
-
-	pokedexWindow.on('close', (event) => {
-		if (pokedexWindow) {
-			event.preventDefault();
-			pokedexWindow.hide(); // Hide the window instead of closing it
-		}
-	});
 
 	// Enable back and forward navigation
 	pokedexWindow.webContents.on('did-finish-load', () => {
@@ -609,6 +691,17 @@ async function createPokedexWindow() {
 			document.body.appendChild(buttonsContainer);
 		`);
 	});
+	
+	pokedexWindow.on('close', (event) => {
+		if (pokedexWindow && !closeUtilityWindows) {
+			event.preventDefault();
+			pokedexWindow.hide(); // Hide the window instead of closing it
+		}
+		else {
+			pokedexWindow = null;
+		}
+		mainWindow.focus();
+	});
 }
 
 // Create the type chart window
@@ -625,10 +718,14 @@ function createTypeChartWindow() {
 	typeChartWindow.loadFile('type-chart.png');
 
 	typeChartWindow.on('close', (event) => {
-		if (typeChartWindow) {
+		if (typeChartWindow && !closeUtilityWindows) {
 			event.preventDefault();
 			typeChartWindow.hide(); // Hide the window instead of closing it
 		}
+		else {
+			typeChartWindow = null;
+		}
+		mainWindow.focus();
 	});
 }
 
@@ -743,10 +840,14 @@ async function createTypeCalculatorWindow() {
 	});
 
 	typeCalculatorWindow.on('close', (event) => {
-		if (typeCalculatorWindow) {
+		if (typeCalculatorWindow && !closeUtilityWindows) {
 			event.preventDefault();
 			typeCalculatorWindow.hide(); // Hide the window instead of closing it
 		}
+		else {
+			typeCalculatorWindow = null;
+		}
+		mainWindow.focus();
 	});
 }
 
@@ -800,13 +901,6 @@ async function createTeamBuilderWindow() {
 	teamBuilderWindowBlocker.enableBlockingInSession(teamBuilderWindow.webContents.session);
 
 	teamBuilderWindow.loadURL('https://marriland.com/tools/team-builder/');
-
-	teamBuilderWindow.on('close', (event) => {
-		if (teamBuilderWindow) {
-			event.preventDefault();
-			teamBuilderWindow.hide(); // Hide the window instead of closing it
-		}
-	});
 
 	// Enable back and forward navigation
 	teamBuilderWindow.webContents.on('did-finish-load', () => {
@@ -862,6 +956,17 @@ async function createTeamBuilderWindow() {
 			document.body.appendChild(buttonsContainer);
 		`);
 	});
+	
+	teamBuilderWindow.on('close', (event) => {
+		if (teamBuilderWindow && !closeUtilityWindows) {
+			event.preventDefault();
+			teamBuilderWindow.hide(); // Hide the window instead of closing it
+		}
+		else {
+			teamBuilderWindow = null;
+		}
+		mainWindow.focus();
+	});
 }
 
 // Create the Smogon window
@@ -880,17 +985,6 @@ async function createSmogonWindow() {
 	smogonWindowBlocker.enableBlockingInSession(smogonWindow.webContents.session);
 
 	smogonWindow.loadURL('https://www.smogon.com/dex/sv/pokemon/');
-
-	smogonWindow.on('close', (event) => {
-		if (smogonWindow) {
-			event.preventDefault();
-			smogonWindow.hide(); // Hide the window instead of closing it
-		}
-	});
-	
-	smogonWindow.on('closed', async () => {
-		smogonWindow = null;
-	});
 
 	// Enable back and forward navigation
 	smogonWindow.webContents.on('did-finish-load', () => {
@@ -946,6 +1040,17 @@ async function createSmogonWindow() {
 
 			document.body.appendChild(buttonsContainer);
 		`);
+	});
+	
+	smogonWindow.on('close', (event) => {
+		if (smogonWindow && !closeUtilityWindows) {
+			event.preventDefault();
+			smogonWindow.hide(); // Hide the window instead of closing it
+		}
+		else {
+			smogonWindow = null;
+		}
+		mainWindow.focus();
 	});
 }
 
