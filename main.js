@@ -398,6 +398,8 @@ async function createWindow() {
 	Menu.setApplicationMenu(menu);
 
 	mainWindow.on('closed', async () => {
+		mainWindow = null;
+		
 		// Close the wiki window if it's open
 		if (wikiWindow) {
 			wikiWindow.close();
