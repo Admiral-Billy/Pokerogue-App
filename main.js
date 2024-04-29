@@ -615,7 +615,9 @@ async function createWikiWindow() {
 		{
 			wikiWindow = null;
 		}
-		mainWindow.focus();
+		if (mainWindow) {
+			mainWindow.focus();
+		}
 	});
 }
 
@@ -700,7 +702,9 @@ async function createPokedexWindow() {
 		else {
 			pokedexWindow = null;
 		}
-		mainWindow.focus();
+		if (mainWindow) {
+			mainWindow.focus();
+		}
 	});
 }
 
@@ -725,7 +729,9 @@ function createTypeChartWindow() {
 		else {
 			typeChartWindow = null;
 		}
-		mainWindow.focus();
+		if (mainWindow) {
+			mainWindow.focus();
+		}
 	});
 }
 
@@ -847,7 +853,9 @@ async function createTypeCalculatorWindow() {
 		else {
 			typeCalculatorWindow = null;
 		}
-		mainWindow.focus();
+		if (mainWindow) {
+			mainWindow.focus();
+		}
 	});
 }
 
@@ -965,7 +973,9 @@ async function createTeamBuilderWindow() {
 		else {
 			teamBuilderWindow = null;
 		}
-		mainWindow.focus();
+		if (mainWindow) {
+			mainWindow.focus();
+		}
 	});
 }
 
@@ -1050,7 +1060,9 @@ async function createSmogonWindow() {
 		else {
 			smogonWindow = null;
 		}
-		mainWindow.focus();
+		if (mainWindow) {
+			mainWindow.focus();
+		}
 	});
 }
 
