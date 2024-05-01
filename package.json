@@ -83,7 +83,7 @@
       "extraFiles": [
         {
           "from": "PokeRogue Offline.command",
-          "to": "PokeRogue Offline.command"
+          "to": "../../PokeRogue Offline.command"
         },
         {
           "from": "update-game.command",
