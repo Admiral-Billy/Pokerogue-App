@@ -46,7 +46,8 @@
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
     "extraResources": [
-      "update-game.js"
+      "update-game.js",
+	  "keymap.json"
     ],
     "win": {
       "icon": "icons/PR.ico",

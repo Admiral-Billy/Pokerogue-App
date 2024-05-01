@@ -1,5 +1,5 @@
 // Importing required modules
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, globalShortcut } = require('electron');
 const { ElectronBlocker } = require('@cliqz/adblocker-electron');
 const fetch = require('cross-fetch');
 const path = require('path');
@@ -22,13 +22,18 @@ let smogonWindow;
 let viteProcess = null;
 let isOfflineMode = process.argv.includes('--offline');
 let closeUtilityWindows = false;
+let darkMode = false;
+let keymap = {};
+let useModifiedHotkeys = false;
 
 function saveSettings() {
     const userDataPath = app.getPath('userData');
     const settingsFilePath = path.join(userDataPath, 'settings.json');
 
     const settings = {
-        closeUtilityWindows: closeUtilityWindows
+        closeUtilityWindows: closeUtilityWindows,
+		darkMode: darkMode,
+		useModifiedHotkeys: useModifiedHotkeys
     };
 
     fs.writeFileSync(settingsFilePath, JSON.stringify(settings));
@@ -42,7 +47,25 @@ function loadSettings() {
         const settingsData = fs.readFileSync(settingsFilePath, 'utf-8');
         const settings = JSON.parse(settingsData);
         closeUtilityWindows = settings.closeUtilityWindows;
+		darkMode = settings.darkMode;
+		useModifiedHotkeys = settings.useModifiedHotkeys;
     }
+}
+
+
+function loadKeymap() {
+  if (useModifiedHotkeys) {
+    try {
+      const keymapPath = path.join(process.resourcesPath, 'keymap.json');
+      const keymapData = fs.readFileSync(keymapPath, 'utf-8');
+      keymap = JSON.parse(keymapData);
+	  console.log('Loaded keymap:', keymap);
+    } catch (error) {
+      console.error('Failed to load keymap:', error);
+    }
+  } else {
+    keymap = {};
+  }
 }
 
 // Create the main application window
@@ -60,7 +83,51 @@ async function createWindow() {
 		}
 	});
 	
+	function registerGlobalShortcuts() {
+	  if (useModifiedHotkeys) {
+		  for (const [originalKey, mappedKey] of Object.entries(keymap)) {
+			if (originalKey != mappedKey) {
+				globalShortcut.register(originalKey, () => {
+				  const focusedWindow = BrowserWindow.getFocusedWindow();
+				  if (focusedWindow === mainWindow) {
+					focusedWindow.webContents.sendInputEvent({ type: 'keyDown', keyCode: mappedKey });
+					setTimeout(() => {
+					  focusedWindow.webContents.sendInputEvent({ type: 'keyUp', keyCode: mappedKey });
+					}, 50);
+				  }
+				});
+
+				globalShortcut.register(`CommandOrControl+${originalKey}`, () => {
+				  const focusedWindow = BrowserWindow.getFocusedWindow();
+				  if (focusedWindow === mainWindow) {
+					focusedWindow.webContents.sendInputEvent({ type: 'keyDown', keyCode: originalKey, modifiers: ['ctrl'] });
+					setTimeout(() => {
+					  focusedWindow.webContents.sendInputEvent({ type: 'keyUp', keyCode: originalKey, modifiers: ['ctrl'] });
+					}, 50);
+				  }
+				});
+			}
+		  }
+		  console.log('Registered global shortcuts:', Object.keys(keymap));
+	  }
+	}
+
+	function unregisterGlobalShortcuts() {
+	  globalShortcut.unregisterAll();
+	}
+	
+	// Register global shortcuts when the game window is focused
+	mainWindow.on('focus', registerGlobalShortcuts);
+
+	// Unregister global shortcuts when the game window loses focus
+	mainWindow.on('blur', unregisterGlobalShortcuts);
+	
 	loadSettings();
+	applyDarkMode();
+	  if (useModifiedHotkeys) {
+		loadKeymap();
+		registerGlobalShortcuts();
+	  }
 	let menuTemplate = [];
 	// Create a custom menu template
 	if (!isOfflineMode) {
@@ -116,14 +183,38 @@ async function createWindow() {
 				label: 'Settings',
 				submenu: [
 					{
-						label: 'Close utility windows instead of hiding',
+					  label: 'Use modified hotkeys', // When enabled, instead of the game's default hotkeys, keys will be remapped according to the keymap.json file. Shortcuts for utility windows will be the same regardless of keybinds.
+					  type: 'checkbox',
+					  checked: useModifiedHotkeys,
+					  click: () => {
+						useModifiedHotkeys = !useModifiedHotkeys;
+						saveSettings();
+						if (useModifiedHotkeys) {
+						  loadKeymap();
+						  registerGlobalShortcuts();
+						} else {
+						  unregisterGlobalShortcuts();
+						}
+					  },
+					},
+					{
+						label: 'Close utility windows instead of hiding', // When enabled, utility windows are completely closed rather than being hidden if they are toggled or exited. This can help save memory, but resets their position every toggle and might result in slower toggles.
 						type: 'checkbox',
 						checked: closeUtilityWindows,
 						click: () => {
 							closeUtilityWindows = !closeUtilityWindows;
 							saveSettings();
 						},
-						tooltip: 'When enabled, utility windows are completely closed rather than being hidden if they are toggled or exited. This can help save memory, but resets their position every toggle and might result in slower toggles.'
+					},
+					{
+					  label: 'Darker background', // When enabled, the grey background that normally fills the outside of the game will instead be black.
+					  type: 'checkbox',
+					  checked: darkMode,
+					  click: () => {
+						darkMode = !darkMode;
+						applyDarkMode();
+						saveSettings();
+					  },
 					}
 				]
 			},
@@ -305,14 +396,38 @@ async function createWindow() {
 				label: 'Settings',
 				submenu: [
 					{
-						label: 'Close utility windows instead of hiding',
+					  label: 'Use modified hotkeys', // When enabled, instead of the game's default hotkeys, keys will be remapped according to the keymap.json file. Shortcuts for utility windows will be the same regardless of keybinds.
+					  type: 'checkbox',
+					  checked: useModifiedHotkeys,
+					  click: () => {
+						useModifiedHotkeys = !useModifiedHotkeys;
+						saveSettings();
+						if (useModifiedHotkeys) {
+						  loadKeymap();
+						  registerGlobalShortcuts();
+						} else {
+						  unregisterGlobalShortcuts();
+						}
+					  },
+					},
+					{
+						label: 'Close utility windows instead of hiding', // When enabled, utility windows are completely closed rather than being hidden if they are toggled or exited. This can help save memory, but resets their position every toggle and might result in slower toggles.
 						type: 'checkbox',
 						checked: closeUtilityWindows,
 						click: () => {
 							closeUtilityWindows = !closeUtilityWindows;
 							saveSettings();
 						},
-						tooltip: 'When enabled, utility windows are completely closed rather than being hidden if they are toggled or exited. This can help save memory, but resets their position every toggle and might result in slower toggles.'
+					},
+					{
+					  label: 'Darker background', // When enabled, the grey background that normally fills the outside of the game will instead be black.
+					  type: 'checkbox',
+					  checked: darkMode,
+					  click: () => {
+						darkMode = !darkMode;
+						applyDarkMode();
+						saveSettings();
+					  },
 					}
 				]
 			},
@@ -448,6 +563,8 @@ async function createWindow() {
 			console.log("Terminated Vite process");
 		}
 
+		unregisterGlobalShortcuts();
+
 		app.quit();
 	});
 
@@ -533,6 +650,22 @@ function showErrorBox() {
 	errorWindow.on('closed', () => {
 		app.quit();
 	});
+}
+
+function applyDarkMode() {
+  if (darkMode) {
+    mainWindow.webContents.insertCSS(`
+      #app {
+        background: black;
+      }
+    `);
+  } else {
+    mainWindow.webContents.insertCSS(`
+      #app {
+        background: #484050;
+      }
+    `);
+  }
 }
 
 // Create the wiki window
@@ -1087,6 +1220,10 @@ app.whenReady().then(() => {
 		isOfflineMode = true;
 	}
 	createWindow();
+  if (useModifiedHotkeys) {
+	loadKeymap();
+	registerGlobalShortcuts();
+  }
 });
 
 app.on('window-all-closed', () => {
