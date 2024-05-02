@@ -1,2 +1,3 @@
   #!/bin/sh
-  ./PokeRogue.app/Contents/MacOS/PokeRogue --offline
+  cd "$(dirname "$0")"
+  open ./PokeRouge.app --args --offline
