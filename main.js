@@ -229,6 +229,15 @@ async function createWindow() {
 						}
 					},
 					{
+						label: 'Reload (invisible)',
+						accelerator: 'F5',
+						click: () => {
+							mainWindow.reload();
+						},
+						visible: false,
+						acceleratorWorksWhenHidden: true
+					},
+					{
 						label: 'Toggle Fullscreen',
 						accelerator: 'F11',
 						click: () => {
@@ -440,6 +449,15 @@ async function createWindow() {
 						click: () => {
 							mainWindow.reload();
 						}
+					},
+					{
+						label: 'Reload (invisible)',
+						accelerator: 'F5',
+						click: () => {
+							mainWindow.reload();
+						},
+						visible: false,
+						acceleratorWorksWhenHidden: true
 					},
 					{
 						label: 'Toggle Fullscreen',
