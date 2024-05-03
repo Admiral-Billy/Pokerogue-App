@@ -25,7 +25,8 @@ let closeUtilityWindows = false;
 let darkMode = false;
 let keymap = {};
 let useModifiedHotkeys = false;
-let autoHideMenu = true;
+let autoHideMenu = false;
+let hideCursor = false;
 
 function saveSettings() {
     const userDataPath = app.getPath('userData');
@@ -38,7 +39,8 @@ function saveSettings() {
         windowSize: mainWindow.getSize(),
         isFullScreen: mainWindow.isFullScreen(),
         isMaximized: mainWindow.isMaximized(),
-        autoHideMenu: autoHideMenu
+        autoHideMenu: autoHideMenu,
+		hideCursor: hideCursor
     };
 
     fs.writeFileSync(settingsFilePath, JSON.stringify(settings));
@@ -55,6 +57,7 @@ function loadSettings() {
         darkMode = settings.darkMode;
         useModifiedHotkeys = settings.useModifiedHotkeys;
         autoHideMenu = settings.autoHideMenu;
+		hideCursor = settings.hideCursor;
         
         // Set the window size, fullscreen state, and maximized state
         if (settings.windowSize) {
@@ -94,6 +97,7 @@ function resetGame() {
 		setTimeout(() => {
 			loadSettings();
 			applyDarkMode();
+			applyCursorHide();
 			if (useModifiedHotkeys) {
 				loadKeymap();
 				registerGlobalShortcuts();
@@ -158,6 +162,7 @@ async function createWindow() {
 	
 	loadSettings();
 	applyDarkMode();
+	applyCursorHide();
 	if (useModifiedHotkeys) {
 		loadKeymap();
 		registerGlobalShortcuts();
@@ -292,6 +297,16 @@ async function createWindow() {
 						checked: closeUtilityWindows,
 						click: () => {
 							closeUtilityWindows = !closeUtilityWindows;
+							saveSettings();
+						},
+					},
+					{
+						label: 'Hide the cursor in the window',
+						type: 'checkbox',
+						checked: hideCursor,
+						click: () => {
+							hideCursor = !hideCursor;
+							applyCursorHide();
 							saveSettings();
 						},
 					},
@@ -545,6 +560,16 @@ async function createWindow() {
 						},
 					},
 					{
+						label: 'Hide the cursor in the window',
+						type: 'checkbox',
+						checked: hideCursor,
+						click: () => {
+							hideCursor = !hideCursor;
+							applyCursorHide();
+							saveSettings();
+						},
+					},
+					{
 					  label: 'Darker background', // When enabled, the grey background that normally fills the outside of the game will instead be black.
 					  type: 'checkbox',
 					  checked: darkMode,
@@ -705,9 +730,9 @@ async function createWindow() {
 	// Fix the resolution and get rid of the loading screen if it exists
 	mainWindow.webContents.on('did-finish-load', () => {
 		const gameWidth = 1280;
-		const gameHeight = 750;
+		const gameHeight = 770;
 		setTimeout(() => {
-			mainWindow.setSize(gameWidth, 749);
+			mainWindow.setSize(gameWidth, 769); // nice
 			mainWindow.setSize(gameWidth, gameHeight);
 			mainWindow.show();
 			if (loadingWindow) {
@@ -775,6 +800,22 @@ function applyDarkMode() {
     mainWindow.webContents.insertCSS(`
       #app {
         background: #484050;
+      }
+    `);
+  }
+}
+
+function applyCursorHide() {
+  if (hideCursor) {
+    mainWindow.webContents.insertCSS(`
+      #app {
+        cursor: none;
+      }
+    `);
+  } else {
+    mainWindow.webContents.insertCSS(`
+      #app {
+        cursor: auto;
       }
     `);
   }
