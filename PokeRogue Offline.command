@@ -1,3 +1,3 @@
   #!/bin/sh
   cd "$(dirname "$0")"
-  open ./PokeRouge.app --args --offline
+  open ./PokeRogue.app --args --offline
