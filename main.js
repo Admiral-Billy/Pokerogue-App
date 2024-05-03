@@ -25,6 +25,7 @@ let closeUtilityWindows = false;
 let darkMode = false;
 let keymap = {};
 let useModifiedHotkeys = false;
+let autoHideMenu = true;
 
 function saveSettings() {
     const userDataPath = app.getPath('userData');
@@ -32,8 +33,12 @@ function saveSettings() {
 
     const settings = {
         closeUtilityWindows: closeUtilityWindows,
-		darkMode: darkMode,
-		useModifiedHotkeys: useModifiedHotkeys
+        darkMode: darkMode,
+        useModifiedHotkeys: useModifiedHotkeys,
+        windowSize: mainWindow.getSize(),
+        isFullScreen: mainWindow.isFullScreen(),
+        isMaximized: mainWindow.isMaximized(),
+        autoHideMenu: autoHideMenu
     };
 
     fs.writeFileSync(settingsFilePath, JSON.stringify(settings));
@@ -47,11 +52,29 @@ function loadSettings() {
         const settingsData = fs.readFileSync(settingsFilePath, 'utf-8');
         const settings = JSON.parse(settingsData);
         closeUtilityWindows = settings.closeUtilityWindows;
-		darkMode = settings.darkMode;
-		useModifiedHotkeys = settings.useModifiedHotkeys;
+        darkMode = settings.darkMode;
+        useModifiedHotkeys = settings.useModifiedHotkeys;
+        autoHideMenu = settings.autoHideMenu;
+        
+        // Set the window size, fullscreen state, and maximized state
+        if (settings.windowSize) {
+            mainWindow.setSize(settings.windowSize[0], settings.windowSize[1]);
+        }
+        if (settings.isFullScreen) {
+            mainWindow.setFullScreen(true);
+        } else if (settings.isMaximized) {
+            mainWindow.maximize();
+        } else {
+            // Center the window if it's not maximized or fullscreen
+            mainWindow.center();
+        }
+
+        // Apply the auto-hide menu setting
+		if (autoHideMenu) {
+			mainWindow.autoHideMenuBar = autoHideMenu;
+		}
     }
 }
-
 
 function loadKeymap() {
   if (useModifiedHotkeys) {
@@ -68,12 +91,26 @@ function loadKeymap() {
   }
 }
 
+function resetGame() {
+	mainWindow.reload()
+	mainWindow.webContents.on('did-finish-load', () => {
+		setTimeout(() => {
+			loadSettings();
+			applyDarkMode();
+			if (useModifiedHotkeys) {
+				loadKeymap();
+				registerGlobalShortcuts();
+			}
+		}, 100);
+	});
+}
+
 // Create the main application window
 async function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 1280,
 		height: 749,
-		autoHideMenuBar: true,
+		autoHideMenuBar: false,
 		icon: 'icons/PR',
 		show: false,
 		webPreferences: {
@@ -124,10 +161,10 @@ async function createWindow() {
 	
 	loadSettings();
 	applyDarkMode();
-	  if (useModifiedHotkeys) {
+	if (useModifiedHotkeys) {
 		loadKeymap();
 		registerGlobalShortcuts();
-	  }
+	}
 	let menuTemplate = [];
 	// Create a custom menu template
 	if (!isOfflineMode) {
@@ -159,7 +196,7 @@ async function createWindow() {
 				// Update the Rich Presence
 				rpc.setActivity({
 					startTimestamp: startTime,
-					largeImageKey: biome ? biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2';,
+					largeImageKey: biome ? biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2',
 					largeImageText: gameData.biome,
 					smallImageKey: 'logo',
 					smallImageText: 'PokéRogue',
@@ -178,8 +215,65 @@ async function createWindow() {
 		
 		menuTemplate = [
 			{
+				label: 'File',
+				submenu: [
+					{
+						label: 'Toggle Fullscreen',
+						accelerator: 'F11',
+						click: () => {
+							mainWindow.setFullScreen(!mainWindow.isFullScreen());
+						}
+					},
+					{
+						label: 'Toggle Console',
+						accelerator: 'F12',
+						click: () => {
+							mainWindow.webContents.toggleDevTools();
+						}
+					},
+					{
+						label: 'Reload',
+						accelerator: 'CommandOrControl+R',
+						click: () => {
+							resetGame();
+						}
+					},
+					{
+						label: 'Reload (invisible)',
+						accelerator: 'F5',
+						click: () => {
+							resetGame();
+						},
+						visible: false,
+						acceleratorWorksWhenHidden: true
+					},
+					{
+						type: 'separator'
+					},
+					{
+						label: 'Quit',
+						click: () => {
+							mainWindow.close();
+						}
+					}
+				]
+			},
+			{
 				label: 'Settings',
 				submenu: [
+					{
+						label: 'Auto-hide this menu (Alt to open again)',
+						type: 'checkbox',
+						checked: autoHideMenu,
+						click: () => {
+							autoHideMenu = !autoHideMenu;
+							mainWindow.autoHideMenuBar = autoHideMenu;
+							if (!autoHideMenu) {
+								mainWindow.setMenuBarVisibility(true);
+							}
+							saveSettings();
+						},
+					},
 					{
 					  label: 'Use modified hotkeys', // When enabled, instead of the game's default hotkeys, keys will be remapped according to the keymap.json file. Shortcuts for utility windows will be the same regardless of keybinds.
 					  type: 'checkbox',
@@ -219,36 +313,6 @@ async function createWindow() {
 			{
 				label: 'Utilities',
 				submenu: [
-					{
-						label: 'Reload',
-						accelerator: 'CommandOrControl+R',
-						click: () => {
-							mainWindow.reload();
-						}
-					},
-					{
-						label: 'Reload (invisible)',
-						accelerator: 'F5',
-						click: () => {
-							mainWindow.reload();
-						},
-						visible: false,
-						acceleratorWorksWhenHidden: true
-					},
-					{
-						label: 'Toggle Fullscreen',
-						accelerator: 'F11',
-						click: () => {
-							mainWindow.setFullScreen(!mainWindow.isFullScreen());
-						}
-					},
-					{
-						label: 'Toggle Console',
-						accelerator: 'F12',
-						click: () => {
-							mainWindow.webContents.toggleDevTools();
-						}
-					},
 					{
 						label: 'Wiki',
 						accelerator: 'CommandOrControl+W',
@@ -400,8 +464,65 @@ async function createWindow() {
 	else {
 		menuTemplate = [
 			{
+				label: 'File',
+				submenu: [
+					{
+						label: 'Toggle Fullscreen',
+						accelerator: 'F11',
+						click: () => {
+							mainWindow.setFullScreen(!mainWindow.isFullScreen());
+						}
+					},
+					{
+						label: 'Toggle Console',
+						accelerator: 'F12',
+						click: () => {
+							mainWindow.webContents.toggleDevTools();
+						}
+					},
+					{
+						label: 'Reload',
+						accelerator: 'CommandOrControl+R',
+						click: () => {
+							resetGame();
+						}
+					},
+					{
+						label: 'Reload (invisible)',
+						accelerator: 'F5',
+						click: () => {
+							resetGame();
+						},
+						visible: false,
+						acceleratorWorksWhenHidden: true
+					},
+					{
+						type: 'separator'
+					},
+					{
+						label: 'Quit',
+						click: () => {
+							mainWindow.close();
+						}
+					}
+				]
+			},
+			{
 				label: 'Settings',
 				submenu: [
+					{
+						label: 'Auto-hide this menu (Alt to open again)',
+						type: 'checkbox',
+						checked: autoHideMenu,
+						click: () => {
+							autoHideMenu = !autoHideMenu;
+							mainWindow.autoHideMenuBar = autoHideMenu;
+							if (!autoHideMenu) {
+								mainWindow.setMenuBarVisibility(true);
+							}
+							saveSettings();
+						},
+					},
 					{
 					  label: 'Use modified hotkeys', // When enabled, instead of the game's default hotkeys, keys will be remapped according to the keymap.json file. Shortcuts for utility windows will be the same regardless of keybinds.
 					  type: 'checkbox',
@@ -441,36 +562,6 @@ async function createWindow() {
 			{
 				label: 'Utilities',
 				submenu: [
-					{
-						label: 'Reload',
-						accelerator: 'CommandOrControl+R',
-						click: () => {
-							mainWindow.reload();
-						}
-					},
-					{
-						label: 'Reload (invisible)',
-						accelerator: 'F5',
-						click: () => {
-							mainWindow.reload();
-						},
-						visible: false,
-						acceleratorWorksWhenHidden: true
-					},
-					{
-						label: 'Toggle Fullscreen',
-						accelerator: 'F11',
-						click: () => {
-							mainWindow.setFullScreen(!mainWindow.isFullScreen());
-						}
-					},
-					{
-						label: 'Toggle Console',
-						accelerator: 'F12',
-						click: () => {
-							mainWindow.webContents.toggleDevTools();
-						}
-					},
 					{
 						label: 'Type Chart',
 						accelerator: 'CommandOrControl+Y',
@@ -527,6 +618,10 @@ async function createWindow() {
 
 	// Set the custom menu as the application menu
 	Menu.setApplicationMenu(menu);
+
+	mainWindow.on('close', () => {
+		saveSettings();
+	});
 
 	mainWindow.on('closed', async () => {
 		mainWindow = null;
@@ -622,6 +717,10 @@ async function createWindow() {
 				loadingWindow.close();
 				loadingWindow = null;
 			}
+			
+			// Load the settings after the game has finished loading
+			loadSettings();
+			mainWindow.center()
 		}, 100);
 	});
 }
