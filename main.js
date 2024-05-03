@@ -60,15 +60,12 @@ function loadSettings() {
         if (settings.windowSize) {
             mainWindow.setSize(settings.windowSize[0], settings.windowSize[1]);
         }
+        mainWindow.center();
         if (settings.isFullScreen) {
             mainWindow.setFullScreen(true);
         } else if (settings.isMaximized) {
             mainWindow.maximize();
-        } else {
-            // Center the window if it's not maximized or fullscreen
-            mainWindow.center();
         }
-
         // Apply the auto-hide menu setting
 		if (autoHideMenu) {
 			mainWindow.autoHideMenuBar = autoHideMenu;
