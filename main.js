@@ -143,34 +143,32 @@ async function createWindow() {
 		let startTime = Date.now();
 
 		async function updateDiscordPresence() {
-			// Placeholder data (replace with actual game data)
-			const gameData = {
-				gameMode: 'Classic',
-				biome: 'Laboratory',
-				currentWave: 50,
-				pokemonList: [
-					{ name: 'Pikachu', level: 36 },
-					{ name: 'Charmander', level: 40 },
-					{ name: 'Bulbasaur', level: 28 },
-					{ name: 'Squirtle', level: 32 },
-				],
-			};
+			mainWindow.webContents.executeJavaScript('window.gameInfo', true)
+			  .then((gameInfo) => {
+				// Process the gameInfo data
+				let gameData = gameInfo;
 
-			// Format the details string
-			const details = `${gameData.gameMode} | Wave: ${gameData.currentWave} | ${gameData.biome}`;
+				// Format the details string
+				const details = `${gameData.gameMode} | Wave: ${gameData.currentWave} | ${gameData.biome}`;
 
-			// Format the state string with the Pokemon list
-			const state = `Hover here for full Pokemon list...\n\nPokemon:\n${gameData.pokemonList
-				.map((pokemon) => `Level ${pokemon.level} ${pokemon.name}`)
-				.join('\n')}`;
+				// Format the state string with the Pokemon list
+				const state = `Hover here for full Pokemon list...\n\nPokemon:\n${gameData.pokemonList
+					.map((pokemon) => `Level ${pokemon.level} ${pokemon.name}`)
+					.join('\n')}`;
 
-			// Update the Rich Presence
-			rpc.setActivity({
-				startTimestamp: startTime,
-				largeImageKey: 'logo',
-				largeImageText: 'PokeRogue',
-				instance: true,
-			});
+				// Update the Rich Presence
+				rpc.setActivity({
+					startTimestamp: startTime,
+					largeImageKey: biome ? biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2';,
+					largeImageText: gameData.biome,
+					smallImageKey: 'logo',
+					smallImageText: 'PokéRogue',
+					instance: true,
+				});
+			  })
+			  .catch((error) => {
+				console.error('Error executing JavaScript:', error);
+			  });
 		}
 
 		// Start updating the Rich Presence every second
