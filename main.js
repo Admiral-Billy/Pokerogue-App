@@ -182,32 +182,45 @@ async function createWindow() {
 		let startTime = Date.now();
 
 		async function updateDiscordPresence() {
-			mainWindow.webContents.executeJavaScript('window.gameInfo', true)
-			  .then((gameInfo) => {
-				// Process the gameInfo data
-				let gameData = gameInfo;
+		  mainWindow.webContents.executeJavaScript('window.gameInfo', true)
+			.then((gameInfo) => {
+			  // Process the gameInfo data
+			  let gameData = gameInfo;
 
+			  // Check if the user is on the menu
+			  if (gameData.gameMode === 'Title') {
+				rpc.setActivity({
+				  details: 'On the menu',
+				  startTimestamp: startTime,
+				  largeImageKey: 'logo2',
+				  largeImageText: 'PokéRogue',
+				  instance: true,
+				});
+			  } else {
 				// Format the details string
-				const details = `${gameData.gameMode} | Wave: ${gameData.currentWave} | ${gameData.biome}`;
+				const details = `${gameData.gameMode} | Wave: ${gameData.wave} | ${gameData.biome}`;
 
 				// Format the state string with the Pokemon list
-				const state = `Hover here for full Pokemon list...\n\nPokemon:\n${gameData.pokemonList
-					.map((pokemon) => `Level ${pokemon.level} ${pokemon.name}`)
-					.join('\n')}`;
+				const state = `Hover here for full Pokemon list...\n\nPokemon:\n${gameData.party
+				  .map((pokemon) => `Level ${pokemon.level} ${pokemon.name}`)
+				  .join('\n')}`;
 
 				// Update the Rich Presence
 				rpc.setActivity({
-					startTimestamp: startTime,
-					largeImageKey: biome ? biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2',
-					largeImageText: gameData.biome,
-					smallImageKey: 'logo',
-					smallImageText: 'PokéRogue',
-					instance: true,
+				  details: details,
+				  state: state,
+				  startTimestamp: startTime,
+				  largeImageKey: gameData.biome ? gameData.biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2',
+				  largeImageText: gameData.biome,
+				  smallImageKey: 'logo',
+				  smallImageText: 'PokéRogue',
+				  instance: true,
 				});
-			  })
-			  .catch((error) => {
-				console.error('Error executing JavaScript:', error);
-			  });
+			  }
+			})
+			.catch((error) => {
+			  console.error('Error executing JavaScript:', error);
+			});
 		}
 
 		// Start updating the Rich Presence every second
