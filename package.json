@@ -1,6 +1,6 @@
 {
   "name": "PokeRogue",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -19,8 +19,10 @@
   },
   "dependencies": {
     "@cliqz/adblocker-electron": "^1.27.1",
+    "adm-zip": "^0.5.12",
     "cross-fetch": "^4.0.0",
-    "discord-rpc": "^4.0.1"
+    "discord-rpc": "^4.0.1",
+    "electron-progressbar": "^2.2.1"
   },
   "build": {
     "appId": "com.example.pokerogue",
@@ -46,50 +48,19 @@
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
     "extraResources": [
-      "update-game.js",
-	  "keymap.json"
+      "keymap.json"
     ],
     "win": {
       "icon": "icons/PR.ico",
-      "target": "nsis",
-      "extraFiles": [
-        {
-          "from": "PokeRogue Offline.bat",
-          "to": "PokeRogue Offline.bat"
-        },
-        {
-          "from": "update-game.bat",
-          "to": "resources/update-game.bat"
-        }
-      ]
+      "target": "nsis"
     },
     "linux": {
       "icon": "icons/PR.png",
-      "target": "AppImage",
-      "extraFiles": [
-        {
-          "from": "PokeRogue Offline.sh",
-          "to": "PokeRogue Offline.sh"
-        },
-        {
-          "from": "update-game.sh",
-          "to": "resources/update-game.sh"
-        }
-      ]
+      "target": "AppImage"
     },
     "mac": {
       "icon": "icons/PR.icns",
-      "target": "dmg",
-      "extraFiles": [
-        {
-          "from": "PokeRogue Offline.command",
-          "to": "../../PokeRogue Offline.command"
-        },
-        {
-          "from": "update-game.command",
-          "to": "resources/update-game.command"
-        }
-      ]
+      "target": "dmg"
     }
   }
 }
