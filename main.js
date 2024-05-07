@@ -106,6 +106,39 @@ function resetGame() {
 	});
 }
 
+function registerGlobalShortcuts() {
+  if (useModifiedHotkeys) {
+	  for (const [originalKey, mappedKey] of Object.entries(keymap)) {
+		if (originalKey != mappedKey) {
+			globalShortcut.register(originalKey, () => {
+			  const focusedWindow = BrowserWindow.getFocusedWindow();
+			  if (focusedWindow === mainWindow) {
+				focusedWindow.webContents.sendInputEvent({ type: 'keyDown', keyCode: mappedKey });
+				setTimeout(() => {
+				  focusedWindow.webContents.sendInputEvent({ type: 'keyUp', keyCode: mappedKey });
+				}, 50);
+			  }
+			});
+
+			globalShortcut.register(`CommandOrControl+${originalKey}`, () => {
+			  const focusedWindow = BrowserWindow.getFocusedWindow();
+			  if (focusedWindow === mainWindow) {
+				focusedWindow.webContents.sendInputEvent({ type: 'keyDown', keyCode: originalKey, modifiers: ['ctrl'] });
+				setTimeout(() => {
+				  focusedWindow.webContents.sendInputEvent({ type: 'keyUp', keyCode: originalKey, modifiers: ['ctrl'] });
+				}, 50);
+			  }
+			});
+		}
+	  }
+	  console.log('Registered global shortcuts:', Object.keys(keymap));
+  }
+}
+
+function unregisterGlobalShortcuts() {
+  globalShortcut.unregisterAll();
+}
+	
 // Create the main application window
 async function createWindow() {
 	mainWindow = new BrowserWindow({
@@ -120,39 +153,6 @@ async function createWindow() {
 			persistUserDataDirName: 'Pokerogue'
 		}
 	});
-	
-	function registerGlobalShortcuts() {
-	  if (useModifiedHotkeys) {
-		  for (const [originalKey, mappedKey] of Object.entries(keymap)) {
-			if (originalKey != mappedKey) {
-				globalShortcut.register(originalKey, () => {
-				  const focusedWindow = BrowserWindow.getFocusedWindow();
-				  if (focusedWindow === mainWindow) {
-					focusedWindow.webContents.sendInputEvent({ type: 'keyDown', keyCode: mappedKey });
-					setTimeout(() => {
-					  focusedWindow.webContents.sendInputEvent({ type: 'keyUp', keyCode: mappedKey });
-					}, 50);
-				  }
-				});
-
-				globalShortcut.register(`CommandOrControl+${originalKey}`, () => {
-				  const focusedWindow = BrowserWindow.getFocusedWindow();
-				  if (focusedWindow === mainWindow) {
-					focusedWindow.webContents.sendInputEvent({ type: 'keyDown', keyCode: originalKey, modifiers: ['ctrl'] });
-					setTimeout(() => {
-					  focusedWindow.webContents.sendInputEvent({ type: 'keyUp', keyCode: originalKey, modifiers: ['ctrl'] });
-					}, 50);
-				  }
-				});
-			}
-		  }
-		  console.log('Registered global shortcuts:', Object.keys(keymap));
-	  }
-	}
-
-	function unregisterGlobalShortcuts() {
-	  globalShortcut.unregisterAll();
-	}
 	
 	// Register global shortcuts when the game window is focused
 	mainWindow.on('focus', registerGlobalShortcuts);
