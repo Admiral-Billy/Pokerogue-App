@@ -569,8 +569,7 @@ async function createWindow() {
         webPreferences: {
             nodeIntegration: false,
             persistSessionStorage: true,
-            persistUserDataDirName: 'Pokerogue',
-			sandbox: false
+            persistUserDataDirName: 'Pokerogue'
         }
     });
     
