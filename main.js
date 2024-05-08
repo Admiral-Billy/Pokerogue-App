@@ -26,6 +26,17 @@ let keymap = {};
 let useModifiedHotkeys = false;
 let autoHideMenu = false;
 let hideCursor = false;
+let gameDir;
+
+function getGameDirectory() {
+  if (process.platform === 'darwin') {
+    // For macOS, use the user's Documents directory
+    gameDir = path.join(app.getPath('documents'), 'PokeRogue', 'game');
+  } else {
+    // For other platforms, use the app's directory
+    gameDir = path.join(__dirname, '..', 'app', 'game');
+  }
+}
 
 function saveSettings() {
     const userDataPath = app.getPath('userData');
@@ -94,7 +105,7 @@ function loadKeymap() {
 
 function resetGame() {
 	if (isOfflineMode) {
-		const gameDir = path.join(__dirname, '..', 'app', 'game');
+		getGameDirectory();
 		mainWindow.loadFile(path.join(gameDir, 'index.html'));
 	} else {
 		mainWindow.loadURL('https://pokerogue.net/');
@@ -511,7 +522,7 @@ function downloadLatestGameFiles() {
 				progressBar.detail = `Deleting old files...`;
 
                 const zip = new AdmZip(zipPath);
-                const gameDir = path.join(__dirname, '..', 'app', 'game');
+                getGameDirectory();
 
                 // Delete the old game files
                 fs.rmSync(gameDir, { recursive: true, force: true });
@@ -1213,7 +1224,7 @@ async function createSmogonWindow() {
 
 // Handle app events
 app.whenReady().then(() => {
-    const gameDir = path.join(__dirname, '..', 'app', 'game');
+    getGameDirectory();
     gameFilesDownloaded = fs.existsSync(gameDir);
     createWindow();
   if (useModifiedHotkeys) {
