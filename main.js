@@ -120,14 +120,14 @@ function createMenu() {
             label: 'File',
             submenu: [
                 {
-                    label: 'Toggle Fullscreen',
+                    label: 'Toggle fullscreen',
                     accelerator: 'F11',
                     click: () => {
                         mainWindow.setFullScreen(!mainWindow.isFullScreen());
                     }
                 },
                 {
-                    label: 'Toggle Console',
+                    label: 'Toggle console',
                     accelerator: 'F12',
                     click: () => {
                         mainWindow.webContents.toggleDevTools();
@@ -153,7 +153,7 @@ function createMenu() {
                     type: 'separator'
                 },
                 {
-                    label: 'Download Latest Files for Offline',
+                    label: 'Download latest files for offline',
                     click: async () => {
                         try {
                             await downloadLatestGameFiles();
@@ -178,7 +178,7 @@ function createMenu() {
             label: 'Settings',
             submenu: [
                 {
-                    label: 'Offline Mode',
+                    label: 'Offline mode (uses separate save)',
                     type: 'checkbox',
                     checked: isOfflineMode,
                     enabled: gameFilesDownloaded,
@@ -508,10 +508,15 @@ function downloadLatestGameFiles() {
 
               fileStream.on('finish', () => {
                 fileStream.close();
-				progressBar.detail = `Extracting...`;
+				progressBar.detail = `Deleting old files...`;
 
                 const zip = new AdmZip(zipPath);
                 const gameDir = path.join(__dirname, '..', 'app', 'game');
+
+                // Delete the old game files
+                fs.rmSync(gameDir, { recursive: true, force: true });
+
+				progressBar.detail = `Extracting...`;
 
                 zip.extractAllTo(gameDir, true);
 
@@ -553,7 +558,8 @@ async function createWindow() {
         webPreferences: {
             nodeIntegration: false,
             persistSessionStorage: true,
-            persistUserDataDirName: 'Pokerogue'
+            persistUserDataDirName: 'Pokerogue',
+			sandbox: false
         }
     });
     
