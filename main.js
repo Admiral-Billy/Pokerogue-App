@@ -120,6 +120,7 @@ function resetGame() {
                 loadKeymap();
                 registerGlobalShortcuts();
             }
+			mainWindow.webContents.send('offline-mode-status', isOfflineMode);
 			
         }, 100);
     });
@@ -567,7 +568,9 @@ async function createWindow() {
         icon: 'icons/PR',
         show: false,
         webPreferences: {
-            nodeIntegration: false,
+			nodeIntegration: true,
+			contextIsolation: false,
+			preload: path.join(__dirname, 'preload.js'),
             persistSessionStorage: true,
             persistUserDataDirName: 'Pokerogue'
         }
@@ -700,7 +703,7 @@ async function createWindow() {
     rpc.login({ clientId }).catch(console.error);
 
     if (isOfflineMode) {
-        const gameDir = path.join(__dirname, '..', 'app', 'game');
+        getGameDirectory();
         mainWindow.loadFile(path.join(gameDir, 'index.html'));
     } else {
         mainWindow.loadURL('https://pokerogue.net/');
