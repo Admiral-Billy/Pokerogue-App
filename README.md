@@ -1,5 +1,7 @@
 # PokeRogue App
-An app to play Pokerogue.net in an app window. Wow! The app is playable in both online and offline mode. Online mode is the default, but you can switch to offline mode at any time by downloading the newest game files (file -> download) and then switching to offline (settings -> offline).
+This is an app to play Pokerogue.net in an app window. Wow! 
+
+The app is playable in both online and offline mode. Online mode is the default, but you can switch to offline mode at any time by downloading the newest game files (file -> download) and then switching to offline (settings -> offline). If you're on the Steam Deck and want to play in Gaming mode, add the "pokerogue" file (with no file extension) as a non-steam game and add "--no-sandbox" as a launch option and it'll work just fine (with touch screen required for the top menu stuff).
 
 All cookie-related information can be found in %AppData%/Pokerogue; go there and delete the whole thing if you want the game to forget your login/settings/offline saves/etc.
 
