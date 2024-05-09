@@ -1,14 +1,11 @@
 # PokeRogue App
-An app to play Pokerogue.net in an app window. Wow! Offline mode can be ran by using the included bat/sh/command file, but requires the game files to be installed using the update script in the resources folder (which is also used to install https://www.pkmn.help for offline use). To find the resources folder on Mac you need to step into the actual App.
+An app to play Pokerogue.net in an app window. Wow! The app is playable in both online and offline mode. Online mode is the default, but you can switch to offline mode at any time by downloading the newest game files (file -> download) and then switching to offline (settings -> offline).
 
-All cookie-related information can be found in %AppData%/Pokerogue; go there and delete the whole thing if you want the game to forget your login/settings/etc.
+All cookie-related information can be found in %AppData%/Pokerogue; go there and delete the whole thing if you want the game to forget your login/settings/offline saves/etc.
 
-It's worth noting that if you're using the offline version startup will be slower, and performance will likely be worse due to running a server locally, so keep that in mind!
-
-Hit Alt and you can view a list of utilities as well as their shortcuts, but they're also included here for your convenience:
-
+The menu at the top has a list of utilities as well as their shortcuts, but they're also included here for your convenience:
 Alt: Opens the menu bar that has the utilities tab, containing all of the below.  
-Ctrl+R: Soft resets the game, as if you relaunched it  
+Ctrl+R or F5: Soft resets the game, as if you relaunched it  
 F11: Fullscreens the game  
 F12: Developer console  
 Ctrl+T: pkmn.help website (useful for being a type calculator and having a pokedex to access bulbapedia)  
