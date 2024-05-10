@@ -380,7 +380,7 @@ function createMenu() {
                                 } else {
                                     teamBuilderWindow.hide();
                                 }
-                                mainwindow.focus(); // Set focus to the main window
+                                mainWindow.focus(); // Set focus to the main window
                             } else {
                                 teamBuilderWindow.show();
                                 teamBuilderWindow.focus(); // Set focus to the team builder window
@@ -956,6 +956,7 @@ function createTypeChartWindow() {
         width: 670,
         height: 1000,
         icon: 'icons/PR',
+		autoHideMenuBar: true,
         webPreferences: {
             nodeIntegration: true
         }
@@ -1072,6 +1073,7 @@ async function createTeamBuilderWindow() {
     teamBuilderWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+		autoHideMenuBar: true,
         icon: 'icons/PR',
         webPreferences: {
             nodeIntegration: false
@@ -1160,6 +1162,7 @@ async function createSmogonWindow() {
     smogonWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+		autoHideMenuBar: true,
         icon: 'icons/PR',
         webPreferences: {
             nodeIntegration: false
