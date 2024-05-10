@@ -3,6 +3,8 @@ This is an app to play Pokerogue.net in an app window. Wow!
 
 The app is playable in both online and offline mode. Online mode is the default, but you can switch to offline mode at any time by downloading the newest game files (file -> download) and then switching to offline (settings -> offline). If you're on the Steam Deck and want to play in Gaming mode, add the "pokerogue" file (with no file extension) as a non-steam game and add "--no-sandbox" as a launch option and it'll work just fine (with touch screen required for the top menu stuff).
 
+There's a variety of settings you can tweak to your choosing as well. The only thing to mention in particular is the modified hotkeys setting; there's a "keymap.json" in the resources folder that you can modify, and that'll affect what your hotkeys are (in the format of "Old" : "New", with the ability to bind multiple keys to the same other key if desired). It's not a perfect hotkey remapping since the hold behavior is off, but it should work for most purposes.
+
 All cookie-related information can be found in %AppData%/Pokerogue; go there and delete the whole thing if you want the game to forget your login/settings/offline saves/etc.
 
 The menu at the top has a list of utilities as well as their shortcuts, but they're also included here for your convenience:
