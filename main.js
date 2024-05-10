@@ -126,6 +126,17 @@ function resetGame() {
     });
 }
 
+function clearCache() {
+    // Set a flag to indicate that the cache should be cleared on the next launch
+    app.commandLine.appendSwitch('clear-cache');
+    
+    // Relaunch the app
+    app.relaunch({ args: process.argv.slice(1).concat(['--clear-cache']) });
+    
+    // Quit the current instance
+    app.quit();
+}
+
 function createMenu() {
     const menuTemplate = [
         {
@@ -160,6 +171,13 @@ function createMenu() {
                     },
                     visible: false,
                     acceleratorWorksWhenHidden: true
+                },
+                {
+                    label: 'Reload + clear cache',
+                    accelerator: 'CommandOrControl+F5',
+                    click: () => {
+                        clearCache();
+                    }
                 },
                 {
                     type: 'separator'
@@ -1228,11 +1246,33 @@ async function createSmogonWindow() {
 app.whenReady().then(() => {
     getGameDirectory();
     gameFilesDownloaded = fs.existsSync(gameDir);
+	
+    // Check if the --clear-cache flag is present
+    if (process.argv.includes('--clear-cache')) {
+        const userDataPath = app.getPath('userData');
+        const settingsFilePath = path.join(userDataPath, 'settings.json');
+        const localStorageDirPath = path.join(userDataPath, 'Local Storage');
+        
+        // Get all files and directories in the user data path
+        const files = fs.readdirSync(userDataPath);
+        
+        // Delete all files and directories except for settings.json and Local Storage folder
+        files.forEach(file => {
+            const filePath = path.join(userDataPath, file);
+            if (filePath !== settingsFilePath && filePath !== localStorageDirPath) {
+                if (fs.lstatSync(filePath).isDirectory()) {
+                    fs.rmdirSync(filePath, { recursive: true });
+                } else {
+                    fs.unlinkSync(filePath);
+                }
+            }
+        });
+        
+        // Remove the --clear-cache flag from the command line arguments
+        app.commandLine.removeSwitch('clear-cache');
+    }
+	
     createWindow();
-  if (useModifiedHotkeys) {
-    loadKeymap();
-    registerGlobalShortcuts();
-  }
 });
 
 app.on('window-all-closed', () => {
