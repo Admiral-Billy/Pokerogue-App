@@ -22,7 +22,7 @@ ipcRenderer.on('offline-mode-status', (event, status) => {
 // Override the global fetch function when in offline mode to fix broken move issues (and more?)
 const originalFetch = window.fetch;
 window.fetch = async (url, options) => {
-  if (isOfflineMode && url.startsWith('./') || url.startsWith('../')) {
+  if (isOfflineMode && (url.startsWith('./') || url.startsWith('../'))) {
     const gameDir = getGameDirectory();
     const filePath = path.join(gameDir, url.split('?')[0]);
     console.log("Fetching file:", filePath);

@@ -1,10 +1,20 @@
 // Importing required modules
-const { app, BrowserWindow, ipcMain, Menu, globalShortcut } = require('electron');
-const { ElectronBlocker } = require('@cliqz/adblocker-electron');
+const {
+    app,
+    BrowserWindow,
+    ipcMain,
+    Menu,
+    globalShortcut
+} = require('electron');
+const {
+    ElectronBlocker
+} = require('@cliqz/adblocker-electron');
 const fetch = require('cross-fetch');
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
+const {
+    exec
+} = require('child_process');
 const DiscordRPC = require('discord-rpc');
 const AdmZip = require('adm-zip');
 const https = require('https');
@@ -29,13 +39,13 @@ let hideCursor = false;
 let gameDir;
 
 function getGameDirectory() {
-  if (process.platform === 'darwin') {
-    // For macOS, use the user's Documents directory
-    gameDir = path.join(app.getPath('documents'), 'PokeRogue', 'game');
-  } else {
-    // For other platforms, use the app's directory
-    gameDir = path.join(__dirname, '..', 'app', 'game');
-  }
+    if (process.platform === 'darwin') {
+        // For macOS, use the user's Documents directory
+        gameDir = path.join(app.getPath('documents'), 'PokeRogue', 'game');
+    } else {
+        // For other platforms, use the app's directory
+        gameDir = path.join(__dirname, '..', 'app', 'game');
+    }
 }
 
 function saveSettings() {
@@ -70,7 +80,8 @@ function loadSettings() {
         autoHideMenu = settings.autoHideMenu;
         hideCursor = settings.hideCursor;
         isOfflineMode = gameFilesDownloaded ? settings.isOfflineMode : false;
-        
+        mainWindow.webContents.send('offline-mode-status', isOfflineMode);
+
         // Set the window size, fullscreen state, and maximized state
         if (settings.windowSize) {
             mainWindow.setSize(settings.windowSize[0], settings.windowSize[1]);
@@ -89,39 +100,39 @@ function loadSettings() {
 }
 
 function loadKeymap() {
-  if (useModifiedHotkeys) {
-    try {
-      const keymapPath = path.join(process.resourcesPath, 'keymap.json');
-      const keymapData = fs.readFileSync(keymapPath, 'utf-8');
-      keymap = JSON.parse(keymapData);
-      console.log('Loaded keymap:', keymap);
-    } catch (error) {
-      console.error('Failed to load keymap:', error);
+    if (useModifiedHotkeys) {
+        try {
+            const keymapPath = path.join(process.resourcesPath, 'keymap.json');
+            const keymapData = fs.readFileSync(keymapPath, 'utf-8');
+            keymap = JSON.parse(keymapData);
+            console.log('Loaded keymap:', keymap);
+        } catch (error) {
+            console.error('Failed to load keymap:', error);
+        }
+    } else {
+        keymap = {};
     }
-  } else {
-    keymap = {};
-  }
 }
 
 function resetGame() {
-	if (isOfflineMode) {
-		getGameDirectory();
-		mainWindow.loadFile(path.join(gameDir, 'index.html'));
-	} else {
-		mainWindow.loadURL('https://pokerogue.net/');
-	}
+    if (isOfflineMode) {
+        getGameDirectory();
+        mainWindow.loadFile(path.join(gameDir, 'index.html'));
+    } else {
+        mainWindow.loadURL('https://pokerogue.net/');
+    }
     mainWindow.webContents.on('did-finish-load', () => {
         setTimeout(() => {
             loadSettings();
-			updateMenu();
+            updateMenu();
             applyDarkMode();
             applyCursorHide();
             if (useModifiedHotkeys) {
                 loadKeymap();
                 registerGlobalShortcuts();
             }
-			mainWindow.webContents.send('offline-mode-status', isOfflineMode);
-			
+            mainWindow.webContents.send('offline-mode-status', isOfflineMode);
+
         }, 100);
     });
 }
@@ -129,20 +140,20 @@ function resetGame() {
 function clearCache() {
     // Set a flag to indicate that the cache should be cleared on the next launch
     app.commandLine.appendSwitch('clear-cache');
-    
+
     // Relaunch the app
-    app.relaunch({ args: process.argv.slice(1).concat(['--clear-cache']) });
-    
+    app.relaunch({
+        args: process.argv.slice(1).concat(['--clear-cache'])
+    });
+
     // Quit the current instance
     app.quit();
 }
 
 function createMenu() {
-    const menuTemplate = [
-        {
+    const menuTemplate = [{
             label: 'File',
-            submenu: [
-                {
+            submenu: [{
                     label: 'Toggle fullscreen',
                     accelerator: 'F11',
                     click: () => {
@@ -206,8 +217,7 @@ function createMenu() {
         },
         {
             label: 'Settings',
-            submenu: [
-                {
+            submenu: [{
                     label: 'Offline mode (uses separate save)',
                     type: 'checkbox',
                     checked: isOfflineMode,
@@ -232,19 +242,19 @@ function createMenu() {
                     },
                 },
                 {
-                  label: 'Use modified hotkeys', // When enabled, instead of the game's default hotkeys, keys will be remapped according to the keymap.json file. Shortcuts for utility windows will be the same regardless of keybinds.
-                  type: 'checkbox',
-                  checked: useModifiedHotkeys,
-                  click: () => {
-                    useModifiedHotkeys = !useModifiedHotkeys;
-                    saveSettings();
-                    if (useModifiedHotkeys) {
-                      loadKeymap();
-                      registerGlobalShortcuts();
-                    } else {
-                      unregisterGlobalShortcuts();
-                    }
-                  },
+                    label: 'Use modified hotkeys', // When enabled, instead of the game's default hotkeys, keys will be remapped according to the keymap.json file. Shortcuts for utility windows will be the same regardless of keybinds.
+                    type: 'checkbox',
+                    checked: useModifiedHotkeys,
+                    click: () => {
+                        useModifiedHotkeys = !useModifiedHotkeys;
+                        saveSettings();
+                        if (useModifiedHotkeys) {
+                            loadKeymap();
+                            registerGlobalShortcuts();
+                        } else {
+                            unregisterGlobalShortcuts();
+                        }
+                    },
                 },
                 {
                     label: 'Close utility windows instead of hiding', // When enabled, utility windows are completely closed rather than being hidden if they are toggled or exited. This can help save memory, but resets their position every toggle and might result in slower toggles.
@@ -266,21 +276,20 @@ function createMenu() {
                     },
                 },
                 {
-                  label: 'Darker background', // When enabled, the grey background that normally fills the outside of the game will instead be black.
-                  type: 'checkbox',
-                  checked: darkMode,
-                  click: () => {
-                    darkMode = !darkMode;
-                    applyDarkMode();
-                    saveSettings();
-                  },
+                    label: 'Darker background', // When enabled, the grey background that normally fills the outside of the game will instead be black.
+                    type: 'checkbox',
+                    checked: darkMode,
+                    click: () => {
+                        darkMode = !darkMode;
+                        applyDarkMode();
+                        saveSettings();
+                    },
                 }
             ]
         },
         {
             label: 'Utilities',
-            submenu: [
-                {
+            submenu: [{
                     label: 'Wiki',
                     accelerator: 'CommandOrControl+W',
                     click: () => {
@@ -416,165 +425,207 @@ function createMenu() {
         },
         {
             label: "Edit",
-            submenu: [
-                { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-                { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-                { type: "separator" },
-                { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-                { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-                { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-                { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+            submenu: [{
+                    label: "Undo",
+                    accelerator: "CmdOrCtrl+Z",
+                    selector: "undo:"
+                },
+                {
+                    label: "Redo",
+                    accelerator: "Shift+CmdOrCtrl+Z",
+                    selector: "redo:"
+                },
+                {
+                    type: "separator"
+                },
+                {
+                    label: "Cut",
+                    accelerator: "CmdOrCtrl+X",
+                    selector: "cut:"
+                },
+                {
+                    label: "Copy",
+                    accelerator: "CmdOrCtrl+C",
+                    selector: "copy:"
+                },
+                {
+                    label: "Paste",
+                    accelerator: "CmdOrCtrl+V",
+                    selector: "paste:"
+                },
+                {
+                    label: "Select All",
+                    accelerator: "CmdOrCtrl+A",
+                    selector: "selectAll:"
+                }
             ]
         }
     ];
-	
-	return Menu.buildFromTemplate(menuTemplate);
+
+    return Menu.buildFromTemplate(menuTemplate);
 }
 
 function updateMenu() {
- const menu = createMenu();
- Menu.setApplicationMenu(menu);
+    const menu = createMenu();
+    Menu.setApplicationMenu(menu);
 }
 
 function registerGlobalShortcuts() {
-  if (useModifiedHotkeys) {
-      for (const [originalKey, mappedKey] of Object.entries(keymap)) {
-        if (originalKey != mappedKey) {
-            globalShortcut.register(originalKey, () => {
-              const focusedWindow = BrowserWindow.getFocusedWindow();
-              if (focusedWindow === mainWindow) {
-                focusedWindow.webContents.sendInputEvent({ type: 'keyDown', keyCode: mappedKey });
-                setTimeout(() => {
-                  focusedWindow.webContents.sendInputEvent({ type: 'keyUp', keyCode: mappedKey });
-                }, 50);
-              }
-            });
+    if (useModifiedHotkeys) {
+        for (const [originalKey, mappedKey] of Object.entries(keymap)) {
+            if (originalKey != mappedKey) {
+                globalShortcut.register(originalKey, () => {
+                    const focusedWindow = BrowserWindow.getFocusedWindow();
+                    if (focusedWindow === mainWindow) {
+                        focusedWindow.webContents.sendInputEvent({
+                            type: 'keyDown',
+                            keyCode: mappedKey
+                        });
+                        setTimeout(() => {
+                            focusedWindow.webContents.sendInputEvent({
+                                type: 'keyUp',
+                                keyCode: mappedKey
+                            });
+                        }, 50);
+                    }
+                });
 
-            globalShortcut.register(`CommandOrControl+${originalKey}`, () => {
-              const focusedWindow = BrowserWindow.getFocusedWindow();
-              if (focusedWindow === mainWindow) {
-                focusedWindow.webContents.sendInputEvent({ type: 'keyDown', keyCode: originalKey, modifiers: ['ctrl'] });
-                setTimeout(() => {
-                  focusedWindow.webContents.sendInputEvent({ type: 'keyUp', keyCode: originalKey, modifiers: ['ctrl'] });
-                }, 50);
-              }
-            });
+                globalShortcut.register(`CommandOrControl+${originalKey}`, () => {
+                    const focusedWindow = BrowserWindow.getFocusedWindow();
+                    if (focusedWindow === mainWindow) {
+                        focusedWindow.webContents.sendInputEvent({
+                            type: 'keyDown',
+                            keyCode: originalKey,
+                            modifiers: ['ctrl']
+                        });
+                        setTimeout(() => {
+                            focusedWindow.webContents.sendInputEvent({
+                                type: 'keyUp',
+                                keyCode: originalKey,
+                                modifiers: ['ctrl']
+                            });
+                        }, 50);
+                    }
+                });
+            }
         }
-      }
-      console.log('Registered global shortcuts:', Object.keys(keymap));
-  }
+        console.log('Registered global shortcuts:', Object.keys(keymap));
+    }
 }
 
 function unregisterGlobalShortcuts() {
-  globalShortcut.unregisterAll();
+    globalShortcut.unregisterAll();
 }
 
 function downloadLatestGameFiles() {
-  return new Promise((resolve, reject) => {
-    const latestReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/pokerogue/releases/latest';
+    return new Promise((resolve, reject) => {
+        const latestReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/pokerogue/releases/latest';
 
-    const options = {
-      headers: {
-        'User-Agent': 'Pokerogue-App',
-      },
-    };
+        const options = {
+            headers: {
+                'User-Agent': 'Pokerogue-App',
+            },
+        };
 
-    https.get(latestReleaseUrl, options, (response) => {
-      let data = '';
+        https.get(latestReleaseUrl, options, (response) => {
+            let data = '';
 
-      response.on('data', (chunk) => {
-        data += chunk;
-      });
-
-      response.on('end', () => {
-        try {
-          const releaseData = JSON.parse(data);
-          const zipAsset = releaseData.assets.find((asset) => asset.name === 'game.zip');
-
-          if (zipAsset) {
-            const zipUrl = zipAsset.browser_download_url;
-            const zipPath = path.join(app.getPath('temp'), 'game.zip');
-            const fileStream = fs.createWriteStream(zipPath);
-
-            const progressBar = new ProgressBar({
-              indeterminate: false,
-              text: 'Downloading game files...',
-              detail: 'Preparing to download...',
-              maxValue: 100,
-              closeOnComplete: true,
+            response.on('data', (chunk) => {
+                data += chunk;
             });
 
-            const totalBytes = zipAsset.size;
-            let receivedBytes = 0;
+            response.on('end', () => {
+                try {
+                    const releaseData = JSON.parse(data);
+                    const zipAsset = releaseData.assets.find((asset) => asset.name === 'game.zip');
 
-            const downloadOptions = {
-              ...options,
-              timeout: 30000, // Set a timeout of 30 seconds
-            };
+                    if (zipAsset) {
+                        const zipUrl = zipAsset.browser_download_url;
+                        const zipPath = path.join(app.getPath('temp'), 'game.zip');
+                        const fileStream = fs.createWriteStream(zipPath);
 
-            https.get(zipUrl, downloadOptions, (response) => {
-              if (response.statusCode === 302) {
-                const redirectUrl = response.headers.location;
-                https.get(redirectUrl, downloadOptions, (response) => {
-                  response.on('data', (chunk) => {
-                    receivedBytes += chunk.length;
-                    const percentage = Math.floor((receivedBytes / totalBytes) * 100);
-                    progressBar.value = percentage;
-                    progressBar.detail = `${receivedBytes} bytes received...`;
-                  });
+                        const progressBar = new ProgressBar({
+                            indeterminate: false,
+                            text: 'Downloading game files...',
+                            detail: 'Preparing to download...',
+                            maxValue: 100,
+                            closeOnComplete: true,
+                        });
 
-                  response.pipe(fileStream);
-                });
-              } else {
-                response.on('data', (chunk) => {
-                  receivedBytes += chunk.length;
-                  const percentage = Math.floor((receivedBytes / totalBytes) * 100);
-                  progressBar.value = percentage;
-                  progressBar.detail = `${receivedBytes} bytes received...`;
-                });
+                        const totalBytes = zipAsset.size;
+                        let receivedBytes = 0;
 
-                response.pipe(fileStream);
-              }
+                        const downloadOptions = {
+                            ...options,
+                            timeout: 30000, // Set a timeout of 30 seconds
+                        };
 
-              fileStream.on('finish', () => {
-                fileStream.close();
-				progressBar.detail = `Deleting old files...`;
+                        https.get(zipUrl, downloadOptions, (response) => {
+                            if (response.statusCode === 302) {
+                                const redirectUrl = response.headers.location;
+                                https.get(redirectUrl, downloadOptions, (response) => {
+                                    response.on('data', (chunk) => {
+                                        receivedBytes += chunk.length;
+                                        const percentage = Math.floor((receivedBytes / totalBytes) * 100);
+                                        progressBar.value = percentage;
+                                        progressBar.detail = `${receivedBytes} bytes received...`;
+                                    });
 
-                const zip = new AdmZip(zipPath);
-                getGameDirectory();
+                                    response.pipe(fileStream);
+                                });
+                            } else {
+                                response.on('data', (chunk) => {
+                                    receivedBytes += chunk.length;
+                                    const percentage = Math.floor((receivedBytes / totalBytes) * 100);
+                                    progressBar.value = percentage;
+                                    progressBar.detail = `${receivedBytes} bytes received...`;
+                                });
 
-                // Delete the old game files
-                fs.rmSync(gameDir, { recursive: true, force: true });
+                                response.pipe(fileStream);
+                            }
 
-				progressBar.detail = `Extracting...`;
+                            fileStream.on('finish', () => {
+                                fileStream.close();
+                                progressBar.detail = `Deleting old files...`;
 
-                zip.extractAllTo(gameDir, true);
+                                const zip = new AdmZip(zipPath);
+                                getGameDirectory();
 
-                fs.unlinkSync(zipPath);
+                                // Delete the old game files
+                                fs.rmSync(gameDir, {
+                                    recursive: true,
+                                    force: true
+                                });
 
-                gameFilesDownloaded = true;
-				updateMenu();
-                resolve();
-              });
-            }).on('error', (error) => {
-              progressBar.close();
-              console.error('Error downloading game.zip:', error);
-              reject(error);
+                                progressBar.detail = `Extracting...`;
+
+                                zip.extractAllTo(gameDir, true);
+
+                                fs.unlinkSync(zipPath);
+
+                                gameFilesDownloaded = true;
+                                updateMenu();
+                                resolve();
+                            });
+                        }).on('error', (error) => {
+                            progressBar.close();
+                            console.error('Error downloading game.zip:', error);
+                            reject(error);
+                        });
+                    } else {
+                        console.error('game.zip asset not found in the latest release');
+                        reject(new Error('game.zip asset not found in the latest release.'));
+                    }
+                } catch (error) {
+                    console.error('Error parsing release data:', error);
+                    reject(new Error('Failed to parse the release data.'));
+                }
             });
-          } else {
-            console.error('game.zip asset not found in the latest release');
-            reject(new Error('game.zip asset not found in the latest release.'));
-          }
-        } catch (error) {
-          console.error('Error parsing release data:', error);
-          reject(new Error('Failed to parse the release data.'));
-        }
-      });
-    }).on('error', (error) => {
-      console.error('Error fetching latest release:', error);
-      reject(error);
+        }).on('error', (error) => {
+            console.error('Error fetching latest release:', error);
+            reject(error);
+        });
     });
-  });
 }
 
 // Create the main application window
@@ -586,20 +637,20 @@ async function createWindow() {
         icon: 'icons/PR',
         show: false,
         webPreferences: {
-			nodeIntegration: true,
-			contextIsolation: false,
-			preload: path.join(__dirname, 'preload.js'),
+            nodeIntegration: true,
+            contextIsolation: false,
+            preload: path.join(__dirname, 'preload.js'),
             persistSessionStorage: true,
             persistUserDataDirName: 'Pokerogue'
         }
     });
-    
+
     // Register global shortcuts when the game window is focused
     mainWindow.on('focus', registerGlobalShortcuts);
 
     // Unregister global shortcuts when the game window loses focus
     mainWindow.on('blur', unregisterGlobalShortcuts);
-    
+
     loadSettings();
     applyDarkMode();
     applyCursorHide();
@@ -620,7 +671,7 @@ async function createWindow() {
 
     mainWindow.on('closed', async () => {
         mainWindow = null;
-        
+
         // Close the wiki window if it's open
         if (wikiWindow) {
             wikiWindow.close();
@@ -664,66 +715,83 @@ async function createWindow() {
 
     const clientId = '1232165629046292551';
     DiscordRPC.register(clientId);
-    const rpc = new DiscordRPC.Client({ transport: 'ipc' });
-    
+    const rpc = new DiscordRPC.Client({
+        transport: 'ipc'
+    });
+
     rpc.on('ready', () => {
         console.log('Discord Rich Presence is ready!');
         updateDiscordPresence();
     });
-    
+
     let startTime = Date.now();
+    let adjustedPlayTime = 0;
+    let sessionStartTime = 0;
 
     async function updateDiscordPresence() {
-      mainWindow.webContents.executeJavaScript('window.gameInfo', true)
-        .then((gameInfo) => {
-          // Process the gameInfo data
-          let gameData = gameInfo;
+        mainWindow.webContents.executeJavaScript('window.gameInfo', true)
+            .then((gameInfo) => {
+                // Process the gameInfo data
+                let gameData = gameInfo;
 
-          // Check if the user is on the menu
-          if (gameData.gameMode === 'Title') {
-            rpc.setActivity({
-              details: 'On the menu',
-              startTimestamp: startTime,
-              largeImageKey: 'logo2',
-              largeImageText: 'PokéRogue',
-              instance: true,
-            });
-          } else {
-            // Format the details string
-            const details = `${gameData.gameMode} | Wave: ${gameData.wave} | ${gameData.biome}`;
+                // Check if the user is on the menu
+                if (gameData.gameMode === 'Title') {
+                    adjustedPlayTime = 0;
+                    rpc.setActivity({
+                        details: 'On the menu',
+                        startTimestamp: startTime,
+                        largeImageKey: 'logo2',
+                        largeImageText: 'PokéRogue',
+                        instance: true,
+                    });
+                } else {
+                    // Format the details string
+                    const details = `${gameData.gameMode} | Wave: ${gameData.wave} | ${gameData.biome}`;
 
-            // Format the state string with the Pokemon list
-            let state = `Party:\n${gameData.party
+                    // Format the state string with the Pokemon list
+                    let state = `Party:\n${gameData.party
               .map((pokemon) => `Lv. ${pokemon.level} ${pokemon.name}`)
               .join('\n')}`;
-			
-			if (state.length > 128)
-			{
-				state = state.substring(0, 125) + "...";
-			}
 
-            // Update the Rich Presence
-            rpc.setActivity({
-              details: details,
-              state: state,
-              startTimestamp: startTime,
-              largeImageKey: gameData.biome ? gameData.biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2',
-              largeImageText: gameData.biome,
-              smallImageKey: 'logo',
-              smallImageText: 'PokéRogue',
-              instance: true,
+                    if (state.length > 128) {
+                        state = state.substring(0, 125) + "...";
+                    }
+
+                    if (adjustedPlayTime === 0) {
+                        sessionStartTime = Date.now();
+                        adjustedPlayTime = gameData.playTime * 1000;
+                    }
+
+                    // Update the Rich Presence
+                    rpc.setActivity({
+                        details: details,
+                        state: state,
+                        startTimestamp: sessionStartTime - adjustedPlayTime,
+                        largeImageKey: gameData.biome ? gameData.biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2',
+                        largeImageText: gameData.biome,
+                        smallImageKey: 'logo',
+                        smallImageText: 'PokéRogue',
+                        instance: true,
+                    });
+                }
+            })
+            .catch((error) => {
+                // Fallback for non-existing code
+                rpc.setActivity({
+                    startTimestamp: startTime,
+                    largeImageKey: 'logo2',
+                    largeImageText: 'PokéRogue',
+                    instance: true,
+                });
             });
-          }
-        })
-        .catch((error) => {
-          console.error('Error executing JavaScript:', error);
-        });
     }
 
     // Start updating the Rich Presence every second
     setInterval(updateDiscordPresence, 1000);
-    
-    rpc.login({ clientId }).catch(console.error);
+
+    rpc.login({
+        clientId
+    }).catch(console.error);
 
     if (isOfflineMode) {
         getGameDirectory();
@@ -749,35 +817,35 @@ async function createWindow() {
 }
 
 function applyDarkMode() {
-  if (darkMode) {
-    mainWindow.webContents.insertCSS(`
+    if (darkMode) {
+        mainWindow.webContents.insertCSS(`
       #app {
         background: black;
       }
     `);
-  } else {
-    mainWindow.webContents.insertCSS(`
+    } else {
+        mainWindow.webContents.insertCSS(`
       #app {
         background: #484050;
       }
     `);
-  }
+    }
 }
 
 function applyCursorHide() {
-  if (hideCursor) {
-    mainWindow.webContents.insertCSS(`
+    if (hideCursor) {
+        mainWindow.webContents.insertCSS(`
       #app {
         cursor: none;
       }
     `);
-  } else {
-    mainWindow.webContents.insertCSS(`
+    } else {
+        mainWindow.webContents.insertCSS(`
       #app {
         cursor: auto;
       }
     `);
-  }
+    }
 }
 
 // Create the wiki window
@@ -852,14 +920,12 @@ async function createWikiWindow() {
             document.body.appendChild(buttonsContainer);
         `);
     });
-    
+
     wikiWindow.on('close', (event) => {
         if (wikiWindow && !closeUtilityWindows) {
             event.preventDefault();
             wikiWindow.hide(); // Hide the window instead of closing it
-        }
-        else
-        {
+        } else {
             wikiWindow = null;
         }
         if (mainWindow) {
@@ -940,13 +1006,12 @@ async function createPokedexWindow() {
             document.body.appendChild(buttonsContainer);
         `);
     });
-    
+
     pokedexWindow.on('close', (event) => {
         if (pokedexWindow && !closeUtilityWindows) {
             event.preventDefault();
             pokedexWindow.hide(); // Hide the window instead of closing it
-        }
-        else {
+        } else {
             pokedexWindow = null;
         }
         if (mainWindow) {
@@ -961,7 +1026,7 @@ function createTypeChartWindow() {
         width: 670,
         height: 1000,
         icon: 'icons/PR',
-		autoHideMenuBar: true,
+        autoHideMenuBar: true,
         webPreferences: {
             nodeIntegration: true
         }
@@ -973,8 +1038,7 @@ function createTypeChartWindow() {
         if (typeChartWindow && !closeUtilityWindows) {
             event.preventDefault();
             typeChartWindow.hide(); // Hide the window instead of closing it
-        }
-        else {
+        } else {
             typeChartWindow = null;
         }
         if (mainWindow) {
@@ -1063,8 +1127,7 @@ navigation-buttons';
         if (typeCalculatorWindow && !closeUtilityWindows) {
             event.preventDefault();
             typeCalculatorWindow.hide(); // Hide the window instead of closing it
-        }
-        else {
+        } else {
             typeCalculatorWindow = null;
         }
         if (mainWindow) {
@@ -1078,7 +1141,7 @@ async function createTeamBuilderWindow() {
     teamBuilderWindow = new BrowserWindow({
         width: 1200,
         height: 800,
-		autoHideMenuBar: true,
+        autoHideMenuBar: true,
         icon: 'icons/PR',
         webPreferences: {
             nodeIntegration: false
@@ -1147,13 +1210,12 @@ async function createTeamBuilderWindow() {
             document.body.appendChild(buttonsContainer);
         `);
     });
-    
+
     teamBuilderWindow.on('close', (event) => {
         if (teamBuilderWindow && !closeUtilityWindows) {
             event.preventDefault();
             teamBuilderWindow.hide(); // Hide the window instead of closing it
-        }
-        else {
+        } else {
             teamBuilderWindow = null;
         }
         if (mainWindow) {
@@ -1167,7 +1229,7 @@ async function createSmogonWindow() {
     smogonWindow = new BrowserWindow({
         width: 1200,
         height: 800,
-		autoHideMenuBar: true,
+        autoHideMenuBar: true,
         icon: 'icons/PR',
         webPreferences: {
             nodeIntegration: false
@@ -1235,13 +1297,12 @@ async function createSmogonWindow() {
             document.body.appendChild(buttonsContainer);
         `);
     });
-    
+
     smogonWindow.on('close', (event) => {
         if (smogonWindow && !closeUtilityWindows) {
             event.preventDefault();
             smogonWindow.hide(); // Hide the window instead of closing it
-        }
-        else {
+        } else {
             smogonWindow = null;
         }
         if (mainWindow) {
@@ -1254,32 +1315,34 @@ async function createSmogonWindow() {
 app.whenReady().then(() => {
     getGameDirectory();
     gameFilesDownloaded = fs.existsSync(gameDir);
-	
+
     // Check if the --clear-cache flag is present
     if (process.argv.includes('--clear-cache')) {
         const userDataPath = app.getPath('userData');
         const settingsFilePath = path.join(userDataPath, 'settings.json');
         const localStorageDirPath = path.join(userDataPath, 'Local Storage');
-        
+
         // Get all files and directories in the user data path
         const files = fs.readdirSync(userDataPath);
-        
+
         // Delete all files and directories except for settings.json and Local Storage folder
         files.forEach(file => {
             const filePath = path.join(userDataPath, file);
             if (filePath !== settingsFilePath && filePath !== localStorageDirPath) {
                 if (fs.lstatSync(filePath).isDirectory()) {
-                    fs.rmdirSync(filePath, { recursive: true });
+                    fs.rmdirSync(filePath, {
+                        recursive: true
+                    });
                 } else {
                     fs.unlinkSync(filePath);
                 }
             }
         });
-        
+
         // Remove the --clear-cache flag from the command line arguments
         app.commandLine.removeSwitch('clear-cache');
     }
-	
+
     createWindow();
 });
 
