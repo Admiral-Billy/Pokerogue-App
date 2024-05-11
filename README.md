@@ -16,7 +16,7 @@ Ctrl+T: pkmn.help website (useful for being a type calculator and having a poked
 Ctrl+Y: Type chart  
 Ctrl+B: Team builder (useful for quickly seeing your team's resistances to various types, or planning)  
 Ctrl+W: PokeRogue wiki  
-Ctrl+D: Pokedex  
+Ctrl+D: Ydarissep's PokeDex (aka the RogueDex, huge credits to them for it existing!)
 Ctrl+S: Smogon (to get a quick reference on what movesets might be good for a Pokemon, although of course take it with a grain of salt; PokeRogue is a different beast).  
 
 # Build instructions
