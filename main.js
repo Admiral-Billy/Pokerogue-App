@@ -693,9 +693,14 @@ async function createWindow() {
             const details = `${gameData.gameMode} | Wave: ${gameData.wave} | ${gameData.biome}`;
 
             // Format the state string with the Pokemon list
-            const state = `Hover here for full Pokemon list...\n\nPokemon:\n${gameData.party
-              .map((pokemon) => `Level ${pokemon.level} ${pokemon.name}`)
+            let state = `Party:\n${gameData.party
+              .map((pokemon) => `Lv. ${pokemon.level} ${pokemon.name}`)
               .join('\n')}`;
+			
+			if (state.length > 128)
+			{
+				state = state.substring(0, 125) + "...";
+			}
 
             // Update the Rich Presence
             rpc.setActivity({
@@ -879,7 +884,7 @@ async function createPokedexWindow() {
     const pokedexWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
     pokedexWindowBlocker.enableBlockingInSession(pokedexWindow.webContents.session);
 
-    pokedexWindow.loadURL('https://pokemondb.net/pokedex/all');
+    pokedexWindow.loadURL('https://ydarissep.github.io/PokeRogue-Pokedex');
 
     // Enable back and forward navigation
     pokedexWindow.webContents.on('did-finish-load', () => {
