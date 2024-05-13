@@ -1,12 +1,11 @@
-const { ipcRenderer, remote } = require('electron');
-const { app } = remote;
+const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
 function getGameDirectory() {
   if (process.platform === 'darwin') {
     // For macOS, use the user's Documents directory
-    return path.join(require('electron').app.getPath('documents'), 'PokeRogue', 'game');
+    return path.join(require('electron').app.remote.app.getPath('documents'), 'PokeRogue', 'game');
   } else {
     // For other platforms, use the app's directory
     return path.join(__dirname, '..', 'app', 'game');
