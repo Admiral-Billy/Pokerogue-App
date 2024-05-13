@@ -130,7 +130,7 @@ function handleClick_About() {
             })
             .catch(reason => console.error("Failed to fetch latest game version with error %O", reason))
             .finally(maybeEnableButton)
-    }).then(() => window.webContents.executeJavaScript(`document.getElementById("buttonUpdate").disabled = document.getElementById("currentGameVersion").innerText === document.getElementById("latestGameVersion").innerText;`));
+    }).then(() => window.webContents.executeJavaScript(`document.getElementById("buttonGameUpdate").disabled = document.getElementById("currentGameVersion").innerText === document.getElementById("latestGameVersion").innerText;`));
 
     window.on('close', () => window = undefined);
 }
@@ -143,7 +143,7 @@ ipcMain.on('about_tab::buttonClick::gameUpdate', (_event, _arg) => {
                     .then(version => {
                         window.webContents.executeJavaScript(`
                             document.getElementById("currentGameVersion").innerText = "${version}";
-                            document.getElementById("buttonUpdate").disabled = true;
+                            document.getElementById("buttonGameUpdate").disabled = true;
                         `);
                     })
                     .catch(reason => console.error("Failed to fetch latest version with error %O", reason))
