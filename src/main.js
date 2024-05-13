@@ -102,24 +102,22 @@ async function createWindow() {
         let startTime = Date.now();
         let adjustedPlayTime = 0;
         let sessionStartTime = 0;
-
-        // Start updating the Rich Presence every second
-        let discordInterval = setInterval(updateDiscordPresence, 1000);
-
-        rpc.on('close', () => {
-            clearInterval(discordInterval);
-            console.log('Discord Rich Presence is not available!');
-            globals.discordEnabled = false;
-        })
-
-        rpc.on('ready', () => {
-            console.log('Discord Rich Presence is ready!');
-            updateDiscordPresence();
-        });
-
-        rpc.login({
-            clientId
-        }).catch(console.error);
+        
+        rpc.connect(clientId)
+            .then(() => {
+                rpc.on('ready', () => {
+                    console.log('Discord Rich Presence is ready!');
+                    updateDiscordPresence();
+                    setInterval(updateDiscordPresence, 1000);
+                });
+                rpc.login({
+                    clientId
+                }).catch(console.error);
+            })
+            .catch(error => {
+                console.log('Discord Rich Presence is not available! %O', error);
+                globals.discordEnabled = false;
+            });
 
         async function updateDiscordPresence() {
             globals.mainWindow.webContents.executeJavaScript('window.gameInfo', true)
