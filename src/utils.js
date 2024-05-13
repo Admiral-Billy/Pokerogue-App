@@ -48,7 +48,45 @@ function createPopup(opts, content) {
     return window;
 }
 
-function fetchCurrentVersionInfo() {
+function fetchCurrentAppVersionInfo() {
+    return new Promise((resolve, reject) => {
+        resolve(app.getVersion())
+    });
+}
+
+function fetchLatestAppVersionInfo(opts) {
+    opts = opts ?? {};
+    const options = {
+        headers: {
+            'User-Agent': 'Pokerogue-App',
+        },
+        ...opts
+    }
+    return new Promise((resolve, reject) => {
+        https.get(globals.latestAppReleaseUrl, options, (response) => {
+            let data = '';
+
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                try {
+                    resolve(JSON.parse(data))
+                }
+                catch (error) {
+                    console.error('Error parsing release data:', error);
+                    reject(new Error('Failed to parse the release data.'));
+                }
+            });
+        }).on('error', (error) => {
+            console.error('Error fetching latest release:', error);
+            reject(error);
+        });
+    });
+}
+
+function fetchCurrentGameVersionInfo() {
     return new Promise((resolve, reject) => {
         fs.readFile(globals.currentVersionPath, 'utf8', (err, data) => {
             if(err) {
@@ -60,7 +98,7 @@ function fetchCurrentVersionInfo() {
     });
 }
 
-function fetchLatestVersionInfo(opts) {
+function fetchLatestGameVersionInfo(opts) {
     opts = opts ?? {};
     const options = {
         headers: {
@@ -69,7 +107,7 @@ function fetchLatestVersionInfo(opts) {
         ...opts
     }
     return new Promise((resolve, reject) => {
-        https.get(globals.latestReleaseUrl, options, (response) => {
+        https.get(globals.latestGameReleaseUrl, options, (response) => {
             let data = '';
 
             response.on('data', (chunk) => {
@@ -124,7 +162,7 @@ function loadSettings() {
         globals.autoHideMenu = settings.autoHideMenu;
         globals.hideCursor = settings.hideCursor;
         globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
-        globals.mainWindow.webContents.send('offline-mode-status', globals.isOfflineMode);
+        globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
         // Set the window size, fullscreen state, and maximized state
         if (settings.windowSize) {
@@ -159,7 +197,7 @@ function resetGame() {
                 loadKeymap();
                 registerGlobalShortcuts();
             }
-            globals.mainWindow.webContents.send('offline-mode-status', globals.isOfflineMode);
+            globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
         }, 100);
     });
@@ -307,8 +345,10 @@ function applyCursorHide() {
 module.exports = { 
     createWindow, 
     createPopup, 
-    fetchCurrentVersionInfo,
-    fetchLatestVersionInfo,
+    fetchCurrentAppVersionInfo,
+    fetchLatestAppVersionInfo,
+    fetchCurrentGameVersionInfo,
+    fetchLatestGameVersionInfo,
     saveSettings,
     loadSettings,
     resetGame,

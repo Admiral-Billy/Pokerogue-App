@@ -101,7 +101,7 @@ let downloadOngoing = false;
 
 function downloadLatestGameFiles(parentWindow) {
     return new Promise((resolve, reject) => {
-        utils.fetchLatestVersionInfo()
+        utils.fetchLatestGameVersionInfo()
             .then(releaseData => {
                 const zipAsset = releaseData.assets.find((asset) => asset.name === 'game.zip');
 
@@ -114,11 +114,13 @@ function downloadLatestGameFiles(parentWindow) {
                         text: 'Downloading game files...',
                         detail: 'Preparing to download...',
                         maxValue: 100,
-                        closeOnComplete: true
+                        closeOnComplete: true,
+                        modal: true,
+                        alwaysOnTop: true,
                     };
 
                     if(parentWindow)
-                        opts.browserWindow = {parentWindow}
+                        opts.parent = parentWindow
 
                     progressBar = new ProgressBar(opts);
 
@@ -144,7 +146,7 @@ function downloadLatestGameFiles(parentWindow) {
                                     force: true
                                 });
                 
-                                progressBar.detail = `Extracting...`;
+                                progressBar.detail = `Extracting... (This may take a while)`;
                 
                                 zip.extractAllTo(globals.gameDir, true);
                 

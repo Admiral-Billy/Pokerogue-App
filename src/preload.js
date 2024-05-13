@@ -2,28 +2,19 @@ const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
-function getGameDirectory() {
-  if (process.platform === 'darwin') {
-    // For macOS, use the user's Documents directory
-    return path.join(require('electron').app.getPath('documents'), 'PokeRogue', 'game');
-  } else {
-    // For other platforms, use the app's directory
-    return path.join(__dirname, '..', 'app', 'game');
-  }
-}
-
 let isOfflineMode = false;
+let gameDir;
 
 // Listen for the offline mode status message from the main process
 ipcRenderer.on('offline-mode-status', (event, status) => {
-  isOfflineMode = status;
+  isOfflineMode = status[0];
+  gameDir = status[1]
 });
 
 // Override the global fetch function when in offline mode to fix broken move issues (and more?)
 const originalFetch = window.fetch;
 window.fetch = async (url, options) => {
   if (isOfflineMode && (url.startsWith('./') || url.startsWith('../'))) {
-    const gameDir = getGameDirectory();
     const filePath = path.join(gameDir, url.split('?')[0]);
     console.log("Fetching file:", filePath);
 
