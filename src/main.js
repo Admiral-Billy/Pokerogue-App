@@ -21,6 +21,7 @@ async function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
+            enableRemoteMudle: true,
             preload: path.join(__dirname, 'preload.js'),
             persistSessionStorage: true,
             persistUserDataDirName: 'Pokerogue'

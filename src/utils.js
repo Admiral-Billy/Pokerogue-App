@@ -124,7 +124,7 @@ function loadSettings() {
         globals.autoHideMenu = settings.autoHideMenu;
         globals.hideCursor = settings.hideCursor;
         globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
-        globals.mainWindow.webContents.send('offline-mode-status', globals.isOfflineMode);
+        globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
         // Set the window size, fullscreen state, and maximized state
         if (settings.windowSize) {
@@ -159,7 +159,7 @@ function resetGame() {
                 loadKeymap();
                 registerGlobalShortcuts();
             }
-            globals.mainWindow.webContents.send('offline-mode-status', globals.isOfflineMode);
+            globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
         }, 100);
     });

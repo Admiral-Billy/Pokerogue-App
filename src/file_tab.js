@@ -146,7 +146,7 @@ function downloadLatestGameFiles(parentWindow) {
                                     force: true
                                 });
                 
-                                progressBar.detail = `Extracting...`;
+                                progressBar.detail = `Extracting... (This may take a while)`;
                 
                                 zip.extractAllTo(globals.gameDir, true);
                 
