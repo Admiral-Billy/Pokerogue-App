@@ -80,7 +80,7 @@ function loadSettings() {
         autoHideMenu = settings.autoHideMenu;
         hideCursor = settings.hideCursor;
         isOfflineMode = gameFilesDownloaded ? settings.isOfflineMode : false;
-        mainWindow.webContents.send('offline-mode-status', isOfflineMode);
+        mainWindow.webContents.send('offline-mode-status', [isOfflineMode, gameDir]);
 
         // Set the window size, fullscreen state, and maximized state
         if (settings.windowSize) {
@@ -131,7 +131,7 @@ function resetGame() {
                 loadKeymap();
                 registerGlobalShortcuts();
             }
-            mainWindow.webContents.send('offline-mode-status', isOfflineMode);
+            mainWindow.webContents.send('offline-mode-status', [isOfflineMode, gameDir]);
 
         }, 100);
     });
@@ -597,7 +597,7 @@ function downloadLatestGameFiles() {
                                     force: true
                                 });
 
-                                progressBar.detail = `Extracting...`;
+                                progressBar.detail = `Extracting... (This may take a while)`;
 
                                 zip.extractAllTo(gameDir, true);
 
