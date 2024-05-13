@@ -20,8 +20,8 @@ let gameDir = (function() {
         // For macOS, use the user's Documents directory
         return path.join(app.getPath('documents'), 'PokeRogue', 'game');
     } else {
-        // For other platforms, use the app's directory
-        return path.join(__dirname, '..', 'app', 'game');
+        // For other platforms, use the game folder in the app's resource directory
+        return path.join(__dirname, '../..', 'game');
     }
 })();
 let currentVersionPath = path.join(gameDir, 'currentVersion.txt')
