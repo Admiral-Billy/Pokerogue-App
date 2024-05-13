@@ -46,12 +46,12 @@ function handleClick_About() {
         </script>
         <table class="table-outline">
             <tr>
-                <td>Current Version</td>
-                <td id="currentVersion"></td>
+                <td>Current Game Version</td>
+                <td id="currentGameVersion"></td>
             </tr>
             <tr>
-                <td>Latest Version</td>
-                <td id="latestVersion"></td>
+                <td>Latest Game Version</td>
+                <td id="latestGameVersion"></td>
             </tr>
             <tr>
                 <td>Author</td>
@@ -62,13 +62,14 @@ function handleClick_About() {
                 <td><a href="https://github.com/Admiral-Billy/Pokerogue-App">Pokerogue-App</a></td>
             </tr>
             <tr>
-                <td colspan=2 style="text-align: center;"><input id="buttonUpdate" type="button" onclick="buttonClick_Update()" value="Update App" disabled/></td>
+                <td colspan=2 style="text-align: center;"><input id="buttonUpdate" type="button" onclick="buttonClick_Update()" value="Update Game Files" disabled/></td>
             </tr>
         </table>
     `;
     window = utils.createPopup({
         title: "About",
-        height: 110
+        width: 350,
+        height: 140
     }, content);
 
     const updateVer = (elemId, ver) => window.webContents.executeJavaScript(`document.getElementById("${elemId}").innerText = "${ver}"`);
@@ -80,19 +81,19 @@ function handleClick_About() {
             if(n >= 2)
                 resolve();
         }
-        utils.fetchCurrentVersionInfo()
+        utils.fetchCurrentGameVersionInfo()
             .then(version => {
-                updateVer("currentVersion", version);
+                updateVer("currentGameVersion", version);
             })
             .catch(reason => console.error("Failed to fetch current version with error %O", reason))
             .finally(maybeEnableButton);
-        utils.fetchLatestVersionInfo()
+        utils.fetchLatestGameVersionInfo()
             .then(releaseData => {
-                updateVer("latestVersion", releaseData.tag_name);
+                updateVer("latestGameVersion", releaseData.tag_name);
             })
             .catch(reason => console.error("Failed to fetch latest version with error %O", reason))
             .finally(maybeEnableButton)
-    }).then(() => window.webContents.executeJavaScript(`document.getElementById("buttonUpdate").disabled = document.getElementById("currentVersion").innerText === document.getElementById("latestVersion").innerText;`));
+    }).then(() => window.webContents.executeJavaScript(`document.getElementById("buttonUpdate").disabled = document.getElementById("currentGameVersion").innerText === document.getElementById("latestGameVersion").innerText;`));
 
     window.on('close', () => window = undefined);
 }
@@ -101,10 +102,10 @@ ipcMain.on('about_tab::buttonClick::update', (_event, _arg) => {
     downloadLatestGameFiles(window)
         .then(() => {
             if(window)
-                utils.fetchCurrentVersionInfo()
+                utils.fetchCurrentGameVersionInfo()
                     .then(version => {
                         window.webContents.executeJavaScript(`
-                            document.getElementById("currentVersion").innerText = "${version}";
+                            document.getElementById("currentGameVersion").innerText = "${version}";
                             document.getElementById("buttonUpdate").disabled = true;
                         `);
                     })

@@ -48,7 +48,7 @@ function createPopup(opts, content) {
     return window;
 }
 
-function fetchCurrentVersionInfo() {
+function fetchCurrentGameVersionInfo() {
     return new Promise((resolve, reject) => {
         fs.readFile(globals.currentVersionPath, 'utf8', (err, data) => {
             if(err) {
@@ -60,7 +60,7 @@ function fetchCurrentVersionInfo() {
     });
 }
 
-function fetchLatestVersionInfo(opts) {
+function fetchLatestGameVersionInfo(opts) {
     opts = opts ?? {};
     const options = {
         headers: {
@@ -307,8 +307,8 @@ function applyCursorHide() {
 module.exports = { 
     createWindow, 
     createPopup, 
-    fetchCurrentVersionInfo,
-    fetchLatestVersionInfo,
+    fetchCurrentGameVersionInfo,
+    fetchLatestGameVersionInfo,
     saveSettings,
     loadSettings,
     resetGame,
