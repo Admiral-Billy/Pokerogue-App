@@ -1,7 +1,7 @@
 const utils = require("./utils");
 const globals = require("./globals");
 
-const tabData = {
+const getTabData = () => { return {
     label: 'Settings',
     submenu: [{
             label: 'Offline mode (uses separate save)',
@@ -72,6 +72,6 @@ const tabData = {
             },
         }
     ]
-};
+}};
 
-module.exports = { tabData }
+module.exports.getTabData = getTabData;

@@ -1,4 +1,4 @@
-const tabData = {
+const getTabData = () => { return {
     label: "Edit",
     submenu: [{
             label: "Undo",
@@ -34,6 +34,6 @@ const tabData = {
             selector: "selectAll:"
         }
     ]
-};
+}};
 
-module.exports = { tabData }
+module.exports.getTabData = getTabData;

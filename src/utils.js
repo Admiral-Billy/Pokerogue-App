@@ -9,6 +9,12 @@ const {
 } = require('electron');
 const globals = require("./globals");
 
+const { getTabData: getAboutTabData } = require("./about_tab");
+const { getTabData: getSettingsTabData} = require("./settings_tab");
+const { getTabData: getUtilitiesTabData} = require("./utilities_tab");
+const { getTabData: getEditTabData} = require("./edit_tab");
+const { getTabData: getFileTabData } = require("./file_tab");
+
 function createWindow(opts) {
     const { BrowserWindow } = require('electron');
     opts = opts ?? {};
@@ -245,7 +251,27 @@ function downloadFile(url, outputPath, onBytesReceived, opts) {
 }
 
 function updateMenu() {
-    Menu.setApplicationMenu(require("./tabmenu").createMenu());
+    const tabs = [
+        getAboutTabData(),
+        getSettingsTabData(),
+        getUtilitiesTabData(),
+        getEditTabData(),
+        getFileTabData(),
+        {
+            label: "GAME DOWNLOADED TOGGLE",
+            click: () => {
+                try {
+                    globals.gameFilesDownloaded = !globals.gameFilesDownloaded
+                    setup();
+                    console.log("Ran successfully")
+                } catch (err) {
+                    console.log("Failed to run %O", err);
+                }
+            }
+        }
+    ];
+    const menu = Menu.buildFromTemplate(tabs);
+    Menu.setApplicationMenu(menu);
 }
 
 function loadKeymap() {
@@ -342,21 +368,19 @@ function applyCursorHide() {
     }
 }
 
-module.exports = { 
-    createWindow, 
-    createPopup, 
-    fetchCurrentAppVersionInfo,
-    fetchLatestAppVersionInfo,
-    fetchCurrentGameVersionInfo,
-    fetchLatestGameVersionInfo,
-    saveSettings,
-    loadSettings,
-    resetGame,
-    downloadFile,
-    updateMenu,
-    loadKeymap,
-    registerGlobalShortcuts,
-    unregisterGlobalShortcuts,
-    applyDarkMode,
-    applyCursorHide
-}
+module.exports.createWindow = createWindow; 
+module.exports.createPopup = createPopup; 
+module.exports.fetchCurrentAppVersionInfo = fetchCurrentAppVersionInfo;
+module.exports.fetchLatestAppVersionInfo = fetchLatestAppVersionInfo;
+module.exports.fetchCurrentGameVersionInfo = fetchCurrentGameVersionInfo;
+module.exports.fetchLatestGameVersionInfo = fetchLatestGameVersionInfo;
+module.exports.saveSettings = saveSettings;
+module.exports.loadSettings = loadSettings;
+module.exports.resetGame = resetGame;
+module.exports.downloadFile = downloadFile;
+module.exports.updateMenu = updateMenu;
+module.exports.loadKeymap = loadKeymap;
+module.exports.registerGlobalShortcuts = registerGlobalShortcuts;
+module.exports.unregisterGlobalShortcuts = unregisterGlobalShortcuts;
+module.exports.applyDarkMode = applyDarkMode;
+module.exports.applyCursorHide = applyCursorHide;

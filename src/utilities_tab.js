@@ -5,7 +5,7 @@ const fetch = require('cross-fetch');
 const utils = require("./utils");
 const globals = require("./globals");
 
-const tabData = {
+const getTabData = () => { return {
     label: 'Utilities',
     submenu: [{
             label: 'Wiki',
@@ -603,6 +603,6 @@ async function createSmogonWindow() {
             globals.mainWindow.focus();
         }
     });
-}
+}}
 
-module.exports = { tabData }
+module.exports.getTabData = getTabData;

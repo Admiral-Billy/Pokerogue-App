@@ -1,16 +1,14 @@
 const globals = require("./globals");
 const {
     app,
-    Menu,
 } = require('electron');
 const AdmZip = require('adm-zip');
-const https = require('https');
 const ProgressBar = require('electron-progressbar');
 const path = require('path');
 const fs = require('fs');
 const utils = require("./utils");
 
-const tabData = {
+const getTabData = () => { return {
     label: 'File',
     submenu: [{
             label: 'Toggle fullscreen',
@@ -50,7 +48,7 @@ const tabData = {
             click: handleClick_Quit
         }
     ]
-};
+}};
 
 function handleClick_ToggleFullscreen() {
     globals.mainWindow.setFullScreen(!globals.mainWindow.isFullScreen());
@@ -70,7 +68,7 @@ function handleClick_ReloadAndClear() {
 
 async function handleClick_DownloadLatest() {
     try {
-        await downloadLatestGameFiles();
+        await downloadLatestGameFiles(globals.mainWindow);
         utils.saveSettings();
     } catch (error) {
         console.error('Failed to download the latest game files:', error);
@@ -179,4 +177,5 @@ function downloadLatestGameFiles(parentWindow) {
     });
 }
 
-module.exports = { tabData, downloadLatestGameFiles };
+module.exports.getTabData = getTabData;
+module.exports.downloadLatestGameFiles = downloadLatestGameFiles;

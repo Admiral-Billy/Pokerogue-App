@@ -2,10 +2,10 @@ const utils = require("./utils");
 const {downloadLatestGameFiles} = require("./file_tab")
 const { ipcMain } = require('electron');
 
-const tabData = {
+const getTabData = () => { return {
     label: "About",
     click: handleClick_About
-};
+}};
 
 let window;
 
@@ -155,4 +155,4 @@ ipcMain.on('about_tab::buttonClick::appUpdate', (_event, _arg) => {
     // TODO: Implement downloading the app
 });
 
-module.exports = { tabData };
+module.exports.getTabData = getTabData;

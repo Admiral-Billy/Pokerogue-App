@@ -10,6 +10,8 @@ const DiscordRPC = require('discord-rpc');
 const globals = require("./globals");
 const utils = require("./utils");
 
+utils.updateMenu();
+
 // Create the main application window
 async function createWindow() {
     globals.mainWindow = new BrowserWindow({

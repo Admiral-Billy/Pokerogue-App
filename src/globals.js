@@ -1,4 +1,5 @@
 const path = require('path');
+const { EventEmitter } = require('stream');
 
 let mainWindow;
 let wikiWindow;
@@ -34,26 +35,24 @@ let httpOptions = {
 };
 let discordEnabled = true;
 
-module.exports = {
-    mainWindow,
-    wikiWindow,
-    pokedexWindow,
-    typeChartWindow,
-    typeCalculatorWindow,
-    teamBuilderWindow,
-    smogonWindow,
-    isOfflineMode,
-    gameFilesDownloaded,
-    closeUtilityWindows,
-    darkMode,
-    keymap,
-    useModifiedHotkeys,
-    autoHideMenu,
-    hideCursor,
-    gameDir,
-    currentVersionPath,
-    latestAppReleaseUrl,
-    latestGameReleaseUrl,
-    httpOptions,
-    discordEnabled
-}
+module.exports.mainWindow = mainWindow;
+module.exports.wikiWindow = wikiWindow;
+module.exports.pokedexWindow = pokedexWindow;
+module.exports.typeChartWindow = typeChartWindow;
+module.exports.typeCalculatorWindow = typeCalculatorWindow;
+module.exports.teamBuilderWindow = teamBuilderWindow;
+module.exports.smogonWindow = smogonWindow;
+module.exports.isOfflineMode = isOfflineMode;
+module.exports.gameFilesDownloaded = gameFilesDownloaded;
+module.exports.closeUtilityWindows = closeUtilityWindows;
+module.exports.darkMode = darkMode;
+module.exports.keymap = keymap;
+module.exports.useModifiedHotkeys = useModifiedHotkeys;
+module.exports.autoHideMenu = autoHideMenu;
+module.exports.hideCursor = hideCursor;
+module.exports.gameDir = gameDir;
+module.exports.currentVersionPath = currentVersionPath;
+module.exports.latestAppReleaseUrl = latestAppReleaseUrl;
+module.exports.latestGameReleaseUrl = latestGameReleaseUrl;
+module.exports.httpOptions = httpOptions;
+module.exports.discordEnabled = discordEnabled;
