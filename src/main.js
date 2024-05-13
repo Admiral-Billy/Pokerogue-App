@@ -92,87 +92,93 @@ async function createWindow() {
         app.quit();
     });
 
-    const clientId = '1232165629046292551';
-    DiscordRPC.register(clientId);
-    const rpc = new DiscordRPC.Client({
-        transport: 'ipc'
-    });
+    if(globals.discordEnabled) {
+        const clientId = '1232165629046292551';
+        DiscordRPC.register(clientId);
+        const rpc = new DiscordRPC.Client({
+            transport: 'ipc'
+        });
 
-    rpc.on('ready', () => {
-        console.log('Discord Rich Presence is ready!');
-        updateDiscordPresence();
-    });
+        let startTime = Date.now();
+        let adjustedPlayTime = 0;
+        let sessionStartTime = 0;
 
-    let startTime = Date.now();
-    let adjustedPlayTime = 0;
-    let sessionStartTime = 0;
+        // Start updating the Rich Presence every second
+        let discordInterval = setInterval(updateDiscordPresence, 1000);
 
-    async function updateDiscordPresence() {
-        globals.mainWindow.webContents.executeJavaScript('window.gameInfo', true)
-            .then((gameInfo) => {
-                // Process the gameInfo data
-                let gameData = gameInfo;
+        rpc.on('close', () => {
+            clearInterval(discordInterval);
+            console.log('Discord Rich Presence is not available!');
+            globals.discordEnabled = false;
+        })
 
-                // Check if the user is on the menu
-                if (gameData.gameMode === 'Title') {
-                    adjustedPlayTime = 0;
+        rpc.on('ready', () => {
+            console.log('Discord Rich Presence is ready!');
+            updateDiscordPresence();
+        });
+
+        rpc.login({
+            clientId
+        }).catch(console.error);
+
+        async function updateDiscordPresence() {
+            globals.mainWindow.webContents.executeJavaScript('window.gameInfo', true)
+                .then((gameInfo) => {
+                    // Process the gameInfo data
+                    let gameData = gameInfo;
+
+                    // Check if the user is on the menu
+                    if (gameData.gameMode === 'Title') {
+                        adjustedPlayTime = 0;
+                        rpc.setActivity({
+                            details: 'On the menu',
+                            startTimestamp: startTime,
+                            largeImageKey: 'logo2',
+                            largeImageText: 'PokéRogue',
+                            instance: true,
+                        });
+                    } else {
+                        // Format the details string
+                        const details = `${gameData.gameMode} | Wave: ${gameData.wave} | ${gameData.biome}`;
+
+                        // Format the state string with the Pokemon list
+                        let state = `Party:\n${gameData.party
+                .map((pokemon) => `Lv. ${pokemon.level} ${pokemon.name}`)
+                .join('\n')}`;
+
+                        if (state.length > 128) {
+                            state = state.substring(0, 125) + "...";
+                        }
+
+                        if (adjustedPlayTime === 0) {
+                            sessionStartTime = Date.now();
+                            adjustedPlayTime = gameData.playTime * 1000;
+                        }
+
+                        // Update the Rich Presence
+                        rpc.setActivity({
+                            details: details,
+                            state: state,
+                            startTimestamp: sessionStartTime - adjustedPlayTime,
+                            largeImageKey: gameData.biome ? gameData.biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2',
+                            largeImageText: gameData.biome,
+                            smallImageKey: 'logo',
+                            smallImageText: 'PokéRogue',
+                            instance: true,
+                        });
+                    }
+                })
+                .catch((error) => {
+                    // Fallback for non-existing code
                     rpc.setActivity({
-                        details: 'On the menu',
                         startTimestamp: startTime,
                         largeImageKey: 'logo2',
                         largeImageText: 'PokéRogue',
                         instance: true,
-                    }).catch(_reason => {
-                        // TODO: catch these errors nicely
                     });
-                } else {
-                    // Format the details string
-                    const details = `${gameData.gameMode} | Wave: ${gameData.wave} | ${gameData.biome}`;
-
-                    // Format the state string with the Pokemon list
-                    let state = `Party:\n${gameData.party
-              .map((pokemon) => `Lv. ${pokemon.level} ${pokemon.name}`)
-              .join('\n')}`;
-
-                    if (state.length > 128) {
-                        state = state.substring(0, 125) + "...";
-                    }
-
-                    if (adjustedPlayTime === 0) {
-                        sessionStartTime = Date.now();
-                        adjustedPlayTime = gameData.playTime * 1000;
-                    }
-
-                    // Update the Rich Presence
-                    rpc.setActivity({
-                        details: details,
-                        state: state,
-                        startTimestamp: sessionStartTime - adjustedPlayTime,
-                        largeImageKey: gameData.biome ? gameData.biome.toLowerCase().replace(/\s/g, '_') + '_discord' : 'logo2',
-                        largeImageText: gameData.biome,
-                        smallImageKey: 'logo',
-                        smallImageText: 'PokéRogue',
-                        instance: true,
-                    });
-                }
-            })
-            .catch((error) => {
-                // Fallback for non-existing code
-                rpc.setActivity({
-                    startTimestamp: startTime,
-                    largeImageKey: 'logo2',
-                    largeImageText: 'PokéRogue',
-                    instance: true,
                 });
-            });
+        }
     }
-
-    // Start updating the Rich Presence every second
-    setInterval(updateDiscordPresence, 1000);
-
-    rpc.login({
-        clientId
-    }).catch(console.error);
 
     if (globals.isOfflineMode) {
         globals.mainWindow.loadFile(path.join(globals.gameDir, 'index.html'));

@@ -31,6 +31,7 @@ let httpOptions = {
         'User-Agent': 'Pokerogue-App',
     }
 };
+let discordEnabled = true;
 
 module.exports = {
     mainWindow,
@@ -51,5 +52,6 @@ module.exports = {
     gameDir,
     currentVersionPath,
     latestReleaseUrl,
-    httpOptions
+    httpOptions,
+    discordEnabled
 }
