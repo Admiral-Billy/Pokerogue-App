@@ -40,11 +40,22 @@ function handleClick_About() {
             }
         </style>
         <script>
-            function buttonClick_Update() {
-                ipcRenderer.send('about_tab::buttonClick::update');
+            function buttonClick_AppUpdate() {
+                ipcRenderer.send('about_tab::buttonClick::appUpdate');
+            }
+            function buttonClick_GameUpdate() {
+                ipcRenderer.send('about_tab::buttonClick::gameUpdate');
             }
         </script>
         <table class="table-outline">
+            <tr>
+                <td>Current App Version</td>
+                <td id="currentAppVersion"></td>
+            </tr>
+            <tr>
+                <td>Latest App Version</td>
+                <td id="latestAppVersion"></td>
+            </tr>
             <tr>
                 <td>Current Game Version</td>
                 <td id="currentGameVersion"></td>
@@ -62,7 +73,11 @@ function handleClick_About() {
                 <td><a href="https://github.com/Admiral-Billy/Pokerogue-App">Pokerogue-App</a></td>
             </tr>
             <tr>
-                <td colspan=2 style="text-align: center;"><input id="buttonUpdate" type="button" onclick="buttonClick_Update()" value="Update Game Files" disabled/></td>
+                <td style="text-align: center;">
+                    <!-- Until we implement updating the app, we'll leave this commented out -->
+                    <!-- <input id="buttonAppUpdate" type="button" onclick="buttonClick_AppUpdate()" value="Update App Files" disabled/> -->
+                </td>
+                <td style="text-align: center;"><input id="buttonGameUpdate" type="button" onclick="buttonClick_GameUpdate()" value="Update Game Files" disabled/></td>
             </tr>
         </table>
     `;
@@ -73,6 +88,28 @@ function handleClick_About() {
     }, content);
 
     const updateVer = (elemId, ver) => window.webContents.executeJavaScript(`document.getElementById("${elemId}").innerText = "${ver}"`);
+
+    
+    new Promise((resolve, _reject) => {
+        let n = 0;
+        function maybeEnableButton() {
+            n++;
+            if(n >= 2)
+                resolve();
+        }
+        utils.fetchCurrentAppVersionInfo()
+            .then(version => {
+                updateVer("currentAppVersion", version);
+            })
+            .catch(reason => console.error("Failed to fetch current app version with error %O", reason))
+            .finally(maybeEnableButton)
+        utils.fetchLatestAppVersionInfo()
+            .then(releaseData => {
+                updateVer("latestAppVersion", releaseData.tag_name.replace(/[^\d.]/g, ""));
+            })
+            .catch(reason => console.error("Failed to fetch latest app version with error %O", reason))
+            .finally(maybeEnableButton)
+    }).then(() => window.webContents.executeJavaScript(`document.getElementById("buttonAppUpdate").disabled = document.getElementById("currentAppVersion").innerText === document.getElementById("latestAppVersion").innerText;`));
 
     new Promise((resolve, _reject) => {
         let n = 0;
@@ -85,20 +122,20 @@ function handleClick_About() {
             .then(version => {
                 updateVer("currentGameVersion", version);
             })
-            .catch(reason => console.error("Failed to fetch current version with error %O", reason))
+            .catch(reason => console.error("Failed to fetch current game version with error %O", reason))
             .finally(maybeEnableButton);
         utils.fetchLatestGameVersionInfo()
             .then(releaseData => {
                 updateVer("latestGameVersion", releaseData.tag_name);
             })
-            .catch(reason => console.error("Failed to fetch latest version with error %O", reason))
+            .catch(reason => console.error("Failed to fetch latest game version with error %O", reason))
             .finally(maybeEnableButton)
     }).then(() => window.webContents.executeJavaScript(`document.getElementById("buttonUpdate").disabled = document.getElementById("currentGameVersion").innerText === document.getElementById("latestGameVersion").innerText;`));
 
     window.on('close', () => window = undefined);
 }
 
-ipcMain.on('about_tab::buttonClick::update', (_event, _arg) => {
+ipcMain.on('about_tab::buttonClick::gameUpdate', (_event, _arg) => {
     downloadLatestGameFiles(window)
         .then(() => {
             if(window)
@@ -112,6 +149,10 @@ ipcMain.on('about_tab::buttonClick::update', (_event, _arg) => {
                     .catch(reason => console.error("Failed to fetch latest version with error %O", reason))
         })
         .catch(reason => console.error("Failed to download latest version with error %O", reason))
+});
+
+ipcMain.on('about_tab::buttonClick::appUpdate', (_event, _arg) => {
+    // TODO: Implement downloading the app
 });
 
 module.exports = { tabData };

@@ -48,6 +48,44 @@ function createPopup(opts, content) {
     return window;
 }
 
+function fetchCurrentAppVersionInfo() {
+    return new Promise((resolve, reject) => {
+        resolve(app.getVersion())
+    });
+}
+
+function fetchLatestAppVersionInfo(opts) {
+    opts = opts ?? {};
+    const options = {
+        headers: {
+            'User-Agent': 'Pokerogue-App',
+        },
+        ...opts
+    }
+    return new Promise((resolve, reject) => {
+        https.get(globals.latestAppReleaseUrl, options, (response) => {
+            let data = '';
+
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                try {
+                    resolve(JSON.parse(data))
+                }
+                catch (error) {
+                    console.error('Error parsing release data:', error);
+                    reject(new Error('Failed to parse the release data.'));
+                }
+            });
+        }).on('error', (error) => {
+            console.error('Error fetching latest release:', error);
+            reject(error);
+        });
+    });
+}
+
 function fetchCurrentGameVersionInfo() {
     return new Promise((resolve, reject) => {
         fs.readFile(globals.currentVersionPath, 'utf8', (err, data) => {
@@ -69,7 +107,7 @@ function fetchLatestGameVersionInfo(opts) {
         ...opts
     }
     return new Promise((resolve, reject) => {
-        https.get(globals.latestReleaseUrl, options, (response) => {
+        https.get(globals.latestGameReleaseUrl, options, (response) => {
             let data = '';
 
             response.on('data', (chunk) => {
@@ -307,6 +345,8 @@ function applyCursorHide() {
 module.exports = { 
     createWindow, 
     createPopup, 
+    fetchCurrentAppVersionInfo,
+    fetchLatestAppVersionInfo,
     fetchCurrentGameVersionInfo,
     fetchLatestGameVersionInfo,
     saveSettings,

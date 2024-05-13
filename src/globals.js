@@ -25,7 +25,8 @@ let gameDir = (function() {
     }
 })();
 let currentVersionPath = path.join(gameDir, 'currentVersion.txt')
-let latestReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/pokerogue/releases/latest';
+let latestAppReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/Pokerogue-App/releases/latest';
+let latestGameReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/pokerogue/releases/latest';
 let httpOptions = {
     headers: {
         'User-Agent': 'Pokerogue-App',
@@ -51,7 +52,8 @@ module.exports = {
     hideCursor,
     gameDir,
     currentVersionPath,
-    latestReleaseUrl,
+    latestAppReleaseUrl,
+    latestGameReleaseUrl,
     httpOptions,
     discordEnabled
 }
