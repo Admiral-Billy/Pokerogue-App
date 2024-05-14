@@ -265,12 +265,12 @@ function updateMenu() {
 function loadKeymap() {
     if (globals.useModifiedHotkeys) {
         try {
-            const keymapPath = path.join(process.resourcesPath, 'globals.keymap.json');
+            const keymapPath = path.join(process.resourcesPath, 'keymap.json');
             const keymapData = fs.readFileSync(keymapPath, 'utf-8');
             globals.keymap = JSON.parse(keymapData);
-            console.log('Loaded globals.keymap:', globals.keymap);
+            console.log('Loaded keymap:', globals.keymap);
         } catch (error) {
-            console.error('Failed to load globals.keymap:', error);
+            console.error('Failed to load keymap:', error);
         }
     } else {
         globals.keymap = {};
