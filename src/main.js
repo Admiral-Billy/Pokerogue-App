@@ -129,7 +129,7 @@ async function createWindow() {
 
                     // Check if the user is on the menu
                     if (gameData.gameMode === 'Title') {
-                        adjustedPlayTime = 0;
+                        adjustedPlayTime = -1;
                         rpc.setActivity({
                             details: 'On the menu',
                             startTimestamp: startTime,
@@ -150,7 +150,7 @@ async function createWindow() {
                             state = state.substring(0, 125) + "...";
                         }
 
-                        if (adjustedPlayTime === 0) {
+                        if (adjustedPlayTime === -1) {
                             sessionStartTime = Date.now();
                             adjustedPlayTime = gameData.playTime * 1000;
                         }
