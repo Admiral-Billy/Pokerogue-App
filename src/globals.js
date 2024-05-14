@@ -1,4 +1,5 @@
 const path = require('path');
+const app = require('electron');
 const { EventEmitter } = require('stream');
 
 let mainWindow;
