@@ -1,5 +1,4 @@
 const path = require('path');
-const app = require('electron');
 const { EventEmitter } = require('stream');
 
 let mainWindow;
@@ -17,6 +16,7 @@ let keymap = {};
 let useModifiedHotkeys = false;
 let autoHideMenu = false;
 let hideCursor = false;
+let app;
 let gameDir = (function() {
     if (process.platform === 'darwin') {
         // For macOS, use the user's Documents directory

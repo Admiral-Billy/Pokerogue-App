@@ -23,7 +23,7 @@ async function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
-            enableRemoteMudle: true,
+            enableRemoteModule: true,
             preload: path.join(__dirname, 'preload.js'),
             persistSessionStorage: true,
             persistUserDataDirName: 'Pokerogue'
@@ -204,6 +204,7 @@ async function createWindow() {
 
 // Handle app events
 app.whenReady().then(() => {
+    globals.app = app;
     globals.gameFilesDownloaded = fs.existsSync(globals.gameDir);
 
     // Check if the --clear-cache flag is present
