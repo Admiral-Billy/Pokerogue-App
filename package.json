@@ -1,6 +1,6 @@
 {
   "name": "PokeRogue",
-  "version": "2.2.3",
+  "version": "2.3.0",
   "description": "",
   "main": "src/main.js",
   "scripts": {
