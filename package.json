@@ -1,8 +1,8 @@
 {
   "name": "PokeRogue",
-  "version": "2.2.1",
+  "version": "2.2.3",
   "description": "",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^29.2.0",
+    "electron": "^29.3.3",
     "electron-builder": "^24.13.3"
   },
   "dependencies": {
@@ -46,7 +46,7 @@
       "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
       "!**/{appveyor.yml,.travis.yml,circle.yml}",
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
-	  "preload.js"
+      "preload.js"
     ],
     "extraResources": [
       "keymap.json"
