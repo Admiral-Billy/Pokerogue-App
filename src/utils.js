@@ -252,23 +252,11 @@ function downloadFile(url, outputPath, onBytesReceived, opts) {
 
 function updateMenu() {
     const tabs = [
-        getAboutTabData(),
+        getFileTabData(),
         getSettingsTabData(),
         getUtilitiesTabData(),
         getEditTabData(),
-        getFileTabData(),
-        {
-            label: "GAME DOWNLOADED TOGGLE",
-            click: () => {
-                try {
-                    globals.gameFilesDownloaded = !globals.gameFilesDownloaded
-                    setup();
-                    console.log("Ran successfully")
-                } catch (err) {
-                    console.log("Failed to run %O", err);
-                }
-            }
-        }
+        getAboutTabData()
     ];
     const menu = Menu.buildFromTemplate(tabs);
     Menu.setApplicationMenu(menu);
