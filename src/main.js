@@ -204,8 +204,15 @@ async function createWindow() {
 
 // Handle app events
 app.whenReady().then(() => {
-    globals.app = app;
+    if (process.platform === 'darwin') {
+        // For macOS, use the user's Documents directory
+        globals.gameDir = path.join(app.getPath('documents'), 'PokeRogue', 'game');
+    } else {
+        // For other platforms, use the game folder in the app's resource directory
+        globals.gameDir = path.join(__dirname, '../..', 'game');
+    }
     globals.gameFilesDownloaded = fs.existsSync(globals.gameDir);
+    globals.currentVersionPath = path.join(globals.gameDir, 'currentVersion.txt');
 
     // Check if the --clear-cache flag is present
     if (process.argv.includes('--clear-cache')) {

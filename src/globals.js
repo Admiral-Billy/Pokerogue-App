@@ -16,17 +16,8 @@ let keymap = {};
 let useModifiedHotkeys = false;
 let autoHideMenu = false;
 let hideCursor = false;
-let app;
-let gameDir = (function() {
-    if (process.platform === 'darwin') {
-        // For macOS, use the user's Documents directory
-        return path.join(app.getPath('documents'), 'PokeRogue', 'game');
-    } else {
-        // For other platforms, use the game folder in the app's resource directory
-        return path.join(__dirname, '../..', 'game');
-    }
-})();
-let currentVersionPath = path.join(gameDir, 'currentVersion.txt')
+let gameDir;
+let currentVersionPath;
 let latestAppReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/Pokerogue-App/releases/latest';
 let latestGameReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/pokerogue/releases/latest';
 let httpOptions = {
