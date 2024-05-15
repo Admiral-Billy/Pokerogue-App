@@ -84,7 +84,7 @@ function handleClick_About() {
     window = utils.createPopup({
         title: "About",
         width: 350,
-        height: 140
+        height: 170
     }, content);
 
     const updateVer = (elemId, ver) => window.webContents.executeJavaScript(`document.getElementById("${elemId}").innerText = "${ver}"`);
