@@ -20,10 +20,8 @@ const getTabData = () => { return {
             checked: globals.autoHideMenu,
             click: () => {
                 globals.autoHideMenu = !globals.autoHideMenu;
-                globals.mainWindow.autoHideMenuBar = globals.autoHideMenu;
-                if (!globals.autoHideMenu) {
-                    globals.mainWindow.setMenuBarVisibility(true);
-                }
+                globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
+                globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);
                 utils.saveSettings();
             },
         },

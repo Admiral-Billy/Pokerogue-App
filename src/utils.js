@@ -181,9 +181,8 @@ function loadSettings() {
             globals.mainWindow.maximize();
         }
         // Apply the auto-hide menu setting
-        if (globals.autoHideMenu) {
-            globals.mainWindow.autoHideMenuBar = globals.autoHideMenu;
-        }
+        globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
+        globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);
     }
 }
 

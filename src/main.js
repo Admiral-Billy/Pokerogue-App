@@ -17,7 +17,8 @@ async function createWindow() {
     globals.mainWindow = new BrowserWindow({
         width: 1280,
         height: 749,
-        autoHideMenuBar: false,
+        autoHideMenuBar: true,
+        menuBarVisible: false,
         icon: 'icons/PR',
         show: false,
         webPreferences: {
