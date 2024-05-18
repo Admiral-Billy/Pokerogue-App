@@ -79,7 +79,7 @@ function handleClick_About() {
                 </td>
                 <!-- Below is the old logic, just in case -->
                 <!-- <td style="text-align: center;"><input id="buttonGameUpdate" type="button" onclick="buttonClick_GameUpdate()" value="Update game files" disabled/></td> -->
-                <td style="text-align: center;"><input id="buttonGameUpdate" type="button" onclick="buttonClick_GameUpdate()" value="Download Futaba's Mod!"/></td>
+                <td style="text-align: center;"><input id="buttonGameUpdate" type="button" onclick="buttonClick_GameUpdate()" value="Download Futaba's Build!"/></td>
             </tr>
         </table>
     `;
