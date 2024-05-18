@@ -77,7 +77,9 @@ function handleClick_About() {
                     <!-- Until we implement updating the app, we'll leave this commented out -->
                     <!-- <input id="buttonAppUpdate" type="button" onclick="buttonClick_AppUpdate()" value="Update App Files" disabled/> -->
                 </td>
-                <td style="text-align: center;"><input id="buttonGameUpdate" type="button" onclick="buttonClick_GameUpdate()" value="Update Game Files" disabled/></td>
+                <!-- Below is the old logic, just in case -->
+                <!-- <td style="text-align: center;"><input id="buttonGameUpdate" type="button" onclick="buttonClick_GameUpdate()" value="Update game files" disabled/></td> -->
+                <td style="text-align: center;"><input id="buttonGameUpdate" type="button" onclick="buttonClick_GameUpdate()" value="Download Futaba's Mod!"/></td>
             </tr>
         </table>
     `;
@@ -130,21 +132,24 @@ function handleClick_About() {
             })
             .catch(reason => console.error("Failed to fetch latest game version with error %O", reason))
             .finally(maybeEnableButton)
-    }).then(() => window.webContents.executeJavaScript(`document.getElementById("buttonGameUpdate").disabled = document.getElementById("currentGameVersion").innerText === document.getElementById("latestGameVersion").innerText;`));
+    })//.then(() => window.webContents.executeJavaScript(`document.getElementById("buttonGameUpdate").disabled = document.getElementById("currentGameVersion").innerText === document.getElementById("latestGameVersion").innerText;`)); leave commented out until needed again
 
     window.on('close', () => window = undefined);
 }
 
 ipcMain.on('about_tab::buttonClick::gameUpdate', (_event, _arg) => {
-    downloadLatestGameFiles(window)
+    downloadLatestGameFiles(window, true)
         .then(() => {
             if(window)
                 utils.fetchCurrentGameVersionInfo()
                     .then(version => {
                         window.webContents.executeJavaScript(`
                             document.getElementById("currentGameVersion").innerText = "${version}";
-                            document.getElementById("buttonGameUpdate").disabled = true;
                         `);
+                        //window.webContents.executeJavaScript(`
+                        //    document.getElementById("currentGameVersion").innerText = "${version}";
+                        //    document.getElementById("buttonGameUpdate").disabled = true;
+                        //`);
                     })
                     .catch(reason => console.error("Failed to fetch latest version with error %O", reason))
         })

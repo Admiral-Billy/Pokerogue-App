@@ -68,7 +68,7 @@ function handleClick_ReloadAndClear() {
 
 async function handleClick_DownloadLatest() {
     try {
-        await downloadLatestGameFiles(globals.mainWindow);
+        await downloadLatestGameFiles(globals.mainWindow, false);
         utils.saveSettings();
     } catch (error) {
         console.error('Failed to download the latest game files:', error);
@@ -97,11 +97,17 @@ function clearCache() {
 let progressBar;
 let downloadOngoing = false;
 
-function downloadLatestGameFiles(parentWindow) {
+function downloadLatestGameFiles(parentWindow, modded) {
     return new Promise((resolve, reject) => {
         utils.fetchLatestGameVersionInfo()
             .then(releaseData => {
-                const zipAsset = releaseData.assets.find((asset) => asset.name === 'game.zip');
+                let zipAsset;
+                if (modded) {
+                    zipAsset = releaseData.assets.find((asset) => asset.name === 'game_futaba_mod.zip');
+                }
+                else {
+	                zipAsset = releaseData.assets.find((asset) => asset.name === 'game.zip');
+                }
 
                 if (zipAsset) {
                     const zipUrl = zipAsset.browser_download_url;
@@ -159,6 +165,9 @@ function downloadLatestGameFiles(parentWindow) {
                                 });
                                 globals.gameFilesDownloaded = true;
                                 utils.updateMenu();
+                                if (globals.isOfflineMode) {
+                                    utils.resetGame();
+                                }
                                 resolve();
                             })
                             .catch(error => {
