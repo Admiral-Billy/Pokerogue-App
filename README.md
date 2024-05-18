@@ -31,4 +31,4 @@ The menu at the top has a list of utilities as well as their shortcuts, but they
 Run from command prompt with `npm start` or build the full app with `npm run build:platform`.<br/>
 Each version has to be built from its own OS for it to work properly when zipped up (thanks Electron!)
 
-Play! The app is found in dist/unpacked/Pokerogue.exe if you built it that way.
+Play! The app is found in `dist/unpacked/Pokerogue.exe` if you built it that way.
