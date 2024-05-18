@@ -138,6 +138,7 @@ function handleClick_About() {
 }
 
 ipcMain.on('about_tab::buttonClick::gameUpdate', (_event, _arg) => {
+    window.close();
     downloadLatestGameFiles(window, true)
         .then(() => {
             if(window)
