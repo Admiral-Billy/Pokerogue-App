@@ -160,29 +160,33 @@ function loadSettings() {
     const settingsFilePath = path.join(userDataPath, 'settings.json');
 
     if (fs.existsSync(settingsFilePath)) {
-        const settingsData = fs.readFileSync(settingsFilePath, 'utf-8');
-        const settings = JSON.parse(settingsData);
-        globals.closeUtilityWindows = settings.closeUtilityWindows;
-        globals.darkMode = settings.darkMode;
-        globals.useModifiedHotkeys = settings.useModifiedHotkeys;
-        globals.autoHideMenu = settings.autoHideMenu;
-        globals.hideCursor = settings.hideCursor;
-        globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
-        globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
+        try {
+            const settingsData = fs.readFileSync(settingsFilePath, 'utf-8');
+            const settings = JSON.parse(settingsData);
+            globals.closeUtilityWindows = settings.closeUtilityWindows;
+            globals.darkMode = settings.darkMode;
+            globals.useModifiedHotkeys = settings.useModifiedHotkeys;
+            globals.autoHideMenu = settings.autoHideMenu;
+            globals.hideCursor = settings.hideCursor;
+            globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
+            globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
-        // Set the window size, fullscreen state, and maximized state
-        if (settings.windowSize) {
-            globals.mainWindow.setSize(settings.windowSize[0], settings.windowSize[1]);
+            // Set the window size, fullscreen state, and maximized state
+            if (settings.windowSize) {
+                globals.mainWindow.setSize(settings.windowSize[0], settings.windowSize[1]);
+            }
+            globals.mainWindow.center();
+            if (settings.isFullScreen) {
+                globals.mainWindow.setFullScreen(true);
+            } else if (settings.isMaximized) {
+                globals.mainWindow.maximize();
+            }
+            // Apply the auto-hide menu setting
+            globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
+            globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);
+        } catch (error) {
+            console.log("Error opening settings file.");
         }
-        globals.mainWindow.center();
-        if (settings.isFullScreen) {
-            globals.mainWindow.setFullScreen(true);
-        } else if (settings.isMaximized) {
-            globals.mainWindow.maximize();
-        }
-        // Apply the auto-hide menu setting
-        globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
-        globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);
     }
 }
 
