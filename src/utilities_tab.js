@@ -74,6 +74,28 @@ const getTabData = () => { return {
             }
         },
         {
+            label: 'Horizontal Type Chart',
+            accelerator: 'CommandOrControl+H',
+            click: () => {
+                if (globals.horizontalTypeChartWindow) {
+                    if (globals.horizontalTypeChartWindow.isVisible()) {
+                        if (globals.closeUtilityWindows) {
+                            globals.horizontalTypeChartWindow.close();
+                            globals.horizontalTypeChartWindow = null;
+                        } else {
+                            globals.horizontalTypeChartWindow.hide();
+                        }
+                        globals.mainWindow.focus(); // Set focus to the main window
+                    } else {
+                        globals.horizontalTypeChartWindow.show();
+                        globals.horizontalTypeChartWindow.focus(); // Set focus to the type chart window
+                    }
+                } else {
+                    createHorizontalTypeChartWindow();
+                }
+            }
+        },
+        {
             label: 'Type Calculator',
             accelerator: 'CommandOrControl+T',
             click: () => {
@@ -334,6 +356,33 @@ function createTypeChartWindow() {
             globals.typeChartWindow.hide(); // Hide the window instead of closing it
         } else {
             globals.typeChartWindow = null;
+        }
+        if (globals.mainWindow) {
+            globals.mainWindow.focus();
+        }
+    });
+}
+
+// Create the horizontal type chart window
+function createHorizontalTypeChartWindow() {
+    globals.horizontalTypeChartWindow = utils.createWindow({
+        width: 1300,
+        height: 600,
+        icon: 'icons/PR',
+        autoHideMenuBar: true,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
+
+    globals.horizontalTypeChartWindow.loadFile('type-chart-2.png');
+
+    globals.horizontalTypeChartWindow.on('close', (event) => {
+        if (globals.horizontalTypeChartWindow && !globals.closeUtilityWindows) {
+            event.preventDefault();
+            globals.horizontalTypeChartWindow.hide(); // Hide the window instead of closing it
+        } else {
+            globals.horizontalTypeChartWindow = null;
         }
         if (globals.mainWindow) {
             globals.mainWindow.focus();

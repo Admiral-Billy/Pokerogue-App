@@ -4,7 +4,7 @@ const globals = require("./globals");
 const getTabData = () => { return {
     label: 'Settings',
     submenu: [{
-            label: 'Offline mode (uses separate save)',
+            label: 'Offline mode (uses separate save, requires game files)',
             type: 'checkbox',
             checked: globals.isOfflineMode,
             enabled: globals.gameFilesDownloaded,

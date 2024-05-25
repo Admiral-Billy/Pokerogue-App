@@ -72,6 +72,12 @@ async function createWindow() {
             globals.typeChartWindow = null;
         }
 
+        // Close the horizontal type chart window if it's open
+        if (globals.horizontalTypeChartWindow) {
+            globals.horizontalTypeChartWindow.close();
+            globals.horizontalTypeChartWindow = null;
+        }
+
         // Close the type calculator window if it's open
         if (globals.typeCalculatorWindow) {
             globals.typeCalculatorWindow.close();

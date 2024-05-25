@@ -5,6 +5,7 @@ let mainWindow;
 let wikiWindow;
 let pokedexWindow;
 let typeChartWindow;
+let horizontalTypeChartWindow;
 let typeCalculatorWindow;
 let teamBuilderWindow;
 let smogonWindow;

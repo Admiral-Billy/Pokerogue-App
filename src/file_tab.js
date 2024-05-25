@@ -39,8 +39,12 @@ const getTabData = () => { return {
         },
         { type: 'separator' },
         {
-            label: 'Download latest files for offline',
+            label: 'Download latest game files (for offline)',
             click: handleClick_DownloadLatest
+        },
+        {
+            label: 'Download Futaba\'s build',
+            click: handleClick_DownloadLatestFutaba
         },
         { type: 'separator' },
         {
@@ -72,6 +76,15 @@ async function handleClick_DownloadLatest() {
         utils.saveSettings();
     } catch (error) {
         console.error('Failed to download the latest game files:', error);
+    }
+}
+
+async function handleClick_DownloadLatestFutaba() {
+    try {
+        await downloadLatestGameFiles(globals.mainWindow, true);
+        utils.saveSettings();
+    } catch (error) {
+        console.error('Failed to download the latest futaba files:', error);
     }
 }
 
