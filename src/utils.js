@@ -159,6 +159,8 @@ function loadSettings() {
     const userDataPath = app.getPath('userData');
     const settingsFilePath = path.join(userDataPath, 'settings.json');
 
+    let useDefault = false;
+
     if (fs.existsSync(settingsFilePath)) {
         try {
             const settingsData = fs.readFileSync(settingsFilePath, 'utf-8');
@@ -186,8 +188,26 @@ function loadSettings() {
             globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);
         } catch (error) {
             console.log("Error opening settings file.");
+            useDefault = true;
         }
     }
+	else {
+        useDefault = true;
+	}
+	
+	if (useDefault) {
+            globals.closeUtilityWindows = false;
+            globals.darkMode = false;
+            globals.useModifiedHotkeys = false;
+            globals.autoHideMenu = false;
+            globals.hideCursor = false;
+            globals.isOfflineMode = false;
+            globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
+
+            // Apply the auto-hide menu setting
+            globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
+            globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);
+	}
 }
 
 function resetGame() {
