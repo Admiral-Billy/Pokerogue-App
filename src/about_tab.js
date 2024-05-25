@@ -2,14 +2,40 @@ const utils = require("./utils");
 const {downloadLatestGameFiles} = require("./file_tab")
 const { ipcMain } = require('electron');
 
-const getTabData = () => { return {
-    label: 'About',
-    submenu: [{
-            label: 'About the app...',
-            click: handleClick_About
-        }
-    ]
-}};
+const getTabData = () => {
+    return {
+        label: 'About/Links',
+        submenu: [{
+                label: 'About the app...',
+                click: handleClick_About
+            },
+            {
+                label: 'PokeRogue Discord',
+                click: () => {
+                    require('electron').shell.openExternal("https://discord.com/invite/pokerogue");
+                }
+            },
+            {
+                label: 'Futaba\'s Discord',
+                click: () => {
+                    require('electron').shell.openExternal("https://discord.gg/PeJbKTCXxh");
+                }
+            },
+            {
+                label: 'Game file repo',
+                click: () => {
+                    require('electron').shell.openExternal("https://github.com/Admiral-Billy/pokerogue/releases");
+                }
+            },
+            {
+                label: 'PokeRogue app overview/tutorial',
+                click: () => {
+                    require('electron').shell.openExternal("https://www.youtube.com/watch?v=8feJJRHFen0");
+                }
+            }
+        ]
+    }
+};
 
 let window;
 
@@ -87,7 +113,9 @@ function handleClick_About() {
     window = utils.createPopup({
         title: "About",
         width: 350,
-        height: 170
+        height: 170,
+        modal: false,
+        closeable: true
     }, content);
 
     const updateVer = (elemId, ver) => window.webContents.executeJavaScript(`document.getElementById("${elemId}").innerText = "${ver}"`);
