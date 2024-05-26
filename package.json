@@ -51,6 +51,11 @@
     "extraResources": [
       "keymap.json"
     ],
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "include": "installer.nsh"
+    },
     "win": {
       "icon": "icons/PR.ico",
       "target": "nsis"

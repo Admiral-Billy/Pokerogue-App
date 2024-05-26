@@ -141,6 +141,27 @@ function handleClick_About() {
             .catch(reason => console.error("Failed to fetch latest app version with error %O", reason))
             .finally(maybeEnableButton)
     }).then(() => window.webContents.executeJavaScript(`document.getElementById("buttonAppUpdate").disabled = document.getElementById("currentAppVersion").innerText === document.getElementById("latestAppVersion").innerText;`));
+	
+    new Promise((resolve, _reject) => {
+        let n = 0;
+        function maybeEnableButton() {
+            n++;
+            if(n >= 2)
+                resolve();
+        }
+        utils.fetchCurrentGameVersionInfo()
+            .then(version => {
+                updateVer("currentGameVersion", version);
+            })
+            .catch(reason => console.error("Failed to fetch current game version with error %O", reason))
+            .finally(maybeEnableButton);
+        utils.fetchLatestGameVersionInfo()
+            .then(releaseData => {
+                updateVer("latestGameVersion", releaseData.tag_name);
+            })
+            .catch(reason => console.error("Failed to fetch latest game version with error %O", reason))
+            .finally(maybeEnableButton)
+    })//.then(() => window.webContents.executeJavaScript(`document.getElementById("buttonGameUpdate").disabled = document.getElementById("currentGameVersion").innerText === document.getElementById("latestGameVersion").innerText;`)); leave commented out until needed again
 
     window.on('close', () => window = undefined);
 }
