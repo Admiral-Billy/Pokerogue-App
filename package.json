@@ -54,7 +54,9 @@
     "nsis": {
       "oneClick": false,
       "perMachine": false,
-      "include": "installer.nsh"
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "allowToChangeInstallationDirectory": true
     },
     "win": {
       "icon": "icons/PR.ico",
