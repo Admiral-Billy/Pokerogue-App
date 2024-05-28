@@ -28,8 +28,7 @@ The menu at the top has a list of utilities as well as their shortcuts, but they
 - Clone this repository with git or download the source code as zip
 - Install [NodeJS](https://nodejs.org/en)
 - Open a command prompt to the directory you stick this repo in
-- Install Electron: `npm install electron --save-dev` 
-- Install Electron Builder: `npm install electron-builder --save-dev`
+- Install dependencies: `npm install` 
 
 Run from command prompt with `npm start` or build the full app with `npm run build:platform` (where platform is "win", "mac", or "linux").<br/>
 Each version has to be built from its own OS for it to work properly when zipped up (thanks Electron!)
