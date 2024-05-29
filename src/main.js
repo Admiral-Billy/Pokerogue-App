@@ -195,17 +195,20 @@ async function createWindow() {
 
     // Fix the resolution
     globals.mainWindow.webContents.on('did-finish-load', () => {
-        const gameWidth = 1280;
-        const gameHeight = 770;
-        setTimeout(() => {
-            globals.mainWindow.setSize(gameWidth, 769); // nice
-            globals.mainWindow.setSize(gameWidth, gameHeight);
-            globals.mainWindow.show();
+        if (globals.onStart) {
+            const gameWidth = 1280;
+            const gameHeight = 770;
+            setTimeout(() => {
+                globals.mainWindow.setSize(gameWidth, 769); // nice
+                globals.mainWindow.setSize(gameWidth, gameHeight);
+                globals.mainWindow.show();
 
-            // Load the settings after the game has finished loading
-            utils.loadSettings();
-            globals.mainWindow.center();
-        }, 100);
+                // Load the settings after the game has finished loading
+                utils.loadSettings();
+                globals.mainWindow.center();
+                globals.onStart = false;
+            }, 100);
+        }
     });
 }
 
@@ -247,7 +250,8 @@ app.whenReady().then(() => {
         // Remove the --clear-cache flag from the command line arguments
         app.commandLine.removeSwitch('clear-cache');
     }
-
+	
+    globals.onStart = true; // for some reason just setting this initiially in globals doesn't work
     createWindow();
 });
 

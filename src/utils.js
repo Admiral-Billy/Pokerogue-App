@@ -174,15 +174,18 @@ function loadSettings() {
             globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
             // Set the window size, fullscreen state, and maximized state
-            if (settings.windowSize) {
-                globals.mainWindow.setSize(settings.windowSize[0], settings.windowSize[1]);
+            if (globals.onStart) {
+                if (settings.windowSize) {
+                    globals.mainWindow.setSize(settings.windowSize[0], settings.windowSize[1]);
+                }
+                globals.mainWindow.center();
+                if (settings.isFullScreen) {
+                    globals.mainWindow.setFullScreen(true);
+                } else if (settings.isMaximized) {
+                    globals.mainWindow.maximize();
+                }
             }
-            globals.mainWindow.center();
-            if (settings.isFullScreen) {
-                globals.mainWindow.setFullScreen(true);
-            } else if (settings.isMaximized) {
-                globals.mainWindow.maximize();
-            }
+			
             // Apply the auto-hide menu setting
             globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
             globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);

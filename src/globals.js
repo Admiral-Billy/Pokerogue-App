@@ -1,6 +1,7 @@
 const path = require('path');
 const { EventEmitter } = require('stream');
 
+let onStart;
 let mainWindow;
 let wikiWindow;
 let pokedexWindow;
