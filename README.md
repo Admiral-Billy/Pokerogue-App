@@ -5,6 +5,8 @@ The app is playable in both online and offline mode. Online mode is the default,
 
 If offline file extraction seem to be taking a *very* long time (such as more than a minute), there's probably an antivirus such as Windows Defender slowing it down by scanning every small file individually; add an exception or disable it temporarily and see if that helps. A not responding message is normal on Windows.
 
+For more information about the Android version, go here: https://github.com/Admiral-Billy/PokeRogue-App-Android
+
 ## Features
 There's a variety of settings you can tweak to your choosing as well. The only thing to mention in particular is the modified hotkeys setting; there's a `keymap.json` in the resources folder that you can modify, and that'll affect what your hotkeys are (in the format of "Old" : "New", with the ability to bind multiple keys to the same other key if desired). It's not a perfect hotkey remapping since the hold behavior is off, but it should work for most purposes. A list of valid keys can be [found here](https://www.electronjs.org/docs/latest/api/accelerator)
 
