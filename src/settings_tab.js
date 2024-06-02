@@ -26,21 +26,6 @@ const getTabData = () => { return {
             },
         },
         {
-            label: 'Use modified hotkeys', // When enabled, instead of the game's default hotkeys, keys will be remapped according to the globals.keymap.json file. Shortcuts for utility windows will be the same regardless of keybinds.
-            type: 'checkbox',
-            checked: globals.useModifiedHotkeys,
-            click: () => {
-                globals.useModifiedHotkeys = !globals.useModifiedHotkeys;
-                utils.saveSettings();
-                if (globals.useModifiedHotkeys) {
-                    utils.loadKeymap();
-                    utils.registerGlobalShortcuts();
-                } else {
-                    utils.unregisterGlobalShortcuts();
-                }
-            },
-        },
-        {
             label: 'Close utility windows instead of hiding', // When enabled, utility windows are completely closed rather than being hidden if they are toggled or exited. This can help save memory, but resets their position every toggle and might result in slower toggles.
             type: 'checkbox',
             checked: globals.closeUtilityWindows,

@@ -31,19 +31,9 @@ async function createWindow() {
         }
     });
 
-    // Register global shortcuts when the game window is focused
-    globals.mainWindow.on('focus', utils.registerGlobalShortcuts);
-
-    // Unregister global shortcuts when the game window loses focus
-    globals.mainWindow.on('blur', utils.unregisterGlobalShortcuts);
-
     utils.loadSettings();
     utils.applyDarkMode();
     utils.applyCursorHide();
-    if (globals.useModifiedHotkeys) {
-        utils.loadKeymap();
-        utils.registerGlobalShortcuts();
-    }
 
     utils.updateMenu();
 
@@ -95,8 +85,6 @@ async function createWindow() {
             globals.smogonWindow.close();
             globals.smogonWindow = null;
         }
-
-        utils.unregisterGlobalShortcuts();
 
         app.quit();
     });
@@ -251,7 +239,6 @@ app.whenReady().then(() => {
         app.commandLine.removeSwitch('clear-cache');
     }
 	
-    globals.onStart = true; // for some reason just setting this initiially in globals doesn't work
     createWindow();
 });
 

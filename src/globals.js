@@ -1,7 +1,7 @@
 const path = require('path');
 const { EventEmitter } = require('stream');
 
-let onStart;
+let onStart = true;
 let mainWindow;
 let wikiWindow;
 let pokedexWindow;
@@ -15,7 +15,6 @@ let gameFilesDownloaded = false;
 let closeUtilityWindows = false;
 let darkMode = false;
 let keymap = {};
-let useModifiedHotkeys = false;
 let autoHideMenu = false;
 let hideCursor = false;
 let gameDir;
@@ -29,11 +28,13 @@ let httpOptions = {
 };
 let discordEnabled = true;
 
+module.exports.onStart = onStart;
 module.exports.mainWindow = mainWindow;
 module.exports.wikiWindow = wikiWindow;
 module.exports.pokedexWindow = pokedexWindow;
 module.exports.typeChartWindow = typeChartWindow;
 module.exports.typeCalculatorWindow = typeCalculatorWindow;
+module.exports.horizontalTypeChartWindow = horizontalTypeChartWindow;
 module.exports.teamBuilderWindow = teamBuilderWindow;
 module.exports.smogonWindow = smogonWindow;
 module.exports.isOfflineMode = isOfflineMode;
@@ -41,7 +42,6 @@ module.exports.gameFilesDownloaded = gameFilesDownloaded;
 module.exports.closeUtilityWindows = closeUtilityWindows;
 module.exports.darkMode = darkMode;
 module.exports.keymap = keymap;
-module.exports.useModifiedHotkeys = useModifiedHotkeys;
 module.exports.autoHideMenu = autoHideMenu;
 module.exports.hideCursor = hideCursor;
 module.exports.gameDir = gameDir;

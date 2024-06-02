@@ -143,7 +143,6 @@ function saveSettings() {
     const settings = {
         closeUtilityWindows: globals.closeUtilityWindows,
         darkMode: globals.darkMode,
-        useModifiedHotkeys: globals.useModifiedHotkeys,
         windowSize: globals.mainWindow.getSize(),
         isFullScreen: globals.mainWindow.isFullScreen(),
         isMaximized: globals.mainWindow.isMaximized(),
@@ -167,7 +166,6 @@ function loadSettings() {
             const settings = JSON.parse(settingsData);
             globals.closeUtilityWindows = settings.closeUtilityWindows;
             globals.darkMode = settings.darkMode;
-            globals.useModifiedHotkeys = settings.useModifiedHotkeys;
             globals.autoHideMenu = settings.autoHideMenu;
             globals.hideCursor = settings.hideCursor;
             globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
@@ -201,7 +199,6 @@ function loadSettings() {
 	if (useDefault) {
             globals.closeUtilityWindows = false;
             globals.darkMode = false;
-            globals.useModifiedHotkeys = false;
             globals.autoHideMenu = false;
             globals.hideCursor = false;
             globals.isOfflineMode = false;
@@ -225,10 +222,6 @@ function resetGame() {
             updateMenu();
             applyDarkMode();
             applyCursorHide();
-            if (globals.useModifiedHotkeys) {
-                loadKeymap();
-                registerGlobalShortcuts();
-            }
             globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
         }, 100);
@@ -288,68 +281,6 @@ function updateMenu() {
     Menu.setApplicationMenu(menu);
 }
 
-function loadKeymap() {
-    if (globals.useModifiedHotkeys) {
-        try {
-            const keymapPath = path.join(process.resourcesPath, 'keymap.json');
-            const keymapData = fs.readFileSync(keymapPath, 'utf-8');
-            globals.keymap = JSON.parse(keymapData);
-            console.log('Loaded keymap:', globals.keymap);
-        } catch (error) {
-            console.error('Failed to load keymap:', error);
-        }
-    } else {
-        globals.keymap = {};
-    }
-}
-
-function registerGlobalShortcuts() {
-    if (globals.useModifiedHotkeys) {
-        for (const [originalKey, mappedKey] of Object.entries(globals.keymap)) {
-            if (originalKey != mappedKey) {
-                globalShortcut.register(originalKey, () => {
-                    const focusedWindow = BrowserWindow.getFocusedWindow();
-                    if (focusedWindow === globals.mainWindow) {
-                        focusedWindow.webContents.sendInputEvent({
-                            type: 'keyDown',
-                            keyCode: mappedKey
-                        });
-                        setTimeout(() => {
-                            focusedWindow.webContents.sendInputEvent({
-                                type: 'keyUp',
-                                keyCode: mappedKey
-                            });
-                        }, 50);
-                    }
-                });
-
-                globalShortcut.register(`CommandOrControl+${originalKey}`, () => {
-                    const focusedWindow = BrowserWindow.getFocusedWindow();
-                    if (focusedWindow === globals.mainWindow) {
-                        focusedWindow.webContents.sendInputEvent({
-                            type: 'keyDown',
-                            keyCode: originalKey,
-                            modifiers: ['ctrl']
-                        });
-                        setTimeout(() => {
-                            focusedWindow.webContents.sendInputEvent({
-                                type: 'keyUp',
-                                keyCode: originalKey,
-                                modifiers: ['ctrl']
-                            });
-                        }, 50);
-                    }
-                });
-            }
-        }
-        console.log('Registered global shortcuts:', Object.keys(globals.keymap));
-    }
-}
-
-function unregisterGlobalShortcuts() {
-    globalShortcut.unregisterAll();
-}
-
 function applyDarkMode() {
     if (globals.darkMode) {
         globals.mainWindow.webContents.insertCSS(`
@@ -393,8 +324,5 @@ module.exports.loadSettings = loadSettings;
 module.exports.resetGame = resetGame;
 module.exports.downloadFile = downloadFile;
 module.exports.updateMenu = updateMenu;
-module.exports.loadKeymap = loadKeymap;
-module.exports.registerGlobalShortcuts = registerGlobalShortcuts;
-module.exports.unregisterGlobalShortcuts = unregisterGlobalShortcuts;
 module.exports.applyDarkMode = applyDarkMode;
 module.exports.applyCursorHide = applyCursorHide;
