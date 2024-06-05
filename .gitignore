@@ -129,3 +129,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 /game
+
+# IDE
+.idea/
