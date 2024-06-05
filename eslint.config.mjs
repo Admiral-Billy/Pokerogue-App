@@ -9,7 +9,7 @@ export default [
         ...globals.node,
       },
     },
-    ignores: [".config/*", "node_modules/", "dist/"],
+    ignores: [".config/*", "node_modules/", "dist/", "package.json", "package-log.json", ".gitignore"],
     rules: {
       "no-unused-vars": [
         "error",
