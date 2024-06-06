@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
+    "lint": "eslint --fix .",
     "start": "electron .",
     "build": "electron-builder",
     "build:win": "electron-builder --win",
@@ -14,8 +15,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.4.0",
     "electron": "^29.3.3",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0",
+    "lefthook": "^1.6.14"
   },
   "dependencies": {
     "@cliqz/adblocker-electron": "^1.27.1",

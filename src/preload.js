@@ -6,7 +6,7 @@ let isOfflineMode = false;
 let gameDir;
 
 // Listen for the offline mode status message from the main process
-ipcRenderer.on('offline-mode-status', (event, status) => {
+ipcRenderer.on('offline-mode-status', (_event, status) => {
   isOfflineMode = status[0];
   gameDir = status[1]
 });
@@ -26,22 +26,22 @@ window.fetch = async (url, options) => {
       if (error.code === 'ENOENT') {
         console.log("File not found:", filePath);
 
-          const fileExtension = path.extname(filePath);
-          let fallbackFileContents = '';
+        const fileExtension = path.extname(filePath);
+        let fallbackFileContents = '';
 
-          if (fileExtension === '.json') {
-            fallbackFileContents = "[]";
-          } else if (fileExtension === '.png') {
-            // Create a transparent 1x1 pixel image
-            fallbackFileContents = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
-          }
+        if (fileExtension === '.json') {
+          fallbackFileContents = "[]";
+        } else if (fileExtension === '.png') {
+          // Create a transparent 1x1 pixel image
+          fallbackFileContents = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+        }
 
-          console.warn("Serving fallback response for file:", filePath);
-          return new Response(fallbackFileContents, {
-            status: 200,
-            statusText: 'OK',
-            headers: { 'Content-Type': fileExtension === '.json' ? 'application/json' : 'image/png' },
-          });
+        console.warn("Serving fallback response for file:", filePath);
+        return new Response(fallbackFileContents, {
+          status: 200,
+          statusText: 'OK',
+          headers: { 'Content-Type': fileExtension === '.json' ? 'application/json' : 'image/png' },
+        });
       } else {
         console.error("Error reading file:", error);
         return originalFetch(url, options);

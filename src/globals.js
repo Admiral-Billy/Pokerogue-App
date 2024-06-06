@@ -1,6 +1,3 @@
-const path = require('path');
-const { EventEmitter } = require('stream');
-
 let onStart = true;
 let mainWindow;
 let wikiWindow;
@@ -22,9 +19,9 @@ let currentVersionPath;
 let latestAppReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/Pokerogue-App/releases/latest';
 let latestGameReleaseUrl = 'https://api.github.com/repos/Admiral-Billy/pokerogue/releases/latest';
 let httpOptions = {
-    headers: {
-        'User-Agent': 'Pokerogue-App',
-    }
+  headers: {
+    'User-Agent': 'Pokerogue-App',
+  }
 };
 let discordEnabled = true;
 
