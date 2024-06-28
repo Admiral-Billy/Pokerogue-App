@@ -38,6 +38,9 @@ Now you're ready to play! The app is found in `dist/platform-unpacked/PokeRogue.
 
 ## Install instructions
 
+### Windows/Mac/Non-Arch Linux
+Simply extract the game's zip somewhere and run the executable. Windows has an installer that can be used as well, although be careful where you install it to; installing it to somewhere like Program Files may create permission issues that require running as admin to resolve.
+
 ### 🐧 Arch
 For Arch Linux users, the application is available as an [AUR package](https://aur.archlinux.org/packages/pokerogue-app-bin). You can install it using an AUR helper like `yay`.
 
@@ -47,3 +50,6 @@ yay -S pokerogue-app-bin
 ```
 
 Once installed, you can launch the application from your application menu or by running pokerogue from the terminal.
+
+### Android
+Download the APK to your phone and then run it with a file manager, and this will install the app.
