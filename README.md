@@ -35,3 +35,15 @@ The menu at the top has a list of utilities as well as their shortcuts, but they
   - Each version has to be built from its own OS for it to work properly when zipped up (thanks Electron!)
 
 Now you're ready to play! The app is found in `dist/platform-unpacked/PokeRogue.exe` if you built it.
+
+## Install instructions
+
+### 🐧 Arch
+For Arch Linux users, the application is available as an [AUR package](https://aur.archlinux.org/packages/pokerogue-app-bin). You can install it using an AUR helper like `yay`.
+
+#### Using `yay`:
+```sh
+yay -S pokerogue-app-bin
+```
+
+Once installed, you can launch the application from your application menu or by running pokerogue from the terminal.
