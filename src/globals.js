@@ -8,6 +8,7 @@ let typeCalculatorWindow;
 let teamBuilderWindow;
 let smogonWindow;
 let isOfflineMode = false;
+let isPRMLMode = false;
 let gameFilesDownloaded = false;
 let closeUtilityWindows = false;
 let darkMode = false;
@@ -35,6 +36,7 @@ module.exports.horizontalTypeChartWindow = horizontalTypeChartWindow;
 module.exports.teamBuilderWindow = teamBuilderWindow;
 module.exports.smogonWindow = smogonWindow;
 module.exports.isOfflineMode = isOfflineMode;
+module.exports.isPRMLMode = isPRMLMode
 module.exports.gameFilesDownloaded = gameFilesDownloaded;
 module.exports.closeUtilityWindows = closeUtilityWindows;
 module.exports.darkMode = darkMode;

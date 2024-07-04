@@ -146,7 +146,8 @@ function saveSettings() {
     isMaximized: globals.mainWindow.isMaximized(),
     autoHideMenu: globals.autoHideMenu,
     hideCursor: globals.hideCursor,
-    isOfflineMode: globals.isOfflineMode
+    isOfflineMode: globals.isOfflineMode,
+    isPRMLMode: globals.isPRMLMode,
   };
 
   fs.writeFileSync(settingsFilePath, JSON.stringify(settings));
@@ -167,6 +168,7 @@ function loadSettings() {
       globals.autoHideMenu = settings.autoHideMenu;
       globals.hideCursor = settings.hideCursor;
       globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
+      globals.isPRMLMode = settings.isPRMLMode || false
       globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
       // Set the window size, fullscreen state, and maximized state
@@ -211,9 +213,12 @@ function loadSettings() {
 function resetGame() {
   if (globals.isOfflineMode) {
     globals.mainWindow.loadFile(path.join(globals.gameDir, 'index.html'));
-  } else {
+  } else if(globals.isPRMLMode){
+    globals.mainWindow.loadURL('https://mokerogue.net/')
+  }else {
     globals.mainWindow.loadURL('https://pokerogue.net/');
   }
+  
   globals.mainWindow.webContents.on('did-finish-load', () => {
     setTimeout(() => {
       loadSettings();
