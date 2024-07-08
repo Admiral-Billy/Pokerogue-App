@@ -174,10 +174,12 @@ async function createWindow() {
         });
     }
   }
-
+  
   if (globals.isOfflineMode) {
     globals.mainWindow.loadFile(path.join(globals.gameDir, 'index.html'));
-  } else {
+  } else if(globals.isPRMLMode){
+    globals.mainWindow.loadURL('https://mokerogue.net/')
+  }else {
     globals.mainWindow.loadURL('https://pokerogue.net/');
   }
 

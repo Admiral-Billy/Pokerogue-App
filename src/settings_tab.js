@@ -10,6 +10,18 @@ const getTabData = () => { return {
     enabled: globals.gameFilesDownloaded,
     click: () => {
       globals.isOfflineMode = !globals.isOfflineMode;
+      globals.isPRMLMode = false
+      utils.saveSettings();
+      utils.resetGame();
+    }
+  },
+  {
+    label: 'PokeRogueModLoader (uses separate server and save)',
+    type: 'checkbox',
+    checked: globals.isPRMLMode,
+    click: () => {
+      globals.isOfflineMode = false;
+      globals.isPRMLMode = !globals.isPRMLMode
       utils.saveSettings();
       utils.resetGame();
     }
