@@ -146,6 +146,8 @@ function saveSettings() {
     isMaximized: globals.mainWindow.isMaximized(),
     autoHideMenu: globals.autoHideMenu,
     hideCursor: globals.hideCursor,
+    isMuted: globals.isMuted,
+    isBeta: globals.isBeta,
     isOfflineMode: globals.isOfflineMode
   };
 
@@ -166,6 +168,7 @@ function loadSettings() {
       globals.darkMode = settings.darkMode;
       globals.autoHideMenu = settings.autoHideMenu;
       globals.hideCursor = settings.hideCursor;
+	  globals.isBeta = settings.isBeta;
       globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
       globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
@@ -182,6 +185,12 @@ function loadSettings() {
         }
       }
 			
+	  // Apply mutes
+	  globals.isMuted = settings.isMuted;
+	  if (globals.isMuted) {
+		  globals.mainWindow.webContents.audioMuted = true;
+	  }
+	
       // Apply the auto-hide menu setting
       globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
       globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);
@@ -199,6 +208,8 @@ function loadSettings() {
     globals.darkMode = false;
     globals.autoHideMenu = false;
     globals.hideCursor = false;
+    globals.isMuted = false;
+    globals.isBeta = false;
     globals.isOfflineMode = false;
     globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
@@ -212,7 +223,12 @@ function resetGame() {
   if (globals.isOfflineMode) {
     globals.mainWindow.loadFile(path.join(globals.gameDir, 'index.html'));
   } else {
-    globals.mainWindow.loadURL('https://pokerogue.net/');
+	 if (globals.isBeta) {
+		 globals.mainWindow.loadURL('https://beta.pokerogue.net/');
+	 }
+	 else {
+		 globals.mainWindow.loadURL('https://pokerogue.net/');
+	 }
   }
   globals.mainWindow.webContents.on('did-finish-load', () => {
     setTimeout(() => {

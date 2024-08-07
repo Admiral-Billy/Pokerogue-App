@@ -178,7 +178,12 @@ async function createWindow() {
   if (globals.isOfflineMode) {
     globals.mainWindow.loadFile(path.join(globals.gameDir, 'index.html'));
   } else {
-    globals.mainWindow.loadURL('https://pokerogue.net/');
+	 if (globals.isBeta) {
+		 globals.mainWindow.loadURL('https://beta.pokerogue.net/');
+	 }
+	 else {
+		 globals.mainWindow.loadURL('https://pokerogue.net/');
+	 }
   }
 
   // Fix the resolution
@@ -197,7 +202,18 @@ async function createWindow() {
         globals.onStart = false;
       }, 100);
     }
+	
+    globals.mainWindow.webContents.executeJavaScript(`
+		setTimeout(() => {
+			var tncLinks = document.getElementById('tnc-links');
+			if (tncLinks) {
+				tncLinks.remove();
+			}
+		}, 30); // Adjust the timeout as needed
+	`);
+	
   });
+
 }
 
 // Handle app events
