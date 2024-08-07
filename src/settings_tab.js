@@ -24,6 +24,17 @@ const getTabData = () => { return {
         utils.resetGame();
       }
     },
+	 {
+      label: 'PokeRogueModLoader (uses separate server and save)',
+      type: 'checkbox',
+      checked: globals.isPRMLMode,
+      click: () => {
+		  globals.isOfflineMode = false;
+		  globals.isPRMLMode = !globals.isPRMLMode
+		  utils.saveSettings();
+		  utils.resetGame();
+      }
+    },
     {
       label: 'Mute game',
       type: 'checkbox',
@@ -77,8 +88,7 @@ const getTabData = () => { return {
         utils.applyDarkMode();
         utils.saveSettings();
       },
-    }
-  ]
+    }]
 }};
 
 module.exports.getTabData = getTabData;

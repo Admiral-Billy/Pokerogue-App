@@ -174,16 +174,18 @@ async function createWindow() {
         });
     }
   }
-
+  
   if (globals.isOfflineMode) {
     globals.mainWindow.loadFile(path.join(globals.gameDir, 'index.html'));
-  } else {
-	 if (globals.isBeta) {
+  } 
+  else if (globals.isBeta) {
 		 globals.mainWindow.loadURL('https://beta.pokerogue.net/');
-	 }
-	 else {
-		 globals.mainWindow.loadURL('https://pokerogue.net/');
-	 }
+  }
+  else if(globals.isPRMLMode){
+    globals.mainWindow.loadURL('https://mokerogue.net/')
+  }
+  else {
+    globals.mainWindow.loadURL('https://pokerogue.net/');
   }
 
   // Fix the resolution
