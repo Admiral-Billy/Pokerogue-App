@@ -21,6 +21,10 @@ window.fetch = async (url, options) => {
     try {
       const data = await fs.promises.readFile(filePath, 'utf-8');
       console.log("File read successfully:", filePath);
+      const fileExtension = path.extname(filePath);
+      if (fileExtension === '.json'){
+        return new Response(data, { status: 200, statusText: 'OK', headers: { 'Content-Type': 'application/json' } });
+      }
       return new Response(data, { status: 200, statusText: 'OK' });
     } catch (error) {
       if (error.code === 'ENOENT') {
