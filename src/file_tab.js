@@ -49,6 +49,7 @@ const getTabData = () => { return {
   { type: 'separator' },
   {
     label: 'Quit',
+    accelerator: (process.platform === 'darwin') ? 'Command+Q' : "Alt+F4",
     click: handleClick_Quit
   }
   ]
