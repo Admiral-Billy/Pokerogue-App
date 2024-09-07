@@ -43,7 +43,7 @@ jobs:
         shell: bash
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: PokeRogue-${{ matrix.os }}
           path: dist/PokeRogue-*.zip
