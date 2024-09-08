@@ -9,7 +9,7 @@
     "build": "electron-builder",
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux",
-    "build:mac": "electron-builder --mac"
+    "build:mac": "electron-builder --mac --universal"
   },
   "keywords": [],
   "author": "",
