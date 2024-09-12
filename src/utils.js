@@ -10,7 +10,6 @@ const globals = require("./globals");
 const { getTabData: getAboutTabData } = require("./about_tab");
 const { getTabData: getSettingsTabData} = require("./settings_tab");
 const { getTabData: getUtilitiesTabData} = require("./utilities_tab");
-const { getTabData: getEditTabData} = require("./edit_tab");
 const { getTabData: getFileTabData } = require("./file_tab");
 
 function createWindow(opts) {
@@ -42,7 +41,7 @@ function createPopup(opts, content) {
     minimizable: false,
     maximizable: false,
     resizable: false,
-    parent: globals.mainWindow,
+    parent: undefined,
     modal: true,
     alwaysOnTop: true,
     ...opts
@@ -186,13 +185,13 @@ function loadSettings() {
           globals.mainWindow.maximize();
         }
       }
-			
+
 	  // Apply mutes
 	  globals.isMuted = settings.isMuted;
 	  if (globals.isMuted) {
 		  globals.mainWindow.webContents.audioMuted = true;
 	  }
-	
+
       // Apply the auto-hide menu setting
       globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
       globals.mainWindow.setMenuBarVisibility(!globals.autoHideMenu);
@@ -204,7 +203,7 @@ function loadSettings() {
   else {
     useDefault = true;
   }
-	
+
   if (useDefault) {
     globals.closeUtilityWindows = false;
     globals.darkMode = false;
@@ -224,7 +223,7 @@ function loadSettings() {
 function resetGame() {
   if (globals.isOfflineMode) {
     globals.mainWindow.loadFile(path.join(globals.gameDir, 'index.html'));
-  } 
+  }
   else if (globals.isBeta) {
 		 globals.mainWindow.loadURL('https://beta.pokerogue.net/');
   }
@@ -234,7 +233,7 @@ function resetGame() {
   else {
     globals.mainWindow.loadURL('https://pokerogue.net/');
   }
-  
+
   globals.mainWindow.webContents.on('did-finish-load', () => {
     setTimeout(() => {
       loadSettings();
@@ -293,7 +292,6 @@ function updateMenu() {
     getFileTabData(),
     getSettingsTabData(),
     getUtilitiesTabData(),
-    getEditTabData(),
     getAboutTabData()
   ];
   const menu = Menu.buildFromTemplate(tabs);
@@ -332,8 +330,8 @@ function applyCursorHide() {
   }
 }
 
-module.exports.createWindow = createWindow; 
-module.exports.createPopup = createPopup; 
+module.exports.createWindow = createWindow;
+module.exports.createPopup = createPopup;
 module.exports.fetchCurrentAppVersionInfo = fetchCurrentAppVersionInfo;
 module.exports.fetchLatestAppVersionInfo = fetchLatestAppVersionInfo;
 module.exports.fetchCurrentGameVersionInfo = fetchCurrentGameVersionInfo;

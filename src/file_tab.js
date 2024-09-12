@@ -39,12 +39,17 @@ const getTabData = () => { return {
   },
   { type: 'separator' },
   {
-    label: 'Download latest game files (for offline)',
-    click: handleClick_DownloadLatest
-  },
-  {
-    label: 'Download Futaba\'s build',
-    click: handleClick_DownloadLatestFutaba
+    label: 'Download files for offline',
+    submenu: [
+      {
+        label: 'Download latest game files (for offline)',
+        click: handleClick_DownloadLatest
+      },
+      {
+        label: 'Download Futaba\'s build',
+        click: handleClick_DownloadLatestFutaba
+      }
+    ]
   },
   { type: 'separator' },
   {

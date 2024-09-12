@@ -39,6 +39,7 @@ const getTabData = () => { return {
       label: 'Mute game',
       type: 'checkbox',
       checked: globals.isMuted,
+      accelerator: 'CommandOrControl+Shift+M',
       click: () => {
         globals.isMuted = !globals.isMuted;
         if (globals.isMuted) {
