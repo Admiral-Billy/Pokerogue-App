@@ -27,6 +27,7 @@
     "adm-zip": "^0.5.12",
     "cross-fetch": "^4.0.0",
     "discord-rpc": "^4.0.1",
+    "electron-localshortcut": "^3.2.1",
     "electron-progressbar": "^2.2.1"
   },
   "build": {

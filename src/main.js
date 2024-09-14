@@ -8,6 +8,7 @@ const fs = require('fs');
 const DiscordRPC = require('discord-rpc');
 
 const globals = require("./globals");
+const localShortcuts = require("./local_shortcuts");
 const utils = require("./utils");
 
 utils.updateMenu();
@@ -30,6 +31,7 @@ async function createWindow() {
       persistUserDataDirName: 'Pokerogue'
     }
   });
+  localShortcuts.registerLocalShortcuts()
 
   utils.loadSettings();
   utils.applyDarkMode();
@@ -220,11 +222,10 @@ async function createWindow() {
 
 // Handle app events
 app.whenReady().then(() => {
+  // Use the app's resource folder for the diff platforms
   if (process.platform === 'darwin') {
-    // For macOS, use the user's Documents directory
-    globals.gameDir = path.join(app.getPath('documents'), 'PokeRogue', 'game');
+    globals.gameDir = path.join(app.getPath('userData'), 'game');
   } else {
-    // For other platforms, use the game folder in the app's resource directory
     globals.gameDir = path.join(__dirname, '../..', 'game');
   }
   globals.gameFilesDownloaded = fs.existsSync(globals.gameDir);
@@ -235,6 +236,7 @@ app.whenReady().then(() => {
     const userDataPath = app.getPath('userData');
     const settingsFilePath = path.join(userDataPath, 'settings.json');
     const localStorageDirPath = path.join(userDataPath, 'Local Storage');
+    const offlineGameDirPath = path.join(userDataPath, 'game');
 
     // Get all files and directories in the user data path
     const files = fs.readdirSync(userDataPath);
@@ -242,7 +244,7 @@ app.whenReady().then(() => {
     // Delete all files and directories except for settings.json and Local Storage folder
     files.forEach(file => {
       const filePath = path.join(userDataPath, file);
-      if (filePath !== settingsFilePath && filePath !== localStorageDirPath) {
+      if (filePath !== settingsFilePath && filePath !== localStorageDirPath && filePath !== offlineGameDirPath) {
         if (fs.lstatSync(filePath).isDirectory()) {
           fs.rmdirSync(filePath, {
             recursive: true
