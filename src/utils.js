@@ -171,7 +171,6 @@ function loadSettings() {
 	  globals.isBeta = settings.isBeta;
       globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
       globals.isPRMLMode = settings.isPRMLMode || false
-      globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
       // Set the window size, fullscreen state, and maximized state
       if (globals.onStart) {
@@ -212,7 +211,6 @@ function loadSettings() {
     globals.isMuted = false;
     globals.isBeta = false;
     globals.isOfflineMode = false;
-    globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
     // Apply the auto-hide menu setting
     globals.mainWindow.setAutoHideMenuBar(globals.autoHideMenu);
@@ -240,7 +238,6 @@ function resetGame() {
       updateMenu();
       applyDarkMode();
       applyCursorHide();
-      globals.mainWindow.webContents.send('offline-mode-status', [globals.isOfflineMode, globals.gameDir]);
 
     }, 100);
   });

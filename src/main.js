@@ -26,7 +26,6 @@ async function createWindow() {
       nodeIntegration: true,
       contextIsolation: true,
       enableRemoteModule: true,
-      preload: path.join(__dirname, 'preload.js'),
       persistSessionStorage: true,
       persistUserDataDirName: 'Pokerogue'
     }
