@@ -138,9 +138,9 @@ async function createWindow() {
             const details = `${gameData.gameMode} | Wave: ${gameData.wave} | ${gameData.biome}`;
 
             // Format the state string with the Pokemon list
-            let state = `Party:\n${gameData.party
+            let state = `Party: ${gameData.party
               .map((pokemon) => `Lv. ${pokemon.level} ${pokemon.name}`)
-              .join('\n')}`;
+              .join(', ')}`;
 
             if (state.length > 128) {
               state = state.substring(0, 125) + "...";
