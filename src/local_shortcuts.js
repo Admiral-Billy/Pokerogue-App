@@ -3,7 +3,7 @@ const electronLocalshortcut = require('electron-localshortcut');
 const globals = require("./globals");
 
 function registerLocalShortcuts() {
-  if (process.platform != 'win32') {
+  if (process.platform !== 'win32') {
     // Undo
     electronLocalshortcut.register(globals.mainWindow, 'CmdOrCtrl+Z', () => {
       globals.mainWindow.webContents.undo()

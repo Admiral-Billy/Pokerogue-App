@@ -25,7 +25,8 @@ let httpOptions = {
     'User-Agent': 'Pokerogue-App',
   }
 };
-let discordEnabled = true;
+let discordRPCConnectInterval = undefined;
+let discordRPCUpdateInterval = undefined;
 
 module.exports.onStart = onStart;
 module.exports.mainWindow = mainWindow;
@@ -50,4 +51,5 @@ module.exports.currentVersionPath = currentVersionPath;
 module.exports.latestAppReleaseUrl = latestAppReleaseUrl;
 module.exports.latestGameReleaseUrl = latestGameReleaseUrl;
 module.exports.httpOptions = httpOptions;
-module.exports.discordEnabled = discordEnabled;
+module.exports.discordRPCConnectInterval = discordRPCConnectInterval;
+module.exports.discordRPCUpdateInterval = discordRPCUpdateInterval;
