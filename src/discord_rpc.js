@@ -5,7 +5,7 @@ const globals = require("./globals");
 let startTime = Date.now()
 let adjustedPlayTime = 0;
 let sessionStartTime = 0;
-const intervalTimeout = 15e3
+const intervalTimeout = 1000
 function setup() {
   const clientId = '1232165629046292551';
   DiscordRPC.register(clientId);
@@ -31,7 +31,7 @@ function setup() {
 
   async function retryDiscordRPCConnection() {
     if (globals.discordRPCConnectInterval === undefined) {
-      console.log('Discord Rich Presence is not available! Will retry every 15s.');
+      console.log('Discord Rich Presence is not available! Will retry every 1s.');
       globals.discordRPCConnectInterval = setInterval(setup, intervalTimeout)
     }
     clearInterval(globals.discordRPCUpdateInterval)
