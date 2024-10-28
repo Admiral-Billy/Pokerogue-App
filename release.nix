@@ -1,6 +1,5 @@
 { lib
 , buildNpmPackage
-, fetchFromGitHub
 , makeWrapper
 , stdenv
 , pname
@@ -63,7 +62,7 @@ buildNpmPackage rec {
     description = "Desktop app for the Pokerogue web game";
     homepage = "https://github.com/Admiral-Billy/Pokerogue-App";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.linux;
   };
 }
