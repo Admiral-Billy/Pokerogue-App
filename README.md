@@ -56,6 +56,18 @@ For NixOs users, the application is available as a flake, just add this in your 
 ```nix
 inputs.pokerogue-app.url = "github:Admiral-Billy/Pokerogue-App";
 ```
+Then add the package in your config anywhere you pass 'pokerogue-app', for example in home-manager:
+```nix
+{ inputs, pkgs, pokerogue-app, ... }: {
+  imports = [
+  ];
+
+  home.packages = with pkgs; [
+    pokerogue-app.packages.x86_64-linux.pokerogue-app
+  ];
+#...config
+}
+```
 
 ### Android
 Download the APK to your phone and then run it with a file manager, and this will install the app.
