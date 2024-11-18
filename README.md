@@ -71,3 +71,28 @@ Then add the package in your config anywhere you pass 'pokerogue-app', for examp
 
 ### Android
 Download the APK to your phone and then run it with a file manager, and this will install the app.
+
+### Steamdeck
+You can add PokéRogue to your Steam Library on the Steam Deck for easy access. Follow these steps:
+
+1. **Download and Extract the PokéRogue Linux Release**:
+   - Download the Linux release of PokéRogue and extract the files to a folder on your Steam Deck.
+
+2. **Add PokéRogue to Steam**:
+   - Open the Steam client on your Steam Deck.
+   - Navigate to `Library` → `Add a Game` → `Add a Non-Steam Game`.
+   - Click `Browse` and locate the `pokerogue` executable file in the extracted folder.
+   - Add it to the list.
+
+3. **Set the Launch Options**:
+   - In your Steam Library, right-click (or press the options button) on PokéRogue and select `Properties`.
+   - Under **Launch Options**, enter the following:
+     ```
+     ~/.steam/bin32/steam-runtime/run.sh ./pokerogue
+     ```
+   - This ensures that PokéRogue runs with the Steam Runtime environment, resolving compatibility issues.
+
+4. **Launch PokéRogue**:
+   - Now, you can launch PokéRogue directly from your Steam Library like any other game.
+
+
