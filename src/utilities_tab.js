@@ -266,7 +266,7 @@ async function createPokedexWindow() {
   const pokedexWindowBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
   pokedexWindowBlocker.enableBlockingInSession(globals.pokedexWindow.webContents.session);
 
-  globals.pokedexWindow.loadURL('https://ydarissep.github.io/PokeRogue-Pokedex');
+  globals.pokedexWindow.loadURL('https://wiki.pokerogue.net/starters:pokedex');
 
   // Enable back and forward navigation
   globals.pokedexWindow.webContents.on('did-finish-load', () => {
