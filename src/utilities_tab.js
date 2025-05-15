@@ -52,7 +52,7 @@ const getTabData = () => { return {
     }
   },
   {
-    label: 'Sandstorm\'s Searchdex',
+    label: 'Sandstorm\'s SearchDex',
     accelerator: 'CommandOrControl+E',
     click: () => {
       if (globals.searchDexWindow) {
