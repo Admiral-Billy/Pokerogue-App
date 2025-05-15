@@ -676,7 +676,7 @@ async function createSmogonWindow() {
   });
 }}
 
-// Create the wiki window
+// Create the SearchDex window
 async function createSearchDexWindow() {
   globals.searchDexWindow = utils.createWindow({
     width: 1200,
