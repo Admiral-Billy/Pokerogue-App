@@ -52,6 +52,28 @@ const getTabData = () => { return {
     }
   },
   {
+    label: 'Sandstorm\'s Searchdex',
+    accelerator: 'CommandOrControl+E',
+    click: () => {
+      if (globals.searchDexWindow) {
+        if (globals.searchDexWindow.isVisible()) {
+          if (globals.closeUtilityWindows) {
+            globals.searchDexWindow.close();
+            globals.searchDexWindow = null;
+          } else {
+            globals.searchDexWindow.hide();
+          }
+          globals.mainWindow.focus(); // Set focus to the main window
+        } else {
+          globals.searchDexWindow.show();
+          globals.searchDexWindow.focus(); // Set focus to the Pokedex window
+        }
+      } else {
+        createSearchDexWindow();
+      }
+    }
+  },
+  {
     label: 'Type Chart',
     accelerator: 'CommandOrControl+Y',
     click: () => {
@@ -653,5 +675,32 @@ async function createSmogonWindow() {
     }
   });
 }}
+
+// Create the wiki window
+async function createSearchDexWindow() {
+  globals.searchDexWindow = utils.createWindow({
+    width: 1200,
+    height: 800,
+    autoHideMenuBar: true,
+    icon: 'icons/PR',
+    webPreferences: {
+      nodeIntegration: false
+    }
+  });
+
+  globals.searchDexWindow.loadURL('https://sandstormer.github.io/PokeRogue-Dex/');
+
+  globals.searchDexWindow.on('close', (event) => {
+    if (globals.searchDexWindow && !globals.closeUtilityWindows) {
+      event.preventDefault();
+      globals.searchDexWindow.hide(); // Hide the window instead of closing it
+    } else {
+      globals.searchDexWindow = null;
+    }
+    if (globals.mainWindow) {
+      globals.mainWindow.focus();
+    }
+  });
+}
 
 module.exports.getTabData = getTabData;

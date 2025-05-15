@@ -79,6 +79,12 @@ async function createWindow() {
       globals.smogonWindow.close();
       globals.smogonWindow = null;
     }
+	
+    // Close the Sandstorm Searchdex window if it's open
+    if (globals.searchDexWindow) {
+      globals.searchDexWindow.close();
+      globals.searchDexWindow = null;
+    }
 
     app.quit();
   });
