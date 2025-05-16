@@ -337,7 +337,7 @@ async function createPokedexWindow() {
             homeButton.className = 'navigation-button';
             homeButton.innerText = 'Home';
             homeButton.addEventListener('click', () => {
-                window.location.href = 'https://pokemondb.net/pokedex/all';
+                window.location.href = 'https://wiki.pokerogue.net/dex:pokedex';
             });
             buttonsContainer.appendChild(homeButton);
 
