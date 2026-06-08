@@ -1,7 +1,8 @@
 // Importing required modules
 const {
   app,
-  BrowserWindow
+  BrowserWindow,
+  session
 } = require('electron');
 app.commandLine.appendSwitch('disable-features', 'EnableWindowsGamingInputDataFetcher');
 const path = require('path');
@@ -22,7 +23,12 @@ async function createWindow() {
     autoHideMenuBar: true,
     menuBarVisible: false,
     icon: 'icons/PR',
-    show: false
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: false,
+    }
   });
   localShortcuts.registerLocalShortcuts()
 
@@ -179,6 +185,19 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   app.quit();
+});
+
+app.on('before-quit', async (event) => {
+  event.preventDefault();
+  // Flush all session storage data (cookies, localStorage, etc.) to disk before exiting.
+  // Without this, Chromium may not have time to write pending data on Windows,
+  // causing the game's settings to reset while cookies survive.
+  try {
+    await session.defaultSession.flushStorageData();
+  } catch (e) {
+    console.error('Failed to flush storage data:', e);
+  }
+  app.exit(0);
 });
 
 app.on('activate', () => {
