@@ -15,12 +15,6 @@ const getTabData = () => {
       }
     },
     {
-      label: 'Futaba\'s Discord',
-      click: () => {
-        require('electron').shell.openExternal("https://discord.gg/PeJbKTCXxh");
-      }
-    },
-    {
       label: 'Game file repo',
       click: () => {
         require('electron').shell.openExternal("https://github.com/Admiral-Billy/pokerogue/releases");
