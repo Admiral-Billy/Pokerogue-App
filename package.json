@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@cliqz/adblocker-electron": "^1.27.1",
-    "adm-zip": "^0.5.12",
+    "adm-zip": "^0.6.0",
     "cross-fetch": "^4.0.0",
     "discord-rpc": "^4.0.1",
     "electron-localshortcut": "^3.2.1",
