@@ -40,16 +40,7 @@ const getTabData = () => { return {
   { type: 'separator' },
   {
     label: 'Download files for offline',
-    submenu: [
-      {
-        label: 'Download latest game files (for offline)',
-        click: handleClick_DownloadLatest
-      },
-      {
-        label: 'Download Futaba\'s build',
-        click: handleClick_DownloadLatestFutaba
-      }
-    ]
+    click: handleClick_DownloadLatest
   },
   { type: 'separator' },
   {
@@ -78,19 +69,10 @@ function handleClick_ReloadAndClear() {
 
 async function handleClick_DownloadLatest() {
   try {
-    await downloadLatestGameFiles(globals.mainWindow, false);
+    await downloadLatestGameFiles(globals.mainWindow);
     utils.saveSettings();
   } catch (error) {
     console.error('Failed to download the latest game files:', error);
-  }
-}
-
-async function handleClick_DownloadLatestFutaba() {
-  try {
-    await downloadLatestGameFiles(globals.mainWindow, true);
-    utils.saveSettings();
-  } catch (error) {
-    console.error('Failed to download the latest futaba files:', error);
   }
 }
 
@@ -116,17 +98,11 @@ function clearCache() {
 let progressBar;
 let downloadOngoing = false;
 
-function downloadLatestGameFiles(parentWindow, modded) {
+function downloadLatestGameFiles(parentWindow) {
   return new Promise((resolve, reject) => {
     utils.fetchLatestGameVersionInfo()
       .then(releaseData => {
-        let zipAsset;
-        if (modded) {
-          zipAsset = releaseData.assets.find((asset) => asset.name === 'game_futaba_mod.zip');
-        }
-        else {
-	                zipAsset = releaseData.assets.find((asset) => asset.name === 'game.zip');
-        }
+        let zipAsset = releaseData.assets.find((asset) => asset.name === 'game.zip');
 
         if (zipAsset) {
           const zipUrl = zipAsset.browser_download_url;
