@@ -147,8 +147,7 @@ function saveSettings() {
     hideCursor: globals.hideCursor,
     isMuted: globals.isMuted,
     isBeta: globals.isBeta,
-    isOfflineMode: globals.isOfflineMode,
-    isPRMLMode: globals.isPRMLMode
+    isOfflineMode: globals.isOfflineMode
   };
 
   fs.writeFileSync(settingsFilePath, JSON.stringify(settings));
@@ -170,7 +169,6 @@ function loadSettings() {
       globals.hideCursor = settings.hideCursor;
 	  globals.isBeta = settings.isBeta;
       globals.isOfflineMode = globals.gameFilesDownloaded ? settings.isOfflineMode : false;
-      globals.isPRMLMode = settings.isPRMLMode || false
 
       // Set the window size, fullscreen state, and maximized state
       if (globals.onStart) {
