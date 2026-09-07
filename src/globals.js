@@ -10,7 +10,6 @@ let smogonWindow;
 let searchDexWindow;
 let isOfflineMode = false;
 let isBeta = false;
-let isPRMLMode = false;
 let gameFilesDownloaded = false;
 let closeUtilityWindows = false;
 let darkMode = false;
