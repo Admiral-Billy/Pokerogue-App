@@ -41,7 +41,6 @@ module.exports.smogonWindow = smogonWindow;
 module.exports.searchDexWindow = searchDexWindow;
 module.exports.isOfflineMode = isOfflineMode;
 module.exports.isBeta = isBeta;
-module.exports.isPRMLMode = isPRMLMode;
 module.exports.gameFilesDownloaded = gameFilesDownloaded;
 module.exports.closeUtilityWindows = closeUtilityWindows;
 module.exports.darkMode = darkMode;
