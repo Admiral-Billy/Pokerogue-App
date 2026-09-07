@@ -98,9 +98,6 @@ async function createWindow() {
   else if (globals.isBeta) {
 		 void globals.mainWindow.loadURL('https://beta.pokerogue.net/');
   }
-  else if(globals.isPRMLMode){
-    void globals.mainWindow.loadURL('https://mokerogue.net/')
-  }
   else {
     void globals.mainWindow.loadURL('https://pokerogue.net/');
   }
